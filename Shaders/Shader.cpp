@@ -2,7 +2,7 @@
 #include <glad/glad.h>
 #include "glm/gtc/type_ptr.hpp"
 
-static const std::string ShaderFloder = "./Shaders/";
+static const std::string ShaderFloder = "../Shaders/";
 std::array<std::shared_ptr<Shader>, static_cast<unsigned int>(EShaderType::MAX_ShaderNum)> Shader::ShaderPool{};
 
 Shader::Shader(const std::string& vertexPath, const std::string& fragmentPath)

@@ -101,7 +101,7 @@ int main()
 	std::vector<std::shared_ptr<RSceneObject>> SceneObjects;
 	// Setup scene 
 	{
-		std::shared_ptr<RModel> marryModel = std::make_shared<RModel>("./resources/objects/mary/Marry.obj", EShaderType::ShaderMarry);
+		std::shared_ptr<RModel> marryModel = std::make_shared<RModel>("../resources/objects/mary/Marry.obj", EShaderType::ShaderMarry);
 		std::shared_ptr<RSceneObject> obj1 = std::make_shared<RSceneObject>(marryModel);
 		
 		SceneObjects.push_back(obj1);

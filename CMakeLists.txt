@@ -2,7 +2,10 @@ include(CMakeDependentOption)
 include(FetchContent)
 cmake_minimum_required(VERSION 3.5 FATAL_ERROR)
 
-project(RealEngine LANGUAGES CXX)
+project(RealEngine )
+
+# project(RealEngine LANGUAGES CXX)
+# 导致链接C的库时找不到C编译器
 
 # OpenGL
 find_package(OpenGL REQUIRED)
@@ -24,7 +27,7 @@ FetchContent_Declare(
     assimp
     GIT_REPOSITORY https://github.com/assimp/assimp.git
 )
-set( BUILD_SHARED_LIBS ON CACHE BOOL "static lib")
+# set( BUILD_SHARED_LIBS OFF CACHE BOOL "static lib")
 FetchContent_MakeAvailable(assimp)
 
 # glad 
@@ -35,10 +38,10 @@ add_library(glad-static
     )
 
 # Custom library header and lib 
-include_directories(../../ThridLib/include/ ./)
-LINK_DIRECTORIES(../../ThridLib/lib/)
-LINK_DIRECTORIES(../../ThridLib/dll/)
+include_directories(./RealEngine/ThirdParty/)
+include_directories(./)
 
+LINK_DIRECTORIES(./RealEngine/ThirdParty/lib/)
 
 # error LNK2019: unresolved external symbol WinMain referenced in function "int __cdecl invoke_main(void)" (?invoke_main@@YAHXZ)
 # Must after project declare
