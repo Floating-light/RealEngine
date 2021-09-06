@@ -1,2 +1,7 @@
 /build/
-/.vscode/
+.vscode/
+*.exe
+*.ilk
+*.obj
+*.pdb
+
