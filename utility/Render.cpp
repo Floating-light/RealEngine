@@ -19,9 +19,16 @@ void RRenderer::Render(std::vector<std::shared_ptr<RSceneObject>>& Objects)
 	}
 }
 
-void RRenderer::DepthPass()
+void RRenderer::DepthPass(std::vector<std::shared_ptr<RSceneObject>>& Objects)
 {
-
+	for(auto& Obj : Objects)
+	{
+		for(auto& mesh : Obj->Model->meshes)
+		{
+			const glm::mat4& Transform = Obj->GetModelTrasform();
+			mesh.Draw(* Shader::GetShader(EShaderType::DepthShader));
+		}
+	}
 }
 
 

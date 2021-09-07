@@ -13,7 +13,7 @@ public:
 	void SetCamera(std::shared_ptr<RCamera> NewCamrea);
 	void SetLight(std::shared_ptr < RLightObject> NewLight);
 private:
-	void DepthPass();
+	void DepthPass(std::vector<std::shared_ptr<RSceneObject>>& Objects);
 
 	std::shared_ptr<RCamera> Camera;
 	std::shared_ptr<RLightObject> Light;

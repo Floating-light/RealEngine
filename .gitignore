@@ -1,7 +1,9 @@
-/build/
 .vscode/
+build/
+debug/
 *.exe
 *.ilk
 *.obj
 *.pdb
+
 

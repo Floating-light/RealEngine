@@ -59,8 +59,12 @@ namespace R
 	}
 }
 // Color(0.828, 0.364, 0.0)
-int main()
+int main(int argc, char**  argv)
 {
+	for(int i = 0; i < argc ; ++i)
+	{
+		std::cout << "Param " << i << " : " << argv[i] << std::endl;
+	}
 	// Init glfw
 	glfwInit();
 	// Specify gl version 
@@ -87,10 +91,10 @@ int main()
 		return -1;
 	}
 
-	// Òþ²ØÊó±êÖ¸Õë
+	// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ö¸ï¿½ï¿½
 	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
-	// ÉèÖÃÖ¸¶¨window µÄframebuffer size µÄcallback.
+	// ï¿½ï¿½ï¿½ï¿½Ö¸ï¿½ï¿½window ï¿½ï¿½framebuffer size ï¿½ï¿½callback.
 	glfwSetFramebufferSizeCallback(window, R::framebuffer_size_callback);
 	glfwSetKeyCallback(window, R::key_callback);
 	glfwSetCursorPosCallback(window, R::mouse_callback);
