@@ -18,7 +18,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE, LPSTR, int nCmdShow)
 {
     D3DApp App;
     App.Setup();
-    App.LogAdapters();
-    std::cout << "------------------->> " << std::endl;
+    // App.LogAdapters();
+    std::cout << "------------------->> End" << std::endl;
     return -1;
 }

@@ -37,6 +37,8 @@ void D3DApp::Setup()
     m_device->CreateCommandList(0,D3D12_COMMAND_LIST_TYPE_DIRECT, m_commandAllocator.Get(),nullptr, IID_PPV_ARGS(&CommandList));
     // for a command allocator, only can have a commandlist is openning fo record command in the same time.
     
+    std::cout << "GPU number : "<< m_device->GetNodeCount() << std::endl;
+
     // CommandList record command 
     
     CommandList->Close();
