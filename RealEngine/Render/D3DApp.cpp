@@ -4,13 +4,27 @@
 #include <vector>
 void D3DApp::Setup()
 {
+#if defined(DEBUG) || defined(_DEBUG)
+    {
+        ComPtr<ID3D12Debug> debugController;
+        ThrowIfFailed(D3D12GetDebugInterface(IID_PPV_ARGS(&debugController)));
+        debugController->EnableDebugLayer();
+    }
+#endif
     UINT dxgiFactoryFlags = 0;
     ThrowIfFailed(CreateDXGIFactory2(dxgiFactoryFlags, IID_PPV_ARGS(&m_factory)));
 
-    ComPtr<IDXGIAdapter> warpAdapter;
+    // Hardware adapter
+    ComPtr<IDXGIAdapter1> adapter;
+    GetHardwareAdapter(m_factory.Get(), &adapter);
 
-    ThrowIfFailed(m_factory->EnumWarpAdapter(IID_PPV_ARGS(&warpAdapter)));
-    ThrowIfFailed(D3D12CreateDevice(warpAdapter.Get(), D3D_FEATURE_LEVEL_11_0, IID_PPV_ARGS(&m_device)));
+    if(FAILED(D3D12CreateDevice(adapter.Get(), D3D_FEATURE_LEVEL_11_0, IID_PPV_ARGS(&m_device))))
+    {
+        // https://docs.microsoft.com/en-us/windows/win32/direct3darticles/directx-warp
+        ThrowIfFailed(m_factory->EnumWarpAdapter(IID_PPV_ARGS(&adapter)));
+
+        ThrowIfFailed(D3D12CreateDevice(adapter.Get(), D3D_FEATURE_LEVEL_11_0, IID_PPV_ARGS(&m_device)));
+    }
 
     // feature to query if support
     D3D_FEATURE_LEVEL featureLevels[3] = {D3D_FEATURE_LEVEL_12_1, D3D_FEATURE_LEVEL_10_0, D3D_FEATURE_LEVEL_9_3} ;
@@ -49,10 +63,33 @@ void D3DApp::Setup()
     // the command in queue will be ok, that will be maintaine by Allocator.
     CommandList->Reset(m_commandAllocator.Get(),nullptr);
 
-    // dangerous, the command has not be execute by gpu !!!
+    // dangerous, the command has not be executed by gpu !!!
     // should use fences to determine GPU execution progress!
     // m_commandAllocator->Reset();
+
+
 }
+
+void D3DApp::LoadAsset()
+{
+    // use commandlist to load asset 
+
+    {
+        ThrowIfFailed(m_device->CreateFence(0, D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS(&m_fence)));
+        m_fenceValue = 1; // next usable fence value 
+
+        // Create envent to handle fence commplete
+        m_fenceEvent = CreateEvent(nullptr, FALSE, FALSE, nullptr);
+        if(m_fenceEvent == nullptr)
+        {
+            ThrowIfFailed(HRESULT_FROM_WIN32(GetLastError()));
+        }
+        
+        // wait gpu to commplete command 
+        WaitForPreviousFrame();
+    }
+}
+
 void D3DApp::LogAdapters() 
 {
     UINT i = 0;
@@ -126,3 +163,66 @@ void D3DApp::LogOutputDisplayModels(ComPtr<IDXGIOutput> output, DXGI_FORMAT form
 
 }
 
+void D3DApp::WaitForPreviousFrame()
+{
+    UINT64 CurrentFence = m_fenceValue;
+    m_commandQueue->Signal(m_fence.Get(), CurrentFence);
+    m_fenceValue++;
+
+    if(m_fence->GetCompletedValue() < CurrentFence)
+    {
+        m_fence->SetEventOnCompletion(CurrentFence, m_fenceEvent);
+        WaitForSingleObject(m_fenceEvent, INFINITE);  // return untile gpu set m_fence to CurrentFence value. 
+    }
+
+}
+
+void D3DApp::GetHardwareAdapter(IDXGIFactory1* pFactory, IDXGIAdapter1** ppAdapter, bool requestHighPerformanceAdapter )
+{
+    *ppAdapter = nullptr;
+
+    ComPtr<IDXGIAdapter1> adapter;
+
+    ComPtr<IDXGIFactory6> factory6;
+    if(SUCCEEDED(pFactory->QueryInterface(IID_PPV_ARGS(&factory6))))
+    {
+        for(UINT adapterIndex = 0; 
+        DXGI_ERROR_NOT_FOUND != factory6->EnumAdapterByGpuPreference(
+            adapterIndex,
+            requestHighPerformanceAdapter == true ? DXGI_GPU_PREFERENCE_HIGH_PERFORMANCE : DXGI_GPU_PREFERENCE_UNSPECIFIED,
+            IID_PPV_ARGS(&adapter));
+            ++adapterIndex)
+            {
+                DXGI_ADAPTER_DESC1 desc;
+                adapter->GetDesc1(&desc);
+                if(desc.Flags & DXGI_ADAPTER_FLAG_SOFTWARE)
+                {
+                    // not software rasterization, use factory->EnumWarpAdapter
+                    continue ;
+                }
+                // check to see whether the adapter supports Direct3D12
+                if(SUCCEEDED(D3D12CreateDevice(adapter.Get(), D3D_FEATURE_LEVEL_11_0, _uuidof(ID3D12Device), nullptr)))
+                {
+                    break ;
+                }
+            }
+    }
+    else // factory1
+    {
+        for(UINT adapterIndex = 0; DXGI_ERROR_NOT_FOUND != pFactory->EnumAdapters1(adapterIndex, &adapter); ++adapterIndex)
+        {
+            DXGI_ADAPTER_DESC1 desc;
+            adapter->GetDesc1(&desc);
+
+            if(desc.Flags & DXGI_ADAPTER_FLAG_SOFTWARE)
+            {
+                continue;
+            }
+            if(SUCCEEDED(D3D12CreateDevice(adapter.Get(), D3D_FEATURE_LEVEL_11_0, _uuidof(ID3D12Device), nullptr)))
+            {
+                break;
+            }
+        }
+    }
+    *ppAdapter = adapter.Detach();
+}
