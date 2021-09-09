@@ -2,6 +2,7 @@
 #include "Helper.h"
 #include <iostream>
 #include <vector>
+
 void D3DApp::Setup()
 {
 #if defined(DEBUG) || defined(_DEBUG)
@@ -25,7 +26,7 @@ void D3DApp::Setup()
 
         ThrowIfFailed(D3D12CreateDevice(adapter.Get(), D3D_FEATURE_LEVEL_11_0, IID_PPV_ARGS(&m_device)));
     }
-
+   
     // feature to query if support
     D3D_FEATURE_LEVEL featureLevels[3] = {D3D_FEATURE_LEVEL_12_1, D3D_FEATURE_LEVEL_10_0, D3D_FEATURE_LEVEL_9_3} ;
     D3D12_FEATURE_DATA_FEATURE_LEVELS featureLevelsInfo;
@@ -45,28 +46,56 @@ void D3DApp::Setup()
 
     m_device->CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT,IID_PPV_ARGS(&m_commandAllocator));
 
-    ComPtr<ID3D12GraphicsCommandList> CommandList;
     // nodeMask the index of GPU (For multple gpu system)
     // pInitialState can be nullptr if CommandList will not contain draw command.
-    m_device->CreateCommandList(0,D3D12_COMMAND_LIST_TYPE_DIRECT, m_commandAllocator.Get(),nullptr, IID_PPV_ARGS(&CommandList));
+    m_device->CreateCommandList(0,D3D12_COMMAND_LIST_TYPE_DIRECT, m_commandAllocator.Get(),nullptr, IID_PPV_ARGS(&m_commandList));
     // for a command allocator, only can have a commandlist is openning fo record command in the same time.
     
     std::cout << "GPU number : "<< m_device->GetNodeCount() << std::endl;
 
     // CommandList record command 
-    
-    CommandList->Close();
+    m_commandList->Close();
 
-    ID3D12CommandList* ppCommandLists[] = { CommandList.Get()};
+    ID3D12CommandList* ppCommandLists[] = { m_commandList.Get()};
     m_commandQueue->ExecuteCommandLists(_countof(ppCommandLists), ppCommandLists);
 
     // the command in queue will be ok, that will be maintaine by Allocator.
-    CommandList->Reset(m_commandAllocator.Get(),nullptr);
+    m_commandList->Reset(m_commandAllocator.Get(),nullptr);
 
     // dangerous, the command has not be executed by gpu !!!
     // should use fences to determine GPU execution progress!
     // m_commandAllocator->Reset();
 
+    // Create seap chain 
+    CreateSwapChain();
+
+    // Create rtv descriptor heap
+    D3D12_DESCRIPTOR_HEAP_DESC rtvHeapDesc;
+    rtvHeapDesc.NumDescriptors = SwapChainBufferCount;
+    rtvHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_RTV;
+    rtvHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_NONE;
+    rtvHeapDesc.NodeMask = 0;
+
+    ThrowIfFailed(m_device->CreateDescriptorHeap(&rtvHeapDesc, IID_PPV_ARGS(&m_swapChain)));
+    m_rtvDescHeapIncSize = m_device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
+    
+    // Create render target view (descriptor)
+    CD3DX12_CPU_DESCRIPTOR_HANDLE rtvHeapHandle(m_rtvHeap->GetCPUDescriptorHandleForHeapStart());
+    for(UINT i = 0; i < SwapChainBufferCount; i++)
+    {
+        m_swapChain->GetBuffer(i, IID_PPV_ARGS(&m_renderTargets[i]));
+        m_device->CreateRenderTargetView(m_renderTargets[i].Get(), nullptr, rtvHeapHandle);
+        rtvHeapHandle.Offset(1, m_rtvDescHeapIncSize);
+    }
+    // Create Depth/Stencil view descriptor heap
+    D3D12_DESCRIPTOR_HEAP_DESC dsvHeapDesc;
+    rtvHeapDesc.NumDescriptors = 1;
+    rtvHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_DSV;
+    rtvHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_NONE;
+    rtvHeapDesc.NodeMask = 0;
+
+    ThrowIfFailed(m_device->CreateDescriptorHeap(&dsvHeapDesc, IID_PPV_ARGS(&m_dsvHeap)));
+    m_dsvDescHeapIncSize = m_device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_DSV);
 
 }
 
@@ -225,4 +254,29 @@ void D3DApp::GetHardwareAdapter(IDXGIFactory1* pFactory, IDXGIAdapter1** ppAdapt
         }
     }
     *ppAdapter = adapter.Detach();
+}
+
+void D3DApp::CreateSwapChain()
+{
+    m_swapChain.Reset();
+
+    DXGI_SWAP_CHAIN_DESC desc;
+    desc.BufferDesc.Width = 720;
+    desc.BufferDesc.Height = 1280;
+    desc.BufferDesc.RefreshRate.Numerator = 60;
+    desc.BufferDesc.RefreshRate.Denominator = 1;
+    desc.BufferDesc.Format = DXGI_FORMAT_B8G8R8A8_UNORM;
+    desc.BufferDesc.ScanlineOrdering = DXGI_MODE_SCANLINE_ORDER_UNSPECIFIED;
+    desc.BufferDesc.Scaling = DXGI_MODE_SCALING_UNSPECIFIED;
+    desc.SampleDesc.Count = 1;
+    desc.SampleDesc.Quality = 0;
+    desc.BufferCount = 2;
+    desc.OutputWindow = m_hMainWnd;
+
+    desc.Windowed = true;
+    desc.SwapEffect = DXGI_SWAP_EFFECT_FLIP_DISCARD;
+    desc.Flags = DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH;
+
+    // need a command queue to refersh swapchain
+    ThrowIfFailed(m_factory->CreateSwapChain(m_commandQueue.Get(), &desc, m_swapChain.GetAddressOf()));
 }
