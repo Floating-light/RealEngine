@@ -23,8 +23,17 @@ protected:
     void GetHardwareAdapter(IDXGIFactory1* pFactory, IDXGIAdapter1** ppAdapter, bool requestHighPerformanceAdapter = false);
     void CreateSwapChain();
 private:
+    UINT m_clientWidth, m_clientHeight;
+
     ComPtr<IDXGISwapChain> m_swapChain;
     HWND m_hMainWnd;
+    UINT m_rtvDescriptorSize;
+    UINT m_dsvDescriptorSize;
+    UINT m_cbvUavDescriptorSize;
+    DXGI_FORMAT m_backBufferFormat;
+    DXGI_FORMAT m_depthStencilFormat;
+    BOOL m_4xMsaaState;
+    int m_currentBackBuffer;
     Microsoft::WRL::ComPtr<IDXGIFactory4> m_factory;
     ComPtr<ID3D12Device> m_device;
     // the container of CommandList for GPU to execute.
@@ -41,11 +50,6 @@ private:
     ComPtr<ID3D12Fence> m_fence;
     UINT64 m_fenceValue;
     HANDLE m_fenceEvent;
-
-    UINT m_rtvDescHeapIncSize;
-    UINT m_dsvDescHeapIncSize;
-
-    int m_currentBackBuffer;
 };
 
 // concept : 

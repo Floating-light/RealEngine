@@ -5,6 +5,7 @@
 
 void D3DApp::Setup()
 {
+    m_backBufferFormat = DXGI_FORMAT_R8G8B8A8_UNORM;
 #if defined(DEBUG) || defined(_DEBUG)
     {
         ComPtr<ID3D12Debug> debugController;
@@ -35,6 +36,20 @@ void D3DApp::Setup()
 
     m_device->CheckFeatureSupport(D3D12_FEATURE_FEATURE_LEVELS, &featureLevelsInfo, sizeof(featureLevelsInfo));
     std::cout <<"Max supported feature : " <<  std::hex << featureLevelsInfo.MaxSupportedFeatureLevel << std::endl;
+
+    // 4X MSAA support query
+    D3D12_FEATURE_DATA_MULTISAMPLE_QUALITY_LEVELS msQualityLevels;
+    msQualityLevels.Format = m_backBufferFormat;
+    msQualityLevels.SampleCount = 4;
+    msQualityLevels.Flags = D3D12_MULTISAMPLE_QUALITY_LEVELS_FLAG_NONE;
+    msQualityLevels.NumQualityLevels = 0;
+    ThrowIfFailed(m_device->CheckFeatureSupport(D3D12_FEATURE_MULTISAMPLE_QUALITY_LEVELS, &msQualityLevels,sizeof(msQualityLevels)));
+    assert(msQualityLevels.NumQualityLevels > 0);
+    
+    // Cache descriptor size 
+    m_rtvDescriptorSize = m_device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
+    m_dsvDescriptorSize = m_device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_DSV);
+    m_cbvUavDescriptorSize = m_device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
 
     // Create command queue
     D3D12_COMMAND_QUEUE_DESC queueDesc = {};
@@ -77,26 +92,42 @@ void D3DApp::Setup()
     rtvHeapDesc.NodeMask = 0;
 
     ThrowIfFailed(m_device->CreateDescriptorHeap(&rtvHeapDesc, IID_PPV_ARGS(&m_swapChain)));
-    m_rtvDescHeapIncSize = m_device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
     
     // Create render target view (descriptor)
-    CD3DX12_CPU_DESCRIPTOR_HANDLE rtvHeapHandle(m_rtvHeap->GetCPUDescriptorHandleForHeapStart());
-    for(UINT i = 0; i < SwapChainBufferCount; i++)
     {
-        m_swapChain->GetBuffer(i, IID_PPV_ARGS(&m_renderTargets[i]));
-        m_device->CreateRenderTargetView(m_renderTargets[i].Get(), nullptr, rtvHeapHandle);
-        rtvHeapHandle.Offset(1, m_rtvDescHeapIncSize);
+        CD3DX12_CPU_DESCRIPTOR_HANDLE rtvHeapHandle(m_rtvHeap->GetCPUDescriptorHandleForHeapStart());
+        for(UINT i = 0; i < SwapChainBufferCount; i++)
+        {
+            m_swapChain->GetBuffer(i, IID_PPV_ARGS(&m_renderTargets[i]));
+            m_device->CreateRenderTargetView(m_renderTargets[i].Get(), nullptr, rtvHeapHandle);
+            rtvHeapHandle.Offset(1, m_rtvDescriptorSize);
+        }
     }
     // Create Depth/Stencil view descriptor heap
-    D3D12_DESCRIPTOR_HEAP_DESC dsvHeapDesc;
-    rtvHeapDesc.NumDescriptors = 1;
-    rtvHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_DSV;
-    rtvHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_NONE;
-    rtvHeapDesc.NodeMask = 0;
+    {
+        D3D12_DESCRIPTOR_HEAP_DESC dsvHeapDesc;
+        rtvHeapDesc.NumDescriptors = 1;
+        rtvHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_DSV;
+        rtvHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_NONE;
+        rtvHeapDesc.NodeMask = 0;
 
-    ThrowIfFailed(m_device->CreateDescriptorHeap(&dsvHeapDesc, IID_PPV_ARGS(&m_dsvHeap)));
-    m_dsvDescHeapIncSize = m_device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_DSV);
+        ThrowIfFailed(m_device->CreateDescriptorHeap(&dsvHeapDesc, IID_PPV_ARGS(&m_dsvHeap)));
+    }
+    {
+        D3D12_RESOURCE_DESC desc;
+        desc.Dimension = D3D12_RESOURCE_DIMENSION_TEXTURE2D;
+        desc.Alignment = 0;
+        desc.Height = m_clientHeight;
+        desc.Width = m_clientWidth;
+        desc.DepthOrArraySize = 1;
+        desc.MipLevels = 1;
+        desc.Format = m_depthStencilFormat;
+        desc.SampleDesc.Count = m_4xMsaaState ? 4 : 1;
+        desc.SampleDesc.Quality = m_4xMsaaState ? m_4xMsaaState - 1 : 0;
+        desc.Layout = D3D12_TEXTURE_LAYOUT_UNKNOWN;
+        desc.Flags = D3D12_RESOURCE_FLAG_ALLOW_DEPTH_STENCIL;
 
+    }
 }
 
 void D3DApp::LoadAsset()
