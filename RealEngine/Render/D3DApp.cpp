@@ -3,6 +3,18 @@
 #include <iostream>
 #include <vector>
 
+#include "AppWindow.h"
+
+D3DApp::D3DApp(UINT width, UINT height, const std::wstring& title)
+    : m_clientWidth(width)
+    , m_clientHeight(height)
+    , m_title(title)
+{
+    m_backBufferFormat = DXGI_FORMAT_R8G8B8A8_UNORM;
+    m_4xMsaaState = false;
+    m_4xMassQuality = 4;
+}
+
 void D3DApp::Setup()
 {
     m_backBufferFormat = DXGI_FORMAT_R8G8B8A8_UNORM;
@@ -29,23 +41,25 @@ void D3DApp::Setup()
     }
    
     // feature to query if support
-    D3D_FEATURE_LEVEL featureLevels[3] = {D3D_FEATURE_LEVEL_12_1, D3D_FEATURE_LEVEL_10_0, D3D_FEATURE_LEVEL_9_3} ;
-    D3D12_FEATURE_DATA_FEATURE_LEVELS featureLevelsInfo;
-    featureLevelsInfo.NumFeatureLevels = 3;
-    featureLevelsInfo.pFeatureLevelsRequested = featureLevels;
-
-    m_device->CheckFeatureSupport(D3D12_FEATURE_FEATURE_LEVELS, &featureLevelsInfo, sizeof(featureLevelsInfo));
-    std::cout <<"Max supported feature : " <<  std::hex << featureLevelsInfo.MaxSupportedFeatureLevel << std::endl;
+    {
+        D3D_FEATURE_LEVEL featureLevels[3] = {D3D_FEATURE_LEVEL_12_1, D3D_FEATURE_LEVEL_10_0, D3D_FEATURE_LEVEL_9_3} ;
+        D3D12_FEATURE_DATA_FEATURE_LEVELS featureLevelsInfo;
+        featureLevelsInfo.NumFeatureLevels = 3;
+        featureLevelsInfo.pFeatureLevelsRequested = featureLevels;
+        m_device->CheckFeatureSupport(D3D12_FEATURE_FEATURE_LEVELS, &featureLevelsInfo, sizeof(featureLevelsInfo));
+        std::cout <<"Max supported feature : " <<  std::hex << featureLevelsInfo.MaxSupportedFeatureLevel << std::endl;
+    }
 
     // 4X MSAA support query
-    D3D12_FEATURE_DATA_MULTISAMPLE_QUALITY_LEVELS msQualityLevels;
-    msQualityLevels.Format = m_backBufferFormat;
-    msQualityLevels.SampleCount = 4;
-    msQualityLevels.Flags = D3D12_MULTISAMPLE_QUALITY_LEVELS_FLAG_NONE;
-    msQualityLevels.NumQualityLevels = 0;
-    ThrowIfFailed(m_device->CheckFeatureSupport(D3D12_FEATURE_MULTISAMPLE_QUALITY_LEVELS, &msQualityLevels,sizeof(msQualityLevels)));
-    assert(msQualityLevels.NumQualityLevels > 0);
-    
+    {
+        D3D12_FEATURE_DATA_MULTISAMPLE_QUALITY_LEVELS msQualityLevels;
+        msQualityLevels.Format = m_backBufferFormat;
+        msQualityLevels.SampleCount = 4;
+        msQualityLevels.Flags = D3D12_MULTISAMPLE_QUALITY_LEVELS_FLAG_NONE;
+        msQualityLevels.NumQualityLevels = 0;
+        ThrowIfFailed(m_device->CheckFeatureSupport(D3D12_FEATURE_MULTISAMPLE_QUALITY_LEVELS, &msQualityLevels,sizeof(msQualityLevels)));
+        assert(msQualityLevels.NumQualityLevels > 0);
+    }
     // Cache descriptor size 
     m_rtvDescriptorSize = m_device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
     m_dsvDescriptorSize = m_device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_DSV);
@@ -71,11 +85,11 @@ void D3DApp::Setup()
     // CommandList record command 
     m_commandList->Close();
 
-    ID3D12CommandList* ppCommandLists[] = { m_commandList.Get()};
-    m_commandQueue->ExecuteCommandLists(_countof(ppCommandLists), ppCommandLists);
+    // ID3D12CommandList* ppCommandLists[] = { m_commandList.Get()};
+    // m_commandQueue->ExecuteCommandLists(_countof(ppCommandLists), ppCommandLists);
 
     // the command in queue will be ok, that will be maintaine by Allocator.
-    m_commandList->Reset(m_commandAllocator.Get(),nullptr);
+    // m_commandList->Reset(m_commandAllocator.Get(),nullptr);
 
     // dangerous, the command has not be executed by gpu !!!
     // should use fences to determine GPU execution progress!
@@ -85,13 +99,14 @@ void D3DApp::Setup()
     CreateSwapChain();
 
     // Create rtv descriptor heap
-    D3D12_DESCRIPTOR_HEAP_DESC rtvHeapDesc;
-    rtvHeapDesc.NumDescriptors = SwapChainBufferCount;
-    rtvHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_RTV;
-    rtvHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_NONE;
-    rtvHeapDesc.NodeMask = 0;
-
-    ThrowIfFailed(m_device->CreateDescriptorHeap(&rtvHeapDesc, IID_PPV_ARGS(&m_swapChain)));
+    {
+        D3D12_DESCRIPTOR_HEAP_DESC rtvHeapDesc;
+        rtvHeapDesc.NumDescriptors = SwapChainBufferCount;
+        rtvHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_RTV;
+        rtvHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_NONE;
+        rtvHeapDesc.NodeMask = 0;
+        ThrowIfFailed(m_device->CreateDescriptorHeap(&rtvHeapDesc, IID_PPV_ARGS(&m_rtvHeap)));
+    }
     
     // Create render target view (descriptor)
     {
@@ -106,14 +121,18 @@ void D3DApp::Setup()
     // Create Depth/Stencil view descriptor heap
     {
         D3D12_DESCRIPTOR_HEAP_DESC dsvHeapDesc;
-        rtvHeapDesc.NumDescriptors = 1;
-        rtvHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_DSV;
-        rtvHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_NONE;
-        rtvHeapDesc.NodeMask = 0;
+        dsvHeapDesc.NumDescriptors = 1;
+        dsvHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_DSV;
+        dsvHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_NONE;
+        dsvHeapDesc.NodeMask = 0;
 
         ThrowIfFailed(m_device->CreateDescriptorHeap(&dsvHeapDesc, IID_PPV_ARGS(&m_dsvHeap)));
     }
+
+    // Create depth / stencil buffer and view(descriptor)
+    // use CreateCommittedResource()
     {
+        // Resource desc 
         D3D12_RESOURCE_DESC desc;
         desc.Dimension = D3D12_RESOURCE_DIMENSION_TEXTURE2D;
         desc.Alignment = 0;
@@ -127,13 +146,28 @@ void D3DApp::Setup()
         desc.Layout = D3D12_TEXTURE_LAYOUT_UNKNOWN;
         desc.Flags = D3D12_RESOURCE_FLAG_ALLOW_DEPTH_STENCIL;
 
+        D3D12_CLEAR_VALUE ClearValue;
+        ClearValue.Format = m_depthStencilFormat;
+        ClearValue.DepthStencil.Depth = 1.0f;
+        ClearValue.DepthStencil.Stencil = 0.0f; 
+        // Create resource 
+        m_device->CreateCommittedResource(&CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_DEFAULT), 
+                                          D3D12_HEAP_FLAG_NONE,
+                                          &desc,
+                                          D3D12_RESOURCE_STATE_COMMON,
+                                          &ClearValue,IID_PPV_ARGS(&m_depthStencilBuffer));
+        // Create view(descriptor)
+        // the resource type has been descript when create , so the second paramter can be nullptr, 
+        // indicate use the desc when it create. if it is a none type resource , must specify type here.
+        m_device->CreateDepthStencilView(m_depthStencilBuffer.Get(),nullptr, m_dsvHeap->GetCPUDescriptorHandleForHeapStart());
+
     }
 }
 
 void D3DApp::LoadAsset()
 {
-    // use commandlist to load asset 
 
+    // use commandlist to load asset 
     {
         ThrowIfFailed(m_device->CreateFence(0, D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS(&m_fence)));
         m_fenceValue = 1; // next usable fence value 
@@ -292,22 +326,26 @@ void D3DApp::CreateSwapChain()
     m_swapChain.Reset();
 
     DXGI_SWAP_CHAIN_DESC desc;
-    desc.BufferDesc.Width = 720;
-    desc.BufferDesc.Height = 1280;
+    desc.BufferDesc.Width = m_clientWidth;
+    desc.BufferDesc.Height = m_clientHeight;
     desc.BufferDesc.RefreshRate.Numerator = 60;
     desc.BufferDesc.RefreshRate.Denominator = 1;
-    desc.BufferDesc.Format = DXGI_FORMAT_B8G8R8A8_UNORM;
+    desc.BufferDesc.Format = m_backBufferFormat;
+
     desc.BufferDesc.ScanlineOrdering = DXGI_MODE_SCANLINE_ORDER_UNSPECIFIED;
     desc.BufferDesc.Scaling = DXGI_MODE_SCALING_UNSPECIFIED;
-    desc.SampleDesc.Count = 1;
-    desc.SampleDesc.Quality = 0;
-    desc.BufferCount = 2;
-    desc.OutputWindow = m_hMainWnd;
+    desc.SampleDesc.Count = m_4xMsaaState ? 4: 1;
+    desc.SampleDesc.Quality = m_4xMsaaState ? m_4xMassQuality - 1 : 0;
+    desc.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
+    desc.BufferCount = SwapChainBufferCount;
+    desc.OutputWindow = AppWindow::Get().GetHwnd();
 
     desc.Windowed = true;
     desc.SwapEffect = DXGI_SWAP_EFFECT_FLIP_DISCARD;
     desc.Flags = DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH;
 
+    ComPtr<IDXGISwapChain> SwapChainToCreate;
     // need a command queue to refersh swapchain
-    ThrowIfFailed(m_factory->CreateSwapChain(m_commandQueue.Get(), &desc, m_swapChain.GetAddressOf()));
+    ThrowIfFailed(m_factory->CreateSwapChain(m_commandQueue.Get(), &desc, &SwapChainToCreate));
+    ThrowIfFailed(SwapChainToCreate.As(&m_swapChain));
 }
