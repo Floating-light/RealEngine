@@ -6,6 +6,8 @@ using Microsoft::WRL::ComPtr;
 // D3D12 : manage the resource in gpu memory manually(residency)
 // D3D11 : manage by system
 
+
+
 class D3DApp
 {
 public:
@@ -16,7 +18,6 @@ public:
     void OnRender(){};
     void OnKeyDown(UINT8 key){};
     void OnKeyUp(UINT8 key){};
-
     // A GPU(adapter) connect to multiple monitor(display output )
     // IDXGIAdapter display adapter 
     void LogAdapters() ;
@@ -31,11 +32,16 @@ public:
 protected:
     void GetHardwareAdapter(IDXGIFactory1* pFactory, IDXGIAdapter1** ppAdapter, bool requestHighPerformanceAdapter = false);
     void CreateSwapChain();
+    std::wstring GetShaderPath() const ;
 private:
     UINT m_clientWidth, m_clientHeight;
     std::wstring m_title;
     ComPtr<IDXGISwapChain3> m_swapChain;
-
+struct Vertex
+{
+    DirectX::XMFLOAT3 position;
+    DirectX::XMFLOAT4 color;
+};
     UINT m_rtvDescriptorSize;
     UINT m_dsvDescriptorSize;
     UINT m_cbvUavDescriptorSize;
@@ -52,12 +58,15 @@ private:
     // the actually place to store command 
     ComPtr<ID3D12CommandAllocator> m_commandAllocator;
     ComPtr<ID3D12GraphicsCommandList> m_commandList;
-
+    ComPtr<ID3D12RootSignature> m_rootSignature;
+    ComPtr<ID3D12PipelineState> m_pipelineState;
     ComPtr<ID3D12DescriptorHeap> m_rtvHeap;
     ComPtr<ID3D12DescriptorHeap> m_dsvHeap;
 
     ComPtr<ID3D12Resource> m_renderTargets[SwapChainBufferCount];
     ComPtr<ID3D12Resource> m_depthStencilBuffer;
+    ComPtr<ID3D12Resource> m_vertexBuffer;
+    D3D12_VERTEX_BUFFER_VIEW m_vertexBufferView;
     ComPtr<ID3D12Fence> m_fence;
     UINT64 m_fenceValue;
     HANDLE m_fenceEvent;
