@@ -10,16 +10,24 @@ D3DApp::D3DApp(UINT width, UINT height, const std::wstring& title)
     : m_clientWidth(width)
     , m_clientHeight(height)
     , m_title(title)
+    , m_currentBackBuffer(0)
+    , m_viewport((width - height)/2,0.0f,height, height)
+    // , m_viewport(0.0f,0.0f,width, height)
+
+    , m_scissorRect(0,0, static_cast<LONG>(width), static_cast<LONG>(height))
+    // , m_scissorRect((width - height)/2,0, static_cast<LONG>( height), static_cast<LONG>(height))
+
 {
     m_backBufferFormat = DXGI_FORMAT_R8G8B8A8_UNORM;
     m_depthStencilFormat = DXGI_FORMAT_D32_FLOAT;
     m_4xMsaaState = false;
     m_4xMassQuality = 4;
+    m_aspectRatio = static_cast<float>(width ) / static_cast<float>(height);
+    // m_aspectRatio = 1;
 }
 
 void D3DApp::Setup()
 {
-    m_backBufferFormat = DXGI_FORMAT_R8G8B8A8_UNORM;
 #if defined(DEBUG) || defined(_DEBUG)
     {
         ComPtr<ID3D12Debug> debugController;
@@ -164,7 +172,6 @@ void D3DApp::Setup()
         // the resource type has been descript when create , so the second paramter can be nullptr, 
         // indicate use the desc when it create. if it is a none type resource , must specify type here.
         m_device->CreateDepthStencilView(m_depthStencilBuffer.Get(),nullptr, m_dsvHeap->GetCPUDescriptorHandleForHeapStart());
-
     }
 
     LoadAsset();
@@ -228,13 +235,24 @@ void D3DApp::LoadAsset()
 
     // Create the vertex buffer
     {
+        // Vertex triangleVertices[] = 
+        // {
+        //     { { 0.0f, 0.25f*m_aspectRatio , 0.0f }, { 1.0f, 0.0f, 0.0f, 1.0f } },
+        //     { { 0.25f, -0.25f*m_aspectRatio , 0.0f }, { 0.0f, 1.0f, 0.0f, 1.0f } },
+        //     { { -0.25f, -0.25f *m_aspectRatio, 0.0f }, { 0.0f, 0.0f, 1.0f, 1.0f } }
+        // };
+        // Vertex triangleVertices[] = 
+        // {
+        //     { { 0.0f, 1.0f*m_aspectRatio , 0.0f }, { 1.0f, 0.0f, 0.0f, 1.0f } },
+        //     { { 1.0f, -1.0f*m_aspectRatio , 0.0f }, { 0.0f, 1.0f, 0.0f, 1.0f } },
+        //     { { -1.0f, -1.0f *m_aspectRatio, 0.0f }, { 0.0f, 0.0f, 1.0f, 1.0f } }
+        // };
         Vertex triangleVertices[] = 
         {
-            { { 0.0f, 0.25f , 0.0f }, { 1.0f, 0.0f, 0.0f, 1.0f } },
-            { { 0.25f, -0.25f , 0.0f }, { 0.0f, 1.0f, 0.0f, 1.0f } },
-            { { -0.25f, -0.25f , 0.0f }, { 0.0f, 0.0f, 1.0f, 1.0f } }
+            { { 0.0f, 1.0f , 0.0f }, { 1.0f, 0.0f, 0.0f, 1.0f } },
+            { { 1.0f, -1.0f , 0.0f }, { 0.0f, 1.0f, 0.0f, 1.0f } },
+            { { -1.0f, -1.0f , 0.0f }, { 0.0f, 0.0f, 1.0f, 1.0f } }
         };
-
         const UINT vertexBufferSize = sizeof(triangleVertices);
 
         CD3DX12_HEAP_PROPERTIES heapPro(D3D12_HEAP_TYPE_UPLOAD);
@@ -256,7 +274,6 @@ void D3DApp::LoadAsset()
         m_vertexBufferView.BufferLocation = m_vertexBuffer->GetGPUVirtualAddress();
         m_vertexBufferView.StrideInBytes = sizeof(Vertex);
         m_vertexBufferView.SizeInBytes = vertexBufferSize;
-
     }
 
 
@@ -275,6 +292,48 @@ void D3DApp::LoadAsset()
         // wait gpu to commplete command 
         WaitForPreviousFrame();
     }
+}
+
+void D3DApp::OnUpdate()
+{
+
+}
+void D3DApp::OnRender()
+{
+    PopulateCommandList();
+
+    ID3D12CommandList* ppCommandLists[] = { m_commandList.Get()};
+    m_commandQueue->ExecuteCommandLists(_countof(ppCommandLists), ppCommandLists);
+
+    ThrowIfFailed(m_swapChain->Present(1, 0));
+
+    WaitForPreviousFrame();
+}
+
+void D3DApp::PopulateCommandList()
+{
+    ThrowIfFailed(m_commandAllocator->Reset());
+
+    ThrowIfFailed(m_commandList->Reset(m_commandAllocator.Get(), m_pipelineState.Get()));
+
+    m_commandList->SetGraphicsRootSignature(m_rootSignature.Get());
+    m_commandList->RSSetViewports(1, &m_viewport);
+    m_commandList->RSSetScissorRects(1, &m_scissorRect);
+
+    m_commandList->ResourceBarrier(1, &CD3DX12_RESOURCE_BARRIER::Transition(m_renderTargets[m_currentBackBuffer].Get(), D3D12_RESOURCE_STATE_PRESENT, D3D12_RESOURCE_STATE_RENDER_TARGET));
+
+    CD3DX12_CPU_DESCRIPTOR_HANDLE rtvHandle(m_rtvHeap->GetCPUDescriptorHandleForHeapStart(),m_currentBackBuffer, m_rtvDescriptorSize);
+    m_commandList->OMSetRenderTargets(1, &rtvHandle, FALSE, nullptr);
+
+    const float clearColor[] = {0.0f, 0.2f, 0.4f, 1.0f};
+    m_commandList->ClearRenderTargetView(rtvHandle, clearColor, 0, nullptr);
+    m_commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+    m_commandList->IASetVertexBuffers(0,1,&m_vertexBufferView);
+    m_commandList->DrawInstanced(3, 1,0,0);
+
+    m_commandList->ResourceBarrier(1, &CD3DX12_RESOURCE_BARRIER::Transition(m_renderTargets[m_currentBackBuffer].Get(), D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PRESENT));
+
+    ThrowIfFailed(m_commandList->Close());
 }
 
 void D3DApp::LogAdapters() 
@@ -362,6 +421,8 @@ void D3DApp::WaitForPreviousFrame()
         WaitForSingleObject(m_fenceEvent, INFINITE);  // return untile gpu set m_fence to CurrentFence value. 
     }
 
+    m_currentBackBuffer = m_swapChain->GetCurrentBackBufferIndex();
+
 }
 
 void D3DApp::GetHardwareAdapter(IDXGIFactory1* pFactory, IDXGIAdapter1** ppAdapter, bool requestHighPerformanceAdapter )
@@ -441,6 +502,10 @@ void D3DApp::CreateSwapChain()
     // need a command queue to refersh swapchain
     ThrowIfFailed(m_factory->CreateSwapChain(m_commandQueue.Get(), &desc, &SwapChainToCreate));
     ThrowIfFailed(SwapChainToCreate.As(&m_swapChain));
+
+    ThrowIfFailed(m_factory->MakeWindowAssociation(AppWindow::Get().GetHwnd(), DXGI_MWA_NO_ALT_ENTER));
+
+    m_currentBackBuffer = m_swapChain->GetCurrentBackBufferIndex();
 }
 
 std::wstring D3DApp::GetShaderPath() const 

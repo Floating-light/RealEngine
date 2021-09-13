@@ -14,8 +14,9 @@ public:
     D3DApp(UINT width, UINT height, const std::wstring& title);
     void Setup() ;
     void LoadAsset();
-    void OnUpdate(){};
-    void OnRender(){};
+    void OnUpdate();
+    void OnRender();
+    void PopulateCommandList();
     void OnKeyDown(UINT8 key){};
     void OnKeyUp(UINT8 key){};
     // A GPU(adapter) connect to multiple monitor(display output )
@@ -47,7 +48,9 @@ struct Vertex
     UINT m_cbvUavDescriptorSize;
     DXGI_FORMAT m_backBufferFormat;
     DXGI_FORMAT m_depthStencilFormat;
-    
+    CD3DX12_VIEWPORT m_viewport;
+    CD3DX12_RECT m_scissorRect;
+    float m_aspectRatio;
     BOOL m_4xMsaaState;
     UINT8 m_4xMassQuality;
     int m_currentBackBuffer;
