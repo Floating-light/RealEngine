@@ -1,6 +1,5 @@
 #pragma once 
 #include <windows.h>
-
 class AppWindow
 {
 public:

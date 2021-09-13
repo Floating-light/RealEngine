@@ -1,6 +1,7 @@
 #include "AppWindow.h"
 
 #include "D3DApp.h"
+#include "GameTIme.h"
 
 AppWindow& AppWindow::Get()
 {
@@ -81,7 +82,8 @@ LRESULT CALLBACK AppWindow::WindowProc(HWND hWnd, UINT message, WPARAM wParam, L
     case WM_PAINT:
         if(pGraphics)
         {
-            pGraphics->OnUpdate();
+            
+            pGraphics->OnUpdate(GameTime::Timer.Tick());
             pGraphics->OnRender();
         }
         return 0;

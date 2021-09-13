@@ -14,7 +14,7 @@ public:
     D3DApp(UINT width, UINT height, const std::wstring& title);
     void Setup() ;
     void LoadAsset();
-    void OnUpdate();
+    void OnUpdate(double DeltaTime);
     void OnRender();
     void PopulateCommandList();
     void OnKeyDown(UINT8 key){};
@@ -73,6 +73,9 @@ struct Vertex
     ComPtr<ID3D12Fence> m_fence;
     UINT64 m_fenceValue;
     HANDLE m_fenceEvent;
+
+    // Vertex buffer 
+UINT8 * pVertexDataBegin;
 };
 
 // concept : 
