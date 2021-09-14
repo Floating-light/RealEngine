@@ -1,4 +1,6 @@
 #include "AppWindow.h"
+#include <sstream>
+#include <string>
 
 #include "D3DApp.h"
 #include "GameTIme.h"
@@ -82,8 +84,9 @@ LRESULT CALLBACK AppWindow::WindowProc(HWND hWnd, UINT message, WPARAM wParam, L
     case WM_PAINT:
         if(pGraphics)
         {
-            
-            pGraphics->OnUpdate(GameTime::Timer.Tick());
+            const double CurrentDelta = GameTime::Timer.Tick();
+            AppWindow::Get().SetWindowTitleText();
+            pGraphics->OnUpdate(CurrentDelta);
             pGraphics->OnRender();
         }
         return 0;
@@ -92,4 +95,11 @@ LRESULT CALLBACK AppWindow::WindowProc(HWND hWnd, UINT message, WPARAM wParam, L
         return 0;
     }
     return DefWindowProc(hWnd, message, wParam, lParam);
+}
+
+void AppWindow::SetWindowTitleText()
+{
+    std::wstringstream ss;
+    ss << L"FPS: " << GameTime::Timer.GetFps();
+    SetWindowText(AppWindow::GetHwnd(), ss.str().c_str());
 }
