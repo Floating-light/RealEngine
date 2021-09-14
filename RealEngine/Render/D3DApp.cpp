@@ -270,7 +270,7 @@ void D3DApp::LoadAsset()
         CD3DX12_RANGE readRange(0,0);
         ThrowIfFailed(m_vertexBuffer->Map(0, &readRange, reinterpret_cast<void**>(&pVertexDataBegin)));
         memcpy(pVertexDataBegin, triangleVertices, sizeof(triangleVertices));
-        // m_vertexBuffer->Unmap(0, nullptr);
+        m_vertexBuffer->Unmap(0, nullptr);
 
         m_vertexBufferView.BufferLocation = m_vertexBuffer->GetGPUVirtualAddress();
         m_vertexBufferView.StrideInBytes = sizeof(Vertex);
@@ -297,15 +297,15 @@ void D3DApp::LoadAsset()
 
 void D3DApp::OnUpdate(double DeltaTime)
 {
-    static double Data = 0.0f;
-    Data += DeltaTime;
+    // static double Data = 0.0f;
+    // Data += DeltaTime;
 
-    Vertex* V = reinterpret_cast<Vertex*>(pVertexDataBegin);
-    V[0].position.y = 1.0f *  abs(sinf(Data)) ;
-    V[1].position.x = 1.0f *  abs(sinf(Data) );
-    V[1].position.y = -1.0f * abs(sinf(Data));
-    V[2].position.x = -1.0f * abs(sinf(Data));
-    V[2].position.y = -1.0f * abs(sinf(Data));
+    // Vertex* V = reinterpret_cast<Vertex*>(pVertexDataBegin);
+    // V[0].position.y = 1.0f *  abs(sinf(Data)) ;
+    // V[1].position.x = 1.0f *  abs(sinf(Data) );
+    // V[1].position.y = -1.0f * abs(sinf(Data));
+    // V[2].position.x = -1.0f * abs(sinf(Data));
+    // V[2].position.y = -1.0f * abs(sinf(Data));
 
 
 }
@@ -316,7 +316,7 @@ void D3DApp::OnRender()
     ID3D12CommandList* ppCommandLists[] = { m_commandList.Get()};
     m_commandQueue->ExecuteCommandLists(_countof(ppCommandLists), ppCommandLists);
 
-    ThrowIfFailed(m_swapChain->Present(1, 0));
+    ThrowIfFailed(m_swapChain->Present(0, 0));
 
     WaitForPreviousFrame();
 }
