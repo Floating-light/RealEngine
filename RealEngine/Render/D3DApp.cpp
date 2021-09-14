@@ -277,6 +277,36 @@ void D3DApp::LoadAsset()
         m_vertexBufferView.SizeInBytes = vertexBufferSize;
     }
 
+    // Line : 
+    {
+        Vertex LineVertex[] = 
+        {
+            { {-0.9f, -0.9f, 0.0f}, {1.0f, 0.0f, 0.0f, 1.0f}},
+            { {0.9f, -0.9f, 0.0f}, {1.0f, 0.0f, 0.0f, 1.0f}},
+            { {0.9f, 0.9f , 0.0f }, { 0.0f, 1.0f, 0.0f, 1.0f}},
+            { {-0.9f, 0.9f , 0.0f }, { 0.0f, 0.0f, 1.0f, 1.0f}}
+
+        };
+
+        const UINT bufferSize = sizeof(LineVertex);
+        ThrowIfFailed(m_device->CreateCommittedResource(
+            &CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_UPLOAD),
+            D3D12_HEAP_FLAG_NONE,
+            &CD3DX12_RESOURCE_DESC::Buffer(bufferSize),
+            D3D12_RESOURCE_STATE_GENERIC_READ,
+            nullptr,
+            IID_PPV_ARGS(&m_LineBuffer)
+        ));
+
+        ThrowIfFailed(m_LineBuffer->Map(0,&CD3DX12_RANGE(0,0),reinterpret_cast<void**>(&pLineDataBegin)));
+        memcpy(pLineDataBegin, LineVertex, bufferSize);
+        m_LineBuffer->Unmap(0, nullptr);
+
+        m_lineVertexBufferView.BufferLocation = m_LineBuffer->GetGPUVirtualAddress();
+        m_lineVertexBufferView.SizeInBytes = bufferSize;
+        m_lineVertexBufferView.StrideInBytes = sizeof(Vertex);
+    }
+
 
     // use commandlist to load asset 
     {
@@ -297,15 +327,15 @@ void D3DApp::LoadAsset()
 
 void D3DApp::OnUpdate(double DeltaTime)
 {
-    // static double Data = 0.0f;
-    // Data += DeltaTime;
+    static double Data = 0.0f;
+    Data += DeltaTime;
 
-    // Vertex* V = reinterpret_cast<Vertex*>(pVertexDataBegin);
-    // V[0].position.y = 1.0f *  abs(sinf(Data)) ;
-    // V[1].position.x = 1.0f *  abs(sinf(Data) );
-    // V[1].position.y = -1.0f * abs(sinf(Data));
-    // V[2].position.x = -1.0f * abs(sinf(Data));
-    // V[2].position.y = -1.0f * abs(sinf(Data));
+    Vertex* V = reinterpret_cast<Vertex*>(pVertexDataBegin);
+    V[0].position.y = 1.0f *  abs(sinf(Data)) ;
+    V[1].position.x = 1.0f *  abs(sinf(Data) );
+    V[1].position.y = -1.0f * abs(sinf(Data));
+    V[2].position.x = -1.0f * abs(sinf(Data));
+    V[2].position.y = -1.0f * abs(sinf(Data));
 
 
 }
@@ -341,6 +371,10 @@ void D3DApp::PopulateCommandList()
     m_commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
     m_commandList->IASetVertexBuffers(0,1,&m_vertexBufferView);
     m_commandList->DrawInstanced(3, 1,0,0);
+
+    m_commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_LINELIST);
+    m_commandList->IASetVertexBuffers(0,1,&m_lineVertexBufferView);
+    m_commandList->DrawInstanced(2, 2,0,0);
 
     m_commandList->ResourceBarrier(1, &CD3DX12_RESOURCE_BARRIER::Transition(m_renderTargets[m_currentBackBuffer].Get(), D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PRESENT));
 

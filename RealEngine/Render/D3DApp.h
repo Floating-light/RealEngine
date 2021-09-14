@@ -69,13 +69,16 @@ struct Vertex
     ComPtr<ID3D12Resource> m_renderTargets[SwapChainBufferCount];
     ComPtr<ID3D12Resource> m_depthStencilBuffer;
     ComPtr<ID3D12Resource> m_vertexBuffer;
+    ComPtr<ID3D12Resource> m_LineBuffer;
     D3D12_VERTEX_BUFFER_VIEW m_vertexBufferView;
+    D3D12_VERTEX_BUFFER_VIEW m_lineVertexBufferView;
     ComPtr<ID3D12Fence> m_fence;
     UINT64 m_fenceValue;
     HANDLE m_fenceEvent;
 
     // Vertex buffer 
-UINT8 * pVertexDataBegin;
+    UINT8 * pVertexDataBegin;
+    UINT8* pLineDataBegin;
 };
 
 // concept : 
