@@ -249,9 +249,13 @@ void D3DApp::LoadAsset()
         // };
         Vertex triangleVertices[] = 
         {
-            { { 0.0f, 1.0f , 0.0f }, { 1.0f, 0.0f, 0.0f, 1.0f } },
+            { { -1.0f, -1.0f , 0.0f }, { 0.0f, 0.0f, 1.0f, 1.0f } },
+            { { -1.0f, 1.0f , 0.0f }, { 1.0f, 0.0f, 0.0f, 1.0f } },
             { { 1.0f, -1.0f , 0.0f }, { 0.0f, 1.0f, 0.0f, 1.0f } },
-            { { -1.0f, -1.0f , 0.0f }, { 0.0f, 0.0f, 1.0f, 1.0f } }
+
+            { { 1.0f, 1.0f , 0.0f }, { 0.0f, 0.0f, 1.0f, 1.0f } },
+            { { 1.0f, -0.8f , 0.0f }, { 0.0f, 1.0f, 0.0f, 1.0f } },
+            { { -0.8f, 1.0f , 0.0f }, { 1.0f, 0.0f, 1.0f, 1.0f } }
         };
         const UINT vertexBufferSize = sizeof(triangleVertices);
 
@@ -270,7 +274,7 @@ void D3DApp::LoadAsset()
         CD3DX12_RANGE readRange(0,0);
         ThrowIfFailed(m_vertexBuffer->Map(0, &readRange, reinterpret_cast<void**>(&pVertexDataBegin)));
         memcpy(pVertexDataBegin, triangleVertices, sizeof(triangleVertices));
-        m_vertexBuffer->Unmap(0, nullptr);
+        // m_vertexBuffer->Unmap(0, nullptr);
 
         m_vertexBufferView.BufferLocation = m_vertexBuffer->GetGPUVirtualAddress();
         m_vertexBufferView.StrideInBytes = sizeof(Vertex);
@@ -330,12 +334,12 @@ void D3DApp::OnUpdate(double DeltaTime)
     static double Data = 0.0f;
     Data += DeltaTime;
 
-    Vertex* V = reinterpret_cast<Vertex*>(pVertexDataBegin);
-    V[0].position.y = 1.0f *  abs(sinf(Data)) ;
-    V[1].position.x = 1.0f *  abs(sinf(Data) );
-    V[1].position.y = -1.0f * abs(sinf(Data));
-    V[2].position.x = -1.0f * abs(sinf(Data));
-    V[2].position.y = -1.0f * abs(sinf(Data));
+    // Vertex* V = reinterpret_cast<Vertex*>(pVertexDataBegin);
+    // V[0].position.y = 1.0f *  abs(sinf(Data)) ;
+    // V[1].position.x = 1.0f *  abs(sinf(Data) );
+    // V[1].position.y = -1.0f * abs(sinf(Data));
+    // V[2].position.x = -1.0f * abs(sinf(Data));
+    // V[2].position.y = -1.0f * abs(sinf(Data));
 
 
 }
@@ -350,7 +354,7 @@ void D3DApp::OnRender()
 
     WaitForPreviousFrame();
 }
-
+// https://www.braynzarsoft.net/viewtutorial/q16390-04-direct3d-12-drawing
 void D3DApp::PopulateCommandList()
 {
     ThrowIfFailed(m_commandAllocator->Reset());
@@ -370,11 +374,11 @@ void D3DApp::PopulateCommandList()
     m_commandList->ClearRenderTargetView(rtvHandle, clearColor, 0, nullptr);
     m_commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
     m_commandList->IASetVertexBuffers(0,1,&m_vertexBufferView);
-    m_commandList->DrawInstanced(3, 1,0,0);
+    m_commandList->DrawInstanced(6, 1,0,0);
 
-    m_commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_LINELIST);
+    m_commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_LINESTRIP);
     m_commandList->IASetVertexBuffers(0,1,&m_lineVertexBufferView);
-    m_commandList->DrawInstanced(2, 2,0,0);
+    m_commandList->DrawInstanced(6, 1,0,0);
 
     m_commandList->ResourceBarrier(1, &CD3DX12_RESOURCE_BARRIER::Transition(m_renderTargets[m_currentBackBuffer].Get(), D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PRESENT));
 
