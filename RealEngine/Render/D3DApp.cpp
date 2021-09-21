@@ -291,18 +291,19 @@ void D3DApp::LoadAsset()
             { {-0.9f, 0.9f , 0.0f }, { 0.0f, 0.0f, 1.0f, 1.0f}}
 
         };
-
         const UINT bufferSize = sizeof(LineVertex);
+        auto heapProperties = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_UPLOAD);
+        auto desc = CD3DX12_RESOURCE_DESC::Buffer(bufferSize);
         ThrowIfFailed(m_device->CreateCommittedResource(
-            &CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_UPLOAD),
+            &heapProperties,
             D3D12_HEAP_FLAG_NONE,
-            &CD3DX12_RESOURCE_DESC::Buffer(bufferSize),
+            &desc,
             D3D12_RESOURCE_STATE_GENERIC_READ,
             nullptr,
             IID_PPV_ARGS(&m_LineBuffer)
         ));
-
-        ThrowIfFailed(m_LineBuffer->Map(0,&CD3DX12_RANGE(0,0),reinterpret_cast<void**>(&pLineDataBegin)));
+        auto range = CD3DX12_RANGE(0,0);
+        ThrowIfFailed(m_LineBuffer->Map(0,&range,reinterpret_cast<void**>(&pLineDataBegin)));
         memcpy(pLineDataBegin, LineVertex, bufferSize);
         m_LineBuffer->Unmap(0, nullptr);
 
@@ -364,8 +365,8 @@ void D3DApp::PopulateCommandList()
     m_commandList->SetGraphicsRootSignature(m_rootSignature.Get());
     m_commandList->RSSetViewports(1, &m_viewport);
     m_commandList->RSSetScissorRects(1, &m_scissorRect);
-
-    m_commandList->ResourceBarrier(1, &CD3DX12_RESOURCE_BARRIER::Transition(m_renderTargets[m_currentBackBuffer].Get(), D3D12_RESOURCE_STATE_PRESENT, D3D12_RESOURCE_STATE_RENDER_TARGET));
+    auto resourceBarrier = CD3DX12_RESOURCE_BARRIER::Transition(m_renderTargets[m_currentBackBuffer].Get(), D3D12_RESOURCE_STATE_PRESENT, D3D12_RESOURCE_STATE_RENDER_TARGET);
+    m_commandList->ResourceBarrier(1, &resourceBarrier);
 
     CD3DX12_CPU_DESCRIPTOR_HANDLE rtvHandle(m_rtvHeap->GetCPUDescriptorHandleForHeapStart(),m_currentBackBuffer, m_rtvDescriptorSize);
     m_commandList->OMSetRenderTargets(1, &rtvHandle, FALSE, nullptr);
@@ -380,7 +381,8 @@ void D3DApp::PopulateCommandList()
     m_commandList->IASetVertexBuffers(0,1,&m_lineVertexBufferView);
     m_commandList->DrawInstanced(4, 1,0,0);
 
-    m_commandList->ResourceBarrier(1, &CD3DX12_RESOURCE_BARRIER::Transition(m_renderTargets[m_currentBackBuffer].Get(), D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PRESENT));
+    auto rt2PresentBarrier = CD3DX12_RESOURCE_BARRIER::Transition(m_renderTargets[m_currentBackBuffer].Get(), D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PRESENT);
+    m_commandList->ResourceBarrier(1, &rt2PresentBarrier);
 
     ThrowIfFailed(m_commandList->Close());
 }
@@ -407,7 +409,7 @@ void D3DApp::LogAdapters()
         ++i;
     }
 
-    adapterList.empty();
+    adapterList.clear();
 
 }
 
@@ -561,6 +563,7 @@ std::wstring D3DApp::GetShaderPath() const
 {
     std::filesystem::path currentPath = std::filesystem::current_path();
     std::wcout << "current path : " << currentPath.generic_wstring() << std::endl;
-    return currentPath.generic_wstring() + L"/";
+    return currentPath.generic_wstring() + L"/../../../RealEngine/Render/";
+    // return  L"/sdf";
 }
 
