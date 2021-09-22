@@ -22,19 +22,13 @@ target_compile_definitions(RendererMain
 # add_compile_options(/permissive)
 
 message(STATUS "${Red}---> Current  current falgs  is ${CMAKE_CXX_FLAGS}")
-target_compile_options(RendererMain
-PUBLIC
-  /std:c++20
-  /permissive
-  /W1
-)
 
 target_sources(RendererMain
   PRIVATE 
-    AppWindow.cpp
-    D3DApp.cpp
-    GameTime.cpp
-    Render.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/AppWindow.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/D3DApp.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/GameTime.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/Render.cpp
   PUBLIC
     ${CMAKE_CURRENT_LIST_DIR}/AppWindow.h
     ${CMAKE_CURRENT_LIST_DIR}/D3DApp.h
