@@ -6,15 +6,15 @@
 #include <vector>
 #include <filesystem>
 
-D3DApp::D3DApp(UINT width, UINT height, const std::wstring& title)
-    : m_clientWidth(width)
-    , m_clientHeight(height)
-    , m_title(title)
-    , m_currentBackBuffer(0)
-    , m_viewport((width - height)/2,0.0f,height, height)
-    // , m_viewport(0.0f,0.0f,width, height)
+D3DApp::D3DApp()
+    // : m_clientWidth(width)
+    // , m_clientHeight(height)
+    // , m_title(title)
+    // , m_currentBackBuffer(0)
+    // , m_viewport((width - height)/2,0.0f,height, height)
+    // // , m_viewport(0.0f,0.0f,width, height)
 
-    , m_scissorRect(0,0, static_cast<LONG>(width), static_cast<LONG>(height))
+    // , m_scissorRect(0,0, static_cast<LONG>(width), static_cast<LONG>(height))
     // , m_scissorRect((width - height)/2,0, static_cast<LONG>( height), static_cast<LONG>(height))
 
 {
@@ -22,8 +22,20 @@ D3DApp::D3DApp(UINT width, UINT height, const std::wstring& title)
     m_depthStencilFormat = DXGI_FORMAT_D32_FLOAT;
     m_4xMsaaState = false;
     m_4xMassQuality = 4;
-    m_aspectRatio = static_cast<float>(width ) / static_cast<float>(height);
+    // m_aspectRatio = static_cast<float>(width ) / static_cast<float>(height);
+    m_aspectRatio = 1.7f;
+
     // m_aspectRatio = 1;
+}
+void D3DApp::InitializeViewport(void* hHwnd, unsigned int width, unsigned int height, const std::wstring& title)
+{
+    m_clientWidth = width;
+    m_clientHeight = height;
+    m_title = title;
+    m_viewport = CD3DX12_VIEWPORT((width - height)/2,0.0f,height, height);
+    m_aspectRatio = static_cast<float>(width ) / static_cast<float>(height);
+    m_scissorRect = CD3DX12_RECT(0,0, static_cast<LONG>(width), static_cast<LONG>(height));
+    m_hHwnd = HWND(hHwnd);
 }
 
 void D3DApp::Setup()

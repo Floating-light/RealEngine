@@ -11,7 +11,8 @@ using Microsoft::WRL::ComPtr;
 class D3DApp
 {
 public:
-    D3DApp(UINT width, UINT height, const std::wstring& title);
+    D3DApp();
+    void InitializeViewport(void* hHwnd, unsigned int width, unsigned int height, const std::wstring& title);
     void Setup() ;
     void LoadAsset();
     void OnUpdate(double DeltaTime);
