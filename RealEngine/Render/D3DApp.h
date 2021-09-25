@@ -80,6 +80,8 @@ struct Vertex
     // Vertex buffer 
     UINT8 * pVertexDataBegin;
     UINT8* pLineDataBegin;
+
+    HWND m_hHwnd;
 };
 
 // concept : 

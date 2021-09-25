@@ -1,9 +1,4 @@
-#include "stdafx.h"
-
-#include <iostream>
-
-#include "D3DApp.h"
-#include "AppWindow.h"
+#include 
 
                 // "/Zi",
                 // "/Fo:", "${workspaceFolder}\\debug\\", // output file path, .exe .obj
