@@ -1,8 +1,9 @@
 #include "RealMain.h"
-
+#include "Application.h"
 int RealLuanch::Run(const wchar_t* Cmd)
 {
-
+    RApplication::Get().Initilization();
+    return 0;
 }
 
 

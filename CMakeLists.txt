@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.5 FATAL_ERROR)
+cmake_minimum_required(VERSION 3.20 FATAL_ERROR)
 
 project(RealEngine)
 
@@ -13,4 +13,10 @@ set(CMAKE_CXX_STANDARD 20)
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 
-add_subdirectory(RealEngine/Render)
+# https://stackoverflow.com/questions/9017573/define-preprocessor-macro-through-cmake
+add_compile_definitions(    
+  UNICODE
+  DEBUG
+)
+
+add_subdirectory(RealEngine)
