@@ -12,4 +12,6 @@ public:
     void Initilization();
     std::shared_ptr<RWindow> GetMainWindow();
     std::vector<std::shared_ptr<class RWindow>> Windows;
+private:
+    std::shared_ptr<class GenericApplication> PlatformApp;
 };
