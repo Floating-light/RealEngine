@@ -16,10 +16,14 @@ void RApplication::Initilization()
     PlatformApp = std::make_shared<RGenericApplication>(GenericPlatformFactory::CreatePlatformApplication());
     
     MainWindow = PlatformApp->MakeWindow();
-    PlatformApp->Initialize(MainWindow,);
+    Windows.push_back(MainWindow);
+    
+    GenericWindowDesc desc;
+    
+    PlatformApp->InitlializeWindow(MainWindow,desc);
 }
 
 std::shared_ptr<RGenericWindow> RApplication::GetMainWindow()
 {
-    return Windows.at(0);
+    return MainWindow;
 }

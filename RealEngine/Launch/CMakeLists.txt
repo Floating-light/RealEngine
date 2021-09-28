@@ -12,6 +12,6 @@ target_sources(Launch
 # target_include_directories(../Application)
 target_link_libraries(Launch 
   PRIVATE
-    Application 
     Core
+    Engine
 )
