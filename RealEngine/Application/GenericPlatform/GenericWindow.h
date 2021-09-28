@@ -9,10 +9,10 @@ public:
     std::wstring title;
 };
 
-class GenericWindow
+class RGenericWindow
 {
 public:
-    virtual ~GenericWindow(){};
+    virtual ~RGenericWindow(){};
     virtual void Initialize(){};
     virtual void* GetWindowHandle(){return nullptr;};
     virtual void SetTitle(const std::wstring& Title);

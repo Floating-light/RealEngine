@@ -3,5 +3,5 @@
 class GenericPlatformFactory
 {
 public:
-    static class GenericApplication* CreatePlatformApplication();
+    static class RGenericApplication* CreatePlatformApplication();
 };

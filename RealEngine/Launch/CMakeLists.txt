@@ -10,4 +10,8 @@ target_sources(Launch
 # https://stackoverflow.com/questions/42166764/cmake-library-dependencies
 
 # target_include_directories(../Application)
-target_link_libraries(Launch Application)
+target_link_libraries(Launch 
+  PRIVATE
+    Application 
+    Core
+)

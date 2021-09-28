@@ -1,9 +1,7 @@
-#include "AppWindow.h"
+#include "WindowsWindow.h"
+
 #include <sstream>
 #include <string>
-
-#include "D3DApp.h"
-#include "GameTIme.h"
 
 AppWindow& AppWindow::Get()
 {

@@ -3,6 +3,7 @@
 
 #include "GenericPlatform/GenericPlatformFactory.h"
 #include "GenericPlatform/GenericApplication.h"
+#include "GenericPlatform/GenericWindow.h"
 
 RApplication& RApplication::Get() 
 {
@@ -12,12 +13,13 @@ RApplication& RApplication::Get()
 void RApplication::Initilization()
 {
     std::cout << __FUNCTION__ << " : Initialization" << std::endl;
-    PlatformApp = std::make_shared<GenericApplication>(GenericPlatformFactory::CreatePlatformApplication());
+    PlatformApp = std::make_shared<RGenericApplication>(GenericPlatformFactory::CreatePlatformApplication());
     
-    GenericWindow = PlatformApp->MakeWindow();
+    MainWindow = PlatformApp->MakeWindow();
+    PlatformApp->Initialize(MainWindow,);
 }
 
-std::shared_ptr<RWindow> RApplication::GetMainWindow()
+std::shared_ptr<RGenericWindow> RApplication::GetMainWindow()
 {
     return Windows.at(0);
 }

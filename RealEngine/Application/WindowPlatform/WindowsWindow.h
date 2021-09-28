@@ -1,9 +1,10 @@
 #pragma once 
 #include <windows.h>
-class AppWindow
+#include "../GenericPlatform/GenericWindow.h"
+
+class WindowsWindow: public GenericWindow
 {
 public:
-    static AppWindow& Get();
     int Run(class D3DApp* Graphics, HINSTANCE hInstance, int nCmdShow);
     HWND GetHwnd() { return m_hwnd;}
     void SetWindowTitleText();

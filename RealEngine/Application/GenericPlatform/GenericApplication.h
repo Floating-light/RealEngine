@@ -1,8 +1,9 @@
 #pragma once
 #include <memory>
 
-class GenericApplication
+class RGenericApplication
 {
 public:
-    std::shared_ptr<class GenericWindow> MakeWindow();    
+    virtual std::shared_ptr<class RGenericWindow> MakeWindow();    
+    virtual void InitlializeWindow(std::shared_ptr<RGenericWindow> InWindow,const struct GenericWindowDesc& desc);
 };

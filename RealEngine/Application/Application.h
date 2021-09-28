@@ -3,15 +3,16 @@
 #include <vector>
 #include <memory>
 
-class RWindow;
+class RGenericWindow;
 
 class RApplication
 {
 public:
     static RApplication& Get();
     void Initilization();
-    std::shared_ptr<RWindow> GetMainWindow();
-    std::vector<std::shared_ptr<class RWindow>> Windows;
+    std::shared_ptr<RGenericWindow> GetMainWindow();
 private:
-    std::shared_ptr<class GenericApplication> PlatformApp;
+    std::shared_ptr<RGenericWindow> MainWindow;
+    std::vector<std::shared_ptr<RGenericWindow>> Windows;
+    std::shared_ptr<class RGenericApplication> PlatformApp;
 };
