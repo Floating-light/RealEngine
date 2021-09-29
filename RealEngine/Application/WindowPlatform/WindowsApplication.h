@@ -1,11 +1,20 @@
 #pragma once
 
 #include <windows.h>
-#include "../GenericPlatform/GenericApplication.h"
+#include "GenericPlatform/GenericApplication.h"
 
 class WindowsApplication : public RGenericApplication
 {
 public:
-    static WindowsApplication* CreateWindowsApplication(const HINSTANCE hInstance, const HICON IconHandle) ;
-    virtual std::shared_ptr<class RGenericWindow> MakeWindow() override;    
+    virtual std::shared_ptr<RGenericWindow> MakeWindow() override;    
+    virtual void InitlializeWindow(std::shared_ptr<RGenericWindow> InWindow,const struct GenericWindowDesc& desc) override;
+
+    static WindowsApplication* CreateWindowsApplication(HINSTANCE inInstance,HICON iconHandle);
+
+private:
+    WindowsApplication(HINSTANCE inInstance, HICON inIcon);
+    
+    static LRESULT CALLBACK WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
+
+    HINSTANCE hInstance;
 };
