@@ -3,7 +3,8 @@
 class RCoreGlobal
 {
 public:
-    static bool bRequireExit;
-public:
     static bool IsRequireExit() ;
+    static void SetRequireExit();
+private:
+    static bool bRequireExit;
 };

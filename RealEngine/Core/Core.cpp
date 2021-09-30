@@ -6,3 +6,8 @@ bool RCoreGlobal::IsRequireExit()
 {
     return RCoreGlobal::bRequireExit;
 }
+
+void RCoreGlobal::SetRequireExit()
+{
+    RCoreGlobal::bRequireExit = true;
+}

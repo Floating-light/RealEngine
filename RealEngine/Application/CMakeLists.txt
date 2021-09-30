@@ -2,6 +2,10 @@
 add_library(Application "")
 
 message(STATUS "-------------->>> ${CMAKE_CURRENT_SOURCE_DIR}/GenericPlatform")
+# message(STATUS "-------------->>> ${CMAKE_SOURCE_DIR}")
+# message(STATUS "-------------->>> ${PROJECT_SOURCE_DIR}")
+
+
 
 # 给编译器的include path, 并不影响Cmake 解析target_source, 它只会把相对路径解析成相对CMAKE_CURRENT_SOURCE_DIR.
 target_include_directories(Application
@@ -38,6 +42,11 @@ if(WIN32)
     PRIVATE
       "${CMAKE_CURRENT_SOURCE_DIR}/WindowPlatform"
   )
+  
+  target_link_libraries(Application 
+    PRIVATE
+      ${CMAKE_SOURCE_DIR}/resources/win.res
+)
 endif()
 
 # https://stackoverflow.com/questions/9160335/os-specific-instructions-in-cmake-how-to

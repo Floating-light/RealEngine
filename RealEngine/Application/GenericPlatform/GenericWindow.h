@@ -15,5 +15,5 @@ public:
     virtual ~RGenericWindow(){};
     virtual void Initialize(){};
     virtual void* GetWindowHandle(){return nullptr;};
-    virtual void SetTitle(const std::wstring& Title);
+    virtual void SetTitle(const std::wstring& Title){};
 };

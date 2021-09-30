@@ -2,14 +2,17 @@
 #include <windows.h>
 #include "../GenericPlatform/GenericWindow.h"
 
-class WindowsWindow: public GenericWindow
+class WindowsWindow: public RGenericWindow
 {
 public:
-    int Run(class D3DApp* Graphics, HINSTANCE hInstance, int nCmdShow);
-    HWND GetHwnd() { return m_hwnd;}
-    void SetWindowTitleText();
-protected:
-    static LRESULT CALLBACK WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM  lParam);
+
+    virtual ~WindowsWindow(){};
+    virtual void* GetWindowHandle() override {return m_hwnd;};
+    virtual void SetTitle(const std::wstring& title) override ;
+    
+    void Initialize(const GenericWindowDesc& desc, HINSTANCE inInstance);
+public:
+    static const wchar_t WindowClassName[];
 private:
     HWND m_hwnd;
 };

@@ -16,5 +16,5 @@ private:
     
     static LRESULT CALLBACK WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
 
-    HINSTANCE hInstance;
+    HINSTANCE m_hInstance;
 };

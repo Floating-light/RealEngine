@@ -1,8 +1,7 @@
 #include "WindowsApplication.h"
 #include "WindowPlatform/WindowsWindow.h"
-
+#include "Core.h"
 WindowsApplication* WindowsPlatform = nullptr;
-const wchar_t WindowClassName[] = L"RealWindow";
 WindowsApplication* WindowsApplication::CreateWindowsApplication(HINSTANCE inInstance,HICON iconHandle)
 {
     WindowsPlatform = new WindowsApplication(inInstance, iconHandle);
@@ -11,15 +10,15 @@ WindowsApplication* WindowsApplication::CreateWindowsApplication(HINSTANCE inIns
 
 WindowsApplication::WindowsApplication(HINSTANCE inInstance, HICON inIcon)
 {
-    hInstance = inInstance;
+    m_hInstance = inInstance;
 
     WNDCLASSEX windowsClass = {0};
     windowsClass.cbSize = sizeof(WNDCLASSEX);
     windowsClass.style = CS_HREDRAW | CS_VREDRAW;
     windowsClass.lpfnWndProc = WindowProc;
-    windowsClass.hInstance = inInstance;
+    windowsClass.hInstance = m_hInstance;
     windowsClass.hCursor = LoadCursor(NULL, IDC_ARROW);
-    windowsClass.lpszClassName = WindowClassName;
+    windowsClass.lpszClassName = WindowsWindow::WindowClassName;
     windowsClass.hIcon = inIcon;
     ::RegisterClassEx(&windowsClass);
 }
@@ -56,8 +55,11 @@ LRESULT CALLBACK WindowsApplication::WindowProc(HWND hWnd, UINT message, WPARAM 
         return 0;
 
     case WM_DESTROY:
+    {
+        RCoreGlobal::SetRequireExit();
         PostQuitMessage(0);
         return 0;
+    }
     }
 
     // Handle any messages the switch statement didn't.
@@ -66,10 +68,10 @@ LRESULT CALLBACK WindowsApplication::WindowProc(HWND hWnd, UINT message, WPARAM 
 
 std::shared_ptr<RGenericWindow> WindowsApplication::MakeWindow() 
 {
-
+    return std::make_shared<WindowsWindow>();
 }
 
 void WindowsApplication::InitlializeWindow(std::shared_ptr<RGenericWindow> InWindow,const struct GenericWindowDesc& desc) 
 {
-
+    std::static_pointer_cast<WindowsWindow>(InWindow)->Initialize(desc,m_hInstance);
 }

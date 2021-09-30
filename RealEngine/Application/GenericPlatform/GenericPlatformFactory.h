@@ -1,7 +1,8 @@
 #pragma once 
 
-class GenericPlatformFactory
+class GenericPlatformMisc
 {
 public:
     static class RGenericApplication* CreatePlatformApplication();
+    static void PumpMessages();
 };
