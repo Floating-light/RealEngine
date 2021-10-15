@@ -1,0 +1,5 @@
+class RGraphicViewport
+{
+public:
+    RGraphicViewport();
+};
