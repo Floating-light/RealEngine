@@ -11,12 +11,16 @@ REngine* REngine::Get()
 
 void REngine::OnInit()
 {
-
+    
     RApplication::Get()->Initilization();
 }
 void REngine::OnUpdate()
 {
     RApplication::Get()->ProcessInput();
+
+    // update scene 
+
+    // Render 
 }
 void REngine::OnDestoryed()
 {

@@ -2,8 +2,7 @@
 message(STATUS "----------->>> source directory : ${CMAKE_CURRENT_SOURCE_DIR}")
 message(STATUS "----------->>> source directory : ${CMAKE_SOURCE_DIR}")
 
-add_library(Render)
-# add_library(Renderer "")
+add_library(Renderer "")
 
 message(STATUS "${Red}---> Current binary dir is ${CMAKE_CURRENT_BINARY_DIR}")
 
@@ -13,13 +12,11 @@ message(STATUS "${Red}---> Current binary dir is ${CMAKE_CURRENT_BINARY_DIR}")
 
 message(STATUS "${Red}---> Current  current falgs  is ${CMAKE_CXX_FLAGS}")
 
-target_sources(Render
+target_sources(Renderer
   PRIVATE 
-    ${CMAKE_CURRENT_LIST_DIR}/AppWindow.cpp
     ${CMAKE_CURRENT_LIST_DIR}/D3DApp.cpp
     ${CMAKE_CURRENT_LIST_DIR}/GameTime.cpp
     ${CMAKE_CURRENT_LIST_DIR}/Render.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/AppWindow.h
     ${CMAKE_CURRENT_LIST_DIR}/D3DApp.h
     ${CMAKE_CURRENT_LIST_DIR}/d3dx12.h
     ${CMAKE_CURRENT_LIST_DIR}/GameTime.h
@@ -27,7 +24,12 @@ target_sources(Render
     ${CMAKE_CURRENT_LIST_DIR}/stdafx.h
 )
 
-target_link_libraries(Render
+target_link_libraries(Renderer
+  PRIVATE
+    GraphicInterface 
+  )
+
+target_link_libraries(Renderer
   PRIVATE
     dxgi.lib
     d3d12.lib

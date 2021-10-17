@@ -10,3 +10,12 @@ void RRenderer::Init()
 {
 
 }
+
+void RRenderer::OnUpdate()
+{
+
+}
+void RRenderer::DoRender(class RSceneInfo* SceneInfor)
+{
+    
+}

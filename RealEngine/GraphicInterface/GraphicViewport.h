@@ -1,5 +1,11 @@
-class RGraphicViewport
+#pragma once 
+#include "Windows/WindowsHeader.h"
+
+class IGraphicViewport
 {
 public:
-    RGraphicViewport();
+    IGraphicViewport(HWND handle, int width, int height);
+    int m_width;
+    int m_height;
+    HWND m_windowHandle;
 };

@@ -6,5 +6,5 @@ public:
     static RRenderer& Get();
     void Init();
     void OnUpdate();
-    void DoRender(class RSceneInfo* SceneInfor, class RTarget* RenderTarget);
+    void DoRender(class RSceneInfo* SceneInforss);
 };
