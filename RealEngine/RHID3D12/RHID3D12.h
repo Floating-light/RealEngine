@@ -5,12 +5,12 @@
 
 using Microsoft::WRL::ComPtr;
 
-class RHID3D12Interface : public RGraphicInterface
+class RHID3D12 : public RGraphicInterface
 {
 public:
 
-    virtual void InitRHI() = 0;
-	virtual IGraphicViewport* CreateViewport(void* handle, int width, int height) = 0;
+    virtual void InitRHI() ;
+	virtual IGraphicViewport* CreateViewport(void* handle, int width, int height) ;
 
 private:
     ComPtr<IDXGIFactory4> m_factory;

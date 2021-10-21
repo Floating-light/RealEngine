@@ -23,4 +23,8 @@ if(WIN32)
   ) 
 endif()
 
+add_subdirectory(Logging)
+
+target_link_libraries(Core Logging)
+
 set_target_properties(Core PROPERTIES LINKER_LANGUAGE CXX)
