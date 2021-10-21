@@ -3,6 +3,7 @@ add_library(Logging "")
 target_sources(Logging 
   PRIVATE
     Logging.h
+    Logging.cpp
 )
 
 target_include_directories( Logging 

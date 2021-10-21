@@ -1,5 +1,11 @@
 #include "RHID3D12.h"
 #include "Logging.h"
+#include "D3D12Adapter.h"
+
+static void GetHardwareAdapter(IDXGIFactory4* pFactory, IDXGIAdapter1** ppAdapter, bool requestHighPerformanceAdapter)
+{
+
+}
 void RHID3D12::InitRHI() 
 {
     UINT dxgiFactoryFlags = 0;
@@ -9,4 +15,6 @@ void RHID3D12::InitRHI()
         RLOG(FATAL) << "CreateDXGIFactory2 failed " << std::endl;
         return ;
     }
+
+
 }

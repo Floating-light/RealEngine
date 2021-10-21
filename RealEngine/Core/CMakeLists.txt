@@ -25,6 +25,9 @@ endif()
 
 add_subdirectory(Logging)
 
-target_link_libraries(Core Logging)
+target_link_libraries(Core 
+  PUBLIC
+    Logging
+)
 
 set_target_properties(Core PROPERTIES LINKER_LANGUAGE CXX)
