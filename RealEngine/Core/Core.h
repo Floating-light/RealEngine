@@ -2,6 +2,8 @@
 
 #include "Logging.h"
 
+
+
 class RCoreGlobal
 {
 public:
