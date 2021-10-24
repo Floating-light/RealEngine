@@ -1,5 +1,8 @@
 #include "Core.h"
 
+std::wstring ExecutableDir = L"";
+
+
 bool RCoreGlobal::bRequireExit = false;
 
 bool RCoreGlobal::IsRequireExit() 

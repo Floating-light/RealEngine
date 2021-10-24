@@ -16,12 +16,3 @@ target_link_libraries(Launch
     Engine
     GraphicInterface
 )
-
-if(WIN32)
-  target_link_libraries(Launch
-    PRIVATE
-      RHID3D12
-  )
-message(STATUS "-------------->>> Win32 RHID3D12 config ")
-
-endif()

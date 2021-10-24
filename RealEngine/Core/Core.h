@@ -2,7 +2,7 @@
 
 #include "Logging.h"
 
-
+extern std::wstring ExecutableDir;
 
 class RCoreGlobal
 {

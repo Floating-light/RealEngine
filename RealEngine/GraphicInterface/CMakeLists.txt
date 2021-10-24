@@ -16,7 +16,16 @@ if(WIN32)
   target_sources(GraphicInterface
     PRIVATE
     Windows/WindowsPlatformRHI.cpp
-)
+  )
+  target_link_libraries(GraphicInterface 
+  PUBLIC
+    RHID3D12
+  )
+  # Work, must be public, 
+  target_link_options(GraphicInterface
+    PUBLIC
+      "LINKER:/include:IMPLEMENT_MODULE_D3D12RHI"
+  )
 endif()
 
 target_link_libraries(GraphicInterface 

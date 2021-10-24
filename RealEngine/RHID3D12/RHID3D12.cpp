@@ -1,8 +1,9 @@
 #include "RHID3D12.h"
 #include "Logging.h"
 #include "D3D12Adapter.h"
-ZMACRO_MSVCStaticLib_cpp(RHID3D12)
+// ZMACRO_MSVCStaticLib_cpp(RHID3D12)
 static RHIInterfaceRegistrant<RHID3D12> D3D12RHIRegistrant(L"D3D12RHI");
+extern "C" void IMPLEMENT_MODULE_D3D12RHI() { } 
 // 
 
 static void GetHardwareAdapter(IDXGIFactory4* pFactory, IDXGIAdapter1** ppAdapter, bool requestHighPerformanceAdapter)

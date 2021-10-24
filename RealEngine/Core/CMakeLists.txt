@@ -4,6 +4,9 @@ target_sources(Core
   PRIVATE
     "Core.h"
     "Core.cpp"
+
+    Module/ModuleManager.h
+    Module/ModuleManager.cpp
 ) 
 
 target_include_directories(Core
@@ -14,8 +17,11 @@ target_include_directories(Core
 if(WIN32)
   target_sources(Core
     PRIVATE  
-      "Windows/WindowsMisc.h"
-      "Windows/WindowsMisc.cpp"
+      Windows/WindowsMisc.h
+      Windows/WindowsMisc.cpp
+      Windows/WindowsPlatformMisc.h
+      Windows/WindowsPlatformMisc.cpp
+
   )
   target_include_directories(Core
     PUBLIC

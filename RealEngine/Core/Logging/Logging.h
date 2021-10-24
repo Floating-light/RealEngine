@@ -17,4 +17,6 @@ inline std::ostream& operator<<(std::ostream& out, const std::wstring& str)
     return operator<<(out, str.c_str());
 }
 
+extern void InitLogger(const std::wstring& logFilePath );
+
 #define RLOG LOG
