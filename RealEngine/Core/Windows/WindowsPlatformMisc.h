@@ -4,5 +4,5 @@
 class WindowsPlatformMisc
 {
 public:
-    static 
+    
 };

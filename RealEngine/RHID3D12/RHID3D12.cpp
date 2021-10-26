@@ -2,8 +2,8 @@
 #include "Logging.h"
 #include "D3D12Adapter.h"
 // ZMACRO_MSVCStaticLib_cpp(RHID3D12)
-static RHIInterfaceRegistrant<RHID3D12> D3D12RHIRegistrant(L"D3D12RHI");
-extern "C" void IMPLEMENT_MODULE_D3D12RHI() { } 
+RDEFINE_MOUDLE(RHID3D12Module,D3D12RHI)
+
 // 
 
 static void GetHardwareAdapter(IDXGIFactory4* pFactory, IDXGIAdapter1** ppAdapter, bool requestHighPerformanceAdapter)
@@ -12,7 +12,6 @@ static void GetHardwareAdapter(IDXGIFactory4* pFactory, IDXGIAdapter1** ppAdapte
 }
 void RHID3D12::InitRHI() 
 {
-    D3D12RHIRegistrant.Initlialize();;
     UINT dxgiFactoryFlags = 0;
     ComPtr<IDXGIFactory4> dxgiFactory4;
     if(FAILED(CreateDXGIFactory2(dxgiFactoryFlags, IID_PPV_ARGS(&dxgiFactory4))))
@@ -43,4 +42,18 @@ void RHID3D12::InitRHI()
     {
         m_adapter = std::shared_ptr<RD3D12Adapter>(new RD3D12Adapter(Adapter));
     }
+}
+
+
+void RHID3D12Module::InitializeModule()
+{
+
+}
+void RHID3D12Module::DeInitializeModule()
+{
+
+} 
+RGraphicInterface* RHID3D12Module::CreateRHI() 
+{
+    return new RHID3D12;
 }

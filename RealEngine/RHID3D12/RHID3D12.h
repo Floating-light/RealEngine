@@ -16,3 +16,11 @@ public:
 private:
     std::shared_ptr<RD3D12Adapter> m_adapter;
 };
+
+class RHID3D12Module : public GraphicModuleBase
+{
+    public:
+	virtual void InitializeModule() override;
+    virtual void DeInitializeModule()override ; 
+    virtual RGraphicInterface* CreateRHI() override;
+};

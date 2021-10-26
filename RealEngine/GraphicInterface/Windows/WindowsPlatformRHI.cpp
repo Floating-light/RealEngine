@@ -3,11 +3,11 @@
 
 RGraphicInterface* CreatePlatformRHI()
 {
-    auto Result = RGraphicInterface::m_Factory.find(L"D3D12RHI");
+    GraphicModuleBase* D3D12Module = RModuleManager::Get().GetModule<GraphicModuleBase>(L"D3D12RHI");
     
-    if(Result != RGraphicInterface::m_Factory.end())
+    if(D3D12Module)
     {
-        return Result->second();
+        return D3D12Module->CreateRHI();
     }
     else
     {

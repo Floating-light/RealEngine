@@ -24,7 +24,7 @@ if(WIN32)
   # Work, must be public, 
   target_link_options(GraphicInterface
     PUBLIC
-      "LINKER:/include:IMPLEMENT_MODULE_D3D12RHI"
+      "LINKER:/include:ForceStaticLibraryReference_D3D12RHI"
   )
 endif()
 
