@@ -3,7 +3,7 @@
 #include "GraphicInterface.h"
 #include "Engine.h"
 #include "Core.h"
-
+#include "stdio.h"
 // for static library reference 
 // #include "RHID3D12.h"
 int RealMain(const wchar_t* Cmd)
@@ -28,7 +28,6 @@ int RealLuanch::Run(const wchar_t* Cmd)
     {
         REngine::Get()->OnUpdate();
     }
-
     return 0;
 }
 

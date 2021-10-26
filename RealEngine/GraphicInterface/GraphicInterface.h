@@ -11,8 +11,6 @@ class RGraphicInterface
 public:
     virtual void InitRHI() = 0;
 	virtual IGraphicViewport* CreateViewport(void* handle, int width, int height) = 0;
-
-	static std::unordered_map<std::wstring, std::function<RGraphicInterface* ()>>  m_Factory;
 };
 
 class GraphicModuleBase : public IModuleInterface
