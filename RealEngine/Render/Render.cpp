@@ -1,5 +1,7 @@
 #include "Render.h"
 
+#include "GraphicInterface.h"
+#include "Logging.h"
 RRenderer& RRenderer::Get()
 {
     static RRenderer Renderer;
@@ -15,7 +17,10 @@ void RRenderer::OnUpdate()
 {
 
 }
-void RRenderer::DoRender(class RSceneInfo* SceneInfor)
+
+void RRenderer::DoRender(RViewInfo& ViewInfo)
 {
-    
+    RLOG(INFO)<< "---------------->>> " << std::endl;
+
+GGraphicInterface;    
 }

@@ -14,15 +14,21 @@ message(STATUS "${Red}---> Current  current falgs  is ${CMAKE_CXX_FLAGS}")
 
 target_sources(Renderer
   PRIVATE 
-    ${CMAKE_CURRENT_LIST_DIR}/D3DApp.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/GameTime.cpp
+    # ${CMAKE_CURRENT_LIST_DIR}/D3DApp.cpp
+    # ${CMAKE_CURRENT_LIST_DIR}/GameTime.cpp
     ${CMAKE_CURRENT_LIST_DIR}/Render.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/D3DApp.h
-    ${CMAKE_CURRENT_LIST_DIR}/d3dx12.h
-    ${CMAKE_CURRENT_LIST_DIR}/GameTime.h
-    ${CMAKE_CURRENT_LIST_DIR}/Helper.h
-    ${CMAKE_CURRENT_LIST_DIR}/stdafx.h
+    ${CMAKE_CURRENT_LIST_DIR}/Render.h
+    # ${CMAKE_CURRENT_LIST_DIR}/D3DApp.h
+    # ${CMAKE_CURRENT_LIST_DIR}/d3dx12.h
+    # ${CMAKE_CURRENT_LIST_DIR}/GameTime.h
+    # ${CMAKE_CURRENT_LIST_DIR}/Helper.h
+    # ${CMAKE_CURRENT_LIST_DIR}/stdafx.h
 )
+
+target_include_directories(Renderer
+  PUBLIC
+    ${CMAKE_CURRENT_LIST_DIR}
+  )
 
 target_link_libraries(Renderer
   PRIVATE
@@ -31,8 +37,9 @@ target_link_libraries(Renderer
 
 target_link_libraries(Renderer
   PRIVATE
-    dxgi.lib
-    d3d12.lib
-    User32.lib
-    d3dcompiler.lib
+    GraphicInterface
+    # dxgi.lib
+    # d3d12.lib
+    # User32.lib
+    # d3dcompiler.lib
 )

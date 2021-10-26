@@ -1,7 +1,7 @@
 #include "Engine.h"
 
 #include "Application.h"
-
+#include "Render.h"
 REngine* REngine::Get()
 {
     static REngine* Engine = new REngine();
@@ -21,6 +21,8 @@ void REngine::OnUpdate()
     // update scene 
 
     // Render 
+    RViewInfo ViewInfo;
+    RRenderer::Get().DoRender(ViewInfo);
 }
 void REngine::OnDestoryed()
 {
