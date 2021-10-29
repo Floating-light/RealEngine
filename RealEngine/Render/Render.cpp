@@ -20,7 +20,7 @@ void RRenderer::OnUpdate()
 
 void RRenderer::DoRender(RViewInfo& ViewInfo)
 {
-    RLOG(INFO)<< "---------------->>> " << std::endl;
+    // RLOG(INFO)<< "---------------->>> " << std::endl;
 
-GGraphicInterface;    
+    GGraphicInterface;    
 }

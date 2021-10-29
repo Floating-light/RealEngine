@@ -52,7 +52,7 @@ LRESULT CALLBACK WindowsApplication::WindowProc(HWND hWnd, UINT message, WPARAM 
             // pSample->OnUpdate();
             // pSample->OnRender();
         }
-        return 0;
+        break;
 
     case WM_DESTROY:
     {
@@ -64,6 +64,7 @@ LRESULT CALLBACK WindowsApplication::WindowProc(HWND hWnd, UINT message, WPARAM 
 
     // Handle any messages the switch statement didn't.
     return DefWindowProc(hWnd, message, wParam, lParam);
+    // return 0;
 }
 
 std::shared_ptr<RGenericWindow> WindowsApplication::MakeWindow() 
