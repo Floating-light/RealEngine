@@ -6,7 +6,8 @@ class RRenderer
 {
 public:
     static RRenderer& Get();
-    void Init();
-    void OnUpdate();
+    void Init(std::shared_ptr<RGenericWindow> Window);
     void DoRender(RViewInfo& ViewInfo);
+private:
+    
 };

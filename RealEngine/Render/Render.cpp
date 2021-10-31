@@ -2,25 +2,26 @@
 
 #include "GraphicInterface.h"
 #include "Logging.h"
+
+#include "D3DApp.h"
+// for test purpose
+#include "GenericPlatform/GenericWindow.h"
 RRenderer& RRenderer::Get()
 {
     static RRenderer Renderer;
     return Renderer;
 }
-
-void RRenderer::Init()
+static D3DApp* TestApp = nullptr;
+void RRenderer::Init(std::shared_ptr<RGenericWindow> Window)
 {
-
-}
-
-void RRenderer::OnUpdate()
-{
-
+    TestApp = new D3DApp();
+    TestApp->InitializeViewport(Window->GetWindowHandle(),1280, 720,L"Test");
+    TestApp->Setup();
 }
 
 void RRenderer::DoRender(RViewInfo& ViewInfo)
 {
     // RLOG(INFO)<< "---------------->>> " << std::endl;
-
-    GGraphicInterface;    
+    TestApp->OnUpdate(0.1);
+    TestApp->OnRender();
 }

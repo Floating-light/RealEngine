@@ -1,9 +1,12 @@
 #pragma once 
+
+#include <memory>
+
 class RSceneInfo;
 class RGenericWindow;
 struct RViewInfo
 {
 public:
     RSceneInfo* SceneInfor;
-    RGenericWindow* RenderWindow;
+    std::shared_ptr<RGenericWindow> RenderWindow;
 };

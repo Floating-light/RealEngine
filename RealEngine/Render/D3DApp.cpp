@@ -270,6 +270,7 @@ void D3DApp::LoadAsset()
         };
         const UINT vertexBufferSize = sizeof(triangleVertices);
 
+        // static geometry : D3D12_HEAP_TYPE_DEFAULT
         CD3DX12_HEAP_PROPERTIES heapPro(D3D12_HEAP_TYPE_UPLOAD);
         auto resDesc = CD3DX12_RESOURCE_DESC::Buffer(vertexBufferSize);
         ThrowIfFailed(m_device->CreateCommittedResource(&heapPro, 
@@ -288,11 +289,11 @@ void D3DApp::LoadAsset()
         // m_vertexBuffer->Unmap(0, nullptr);
 
         m_vertexBufferView.BufferLocation = m_vertexBuffer->GetGPUVirtualAddress();
-        m_vertexBufferView.StrideInBytes = sizeof(Vertex);
-        m_vertexBufferView.SizeInBytes = vertexBufferSize;
+        m_vertexBufferView.StrideInBytes = sizeof(Vertex); // size per element in buffer 
+        m_vertexBufferView.SizeInBytes = vertexBufferSize; // total size of buffer 
     }
 
-    // Line : 
+    // Line vertex buffer : 
     {
         Vertex LineVertex[] = 
         {
@@ -302,6 +303,9 @@ void D3DApp::LoadAsset()
             { {-0.9f, 0.9f , 0.0f }, { 0.0f, 0.0f, 1.0f, 1.0f}}
 
         };
+        std::uint16_t LineIndices[] = {0,1,2,3,0};
+        ComPtr<ID3D12Resource> LineIndicesRes;
+        // D3DUtil::CreateDefaultBuffer(m_device.Get(),m_commandList.Get(),LineIndices,sizeof(LineIndices),LineIndicesRes );
         const UINT bufferSize = sizeof(LineVertex);
         auto heapProperties = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_UPLOAD);
         auto desc = CD3DX12_RESOURCE_DESC::Buffer(bufferSize);
@@ -554,7 +558,7 @@ void D3DApp::CreateSwapChain()
     desc.SampleDesc.Quality = m_4xMsaaState ? m_4xMassQuality - 1 : 0;
     desc.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
     desc.BufferCount = SwapChainBufferCount;
-    desc.OutputWindow = AppWindow::Get().GetHwnd();
+    desc.OutputWindow = m_hHwnd;
 
     desc.Windowed = true;
     desc.SwapEffect = DXGI_SWAP_EFFECT_FLIP_DISCARD;
@@ -565,7 +569,7 @@ void D3DApp::CreateSwapChain()
     ThrowIfFailed(m_factory->CreateSwapChain(m_commandQueue.Get(), &desc, &SwapChainToCreate));
     ThrowIfFailed(SwapChainToCreate.As(&m_swapChain));
 
-    ThrowIfFailed(m_factory->MakeWindowAssociation(AppWindow::Get().GetHwnd(), DXGI_MWA_NO_ALT_ENTER));
+    ThrowIfFailed(m_factory->MakeWindowAssociation(m_hHwnd, DXGI_MWA_NO_ALT_ENTER));
 
     m_currentBackBuffer = m_swapChain->GetCurrentBackBufferIndex();
 }

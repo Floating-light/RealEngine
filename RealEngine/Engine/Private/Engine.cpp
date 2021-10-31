@@ -11,8 +11,8 @@ REngine* REngine::Get()
 
 void REngine::OnInit()
 {
-    
     RApplication::Get()->Initilization();
+    RRenderer::Get().Init(RApplication::Get()->GetMainWindow());
 }
 void REngine::OnUpdate()
 {
@@ -22,6 +22,7 @@ void REngine::OnUpdate()
 
     // Render 
     RViewInfo ViewInfo;
+    ViewInfo.RenderWindow = RApplication::Get()->GetMainWindow();
     RRenderer::Get().DoRender(ViewInfo);
 }
 void REngine::OnDestoryed()
