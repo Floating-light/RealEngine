@@ -1,6 +1,6 @@
-add_executable(Launch WIN32)
+add_executable(${PROJECT_NAME} WIN32)
 
-target_sources(Launch
+target_sources(${PROJECT_NAME}
     PRIVATE
       ${CMAKE_CURRENT_LIST_DIR}/RealMain.cpp
       ${CMAKE_CURRENT_LIST_DIR}/Windows/LaunchWindows.cpp
@@ -10,7 +10,7 @@ target_sources(Launch
 # https://stackoverflow.com/questions/42166764/cmake-library-dependencies
 
 # target_include_directories(../Application)
-target_link_libraries(Launch 
+target_link_libraries(${PROJECT_NAME}
   PRIVATE
     Core
     Engine

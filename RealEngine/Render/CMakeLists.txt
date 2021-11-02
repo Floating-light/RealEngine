@@ -42,8 +42,9 @@ target_link_libraries(Renderer
 target_link_libraries(Renderer
   PRIVATE
     GraphicInterface
-    # dxgi.lib
-    # d3d12.lib
-    # User32.lib
-    # d3dcompiler.lib
+    dxgi.lib
+    d3d12.lib
+    User32.lib
+    d3dcompiler.lib
+    dxguid.lib
 )

@@ -71,8 +71,11 @@ struct Vertex
     ComPtr<ID3D12Resource> m_depthStencilBuffer;
     ComPtr<ID3D12Resource> m_vertexBuffer;
     ComPtr<ID3D12Resource> m_LineBuffer;
+    ComPtr<ID3D12Resource> m_lineIndicesRes;
+
     D3D12_VERTEX_BUFFER_VIEW m_vertexBufferView;
     D3D12_VERTEX_BUFFER_VIEW m_lineVertexBufferView;
+    D3D12_INDEX_BUFFER_VIEW m_lineIndexbufferView;
     ComPtr<ID3D12Fence> m_fence;
     UINT64 m_fenceValue;
     HANDLE m_fenceEvent;

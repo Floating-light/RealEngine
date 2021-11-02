@@ -218,8 +218,8 @@ void D3DApp::LoadAsset()
 
         D3D12_INPUT_ELEMENT_DESC inputElementDescs[] = 
         {
-            {"POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0},
-            {"COLOR", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, 12, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0}
+            {"POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT,    0, 0,  D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0},
+            {"COLOR",    0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, 12, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0}
         };
 
         // Create graphics gipeline state object 
@@ -241,8 +241,6 @@ void D3DApp::LoadAsset()
     }
 
     ThrowIfFailed(m_device->CreateCommandList(0, D3D12_COMMAND_LIST_TYPE_DIRECT, m_commandAllocator.Get(), m_pipelineState.Get(), IID_PPV_ARGS(&m_commandList) ));
-
-    m_commandList->Close();
 
     // Create the vertex buffer
     {
@@ -303,9 +301,7 @@ void D3DApp::LoadAsset()
             { {-0.9f, 0.9f , 0.0f }, { 0.0f, 0.0f, 1.0f, 1.0f}}
 
         };
-        std::uint16_t LineIndices[] = {0,1,2,3,0};
-        ComPtr<ID3D12Resource> LineIndicesRes;
-        // D3DUtil::CreateDefaultBuffer(m_device.Get(),m_commandList.Get(),LineIndices,sizeof(LineIndices),LineIndicesRes );
+
         const UINT bufferSize = sizeof(LineVertex);
         auto heapProperties = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_UPLOAD);
         auto desc = CD3DX12_RESOURCE_DESC::Buffer(bufferSize);
@@ -327,6 +323,24 @@ void D3DApp::LoadAsset()
         m_lineVertexBufferView.StrideInBytes = sizeof(Vertex);
     }
 
+    ComPtr<ID3D12Resource> UploadLineIndicesRes;
+    // Index buffer 
+    {
+        std::uint16_t LineIndices[] = {0,1,2,3,0};
+
+        // 会调用 Cmd 来Copy buffer , 所以必须执行 commandList.
+        // 且
+        m_lineIndicesRes = D3DUtil::CreateDefaultBuffer(m_device.Get(),m_commandList.Get(),LineIndices,sizeof(LineIndices),UploadLineIndicesRes );
+
+        m_lineIndexbufferView.BufferLocation = m_lineIndicesRes->GetGPUVirtualAddress();
+        m_lineIndexbufferView.SizeInBytes = sizeof(LineIndices);
+        m_lineIndexbufferView.Format = DXGI_FORMAT_R16_UINT;
+    }
+
+    m_commandList->Close();
+    
+    ID3D12CommandList* CommandLists[] = {m_commandList.Get()};
+    m_commandQueue->ExecuteCommandLists(_countof(CommandLists), CommandLists);
 
     // use commandlist to load asset 
     {
@@ -388,13 +402,17 @@ void D3DApp::PopulateCommandList()
 
     const float clearColor[] = {0.0f, 0.2f, 0.4f, 1.0f};
     m_commandList->ClearRenderTargetView(rtvHandle, clearColor, 0, nullptr);
+
     m_commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+    // StartSlot : the start input slot of vertex input , if have multiple view. or only the first .
     m_commandList->IASetVertexBuffers(0,1,&m_vertexBufferView);
     m_commandList->DrawInstanced(6, 1,0,0);
 
     m_commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_LINESTRIP);
     m_commandList->IASetVertexBuffers(0,1,&m_lineVertexBufferView);
-    m_commandList->DrawInstanced(4, 1,0,0);
+    m_commandList->IASetIndexBuffer(&m_lineIndexbufferView);
+    // m_commandList->DrawInstanced(4, 1,0,0);
+    m_commandList->DrawIndexedInstanced(5,1,0,0,0);
 
     auto rt2PresentBarrier = CD3DX12_RESOURCE_BARRIER::Transition(m_renderTargets[m_currentBackBuffer].Get(), D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PRESENT);
     m_commandList->ResourceBarrier(1, &rt2PresentBarrier);
