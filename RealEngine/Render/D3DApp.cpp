@@ -407,7 +407,7 @@ void D3DApp::PopulateCommandList()
     // StartSlot : the start input slot of vertex input , if have multiple view. or only the first .
     m_commandList->IASetVertexBuffers(0,1,&m_vertexBufferView);
     m_commandList->DrawInstanced(6, 1,0,0);
-
+    
     m_commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_LINESTRIP);
     m_commandList->IASetVertexBuffers(0,1,&m_lineVertexBufferView);
     m_commandList->IASetIndexBuffer(&m_lineIndexbufferView);

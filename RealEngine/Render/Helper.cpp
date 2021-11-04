@@ -33,3 +33,8 @@ ComPtr<ID3D12Resource> D3DUtil::CreateDefaultBuffer(ID3D12Device* device,
 
     return defaultBuffer;
 }
+
+UINT D3DUtil::CalcConstantBufferByteSize(UINT byteSize)
+{
+    return (byteSize + 255) & ~255;
+}
