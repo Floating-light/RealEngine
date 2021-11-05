@@ -66,6 +66,7 @@ struct Vertex
     ComPtr<ID3D12PipelineState> m_pipelineState;
     ComPtr<ID3D12DescriptorHeap> m_rtvHeap;
     ComPtr<ID3D12DescriptorHeap> m_dsvHeap;
+    ComPtr<ID3D12DescriptorHeap> m_cbvHeap;
 
     ComPtr<ID3D12Resource> m_renderTargets[SwapChainBufferCount];
     ComPtr<ID3D12Resource> m_depthStencilBuffer;

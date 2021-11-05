@@ -185,6 +185,17 @@ void D3DApp::Setup()
         m_device->CreateDepthStencilView(m_depthStencilBuffer.Get(),nullptr, m_dsvHeap->GetCPUDescriptorHandleForHeapStart());
     }
 
+    // Create constant buffer view heap, 
+    {
+        D3D12_DESCRIPTOR_HEAP_DESC cbvHeapDesc;
+        cbvHeapDesc.NumDescriptors = 1;
+        cbvHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
+        cbvHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
+        cbvHeapDesc.NodeMask = 0;
+
+        m_device->CreateDescriptorHeap(&cbvHeapDesc,IID_PPV_ARGS(&m_cbvHeap));
+    }
+
     LoadAsset();
 }
 
