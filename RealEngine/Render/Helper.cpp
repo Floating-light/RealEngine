@@ -1,6 +1,6 @@
 #include "Helper.h"
 
-
+#include <fstream>
 ComPtr<ID3D12Resource> D3DUtil::CreateDefaultBuffer(ID3D12Device* device, 
                                                     ID3D12GraphicsCommandList* cmdList, 
                                                     const void* initData, UINT64 byteSize, 
@@ -37,4 +37,19 @@ ComPtr<ID3D12Resource> D3DUtil::CreateDefaultBuffer(ID3D12Device* device,
 UINT D3DUtil::CalcConstantBufferByteSize(UINT byteSize)
 {
     return (byteSize + 255) & ~255;
+}
+
+ComPtr<ID3DBlob> D3DUtil::LoadBinary(const std::wstring& filename)
+{
+    std::ifstream fin(filename, std::ios::binary);
+    fin.seekg(0, std::ios_base::end);
+    std::ifstream::pos_type size = (int)fin.tellg();
+    fin.seekg(0, std::ios_base::beg);
+
+    ComPtr<ID3DBlob> blob;
+    ThrowIfFailed(D3DCreateBlob(size, blob.GetAddressOf()));
+    fin.read((char*)blob->GetBufferPointer(), size);
+    fin.close();
+
+    return blob;
 }

@@ -7,11 +7,14 @@ target_sources(Core
 
     Module/ModuleManager.h
     Module/ModuleManager.cpp
+    Math/Matrix.h
+    Math/Matrix.cpp
 ) 
 
 target_include_directories(Core
   PUBLIC
     "${CMAKE_CURRENT_SOURCE_DIR}"
+    ${CMAKE_CURRENT_SOURCE_DIR}/Math
 )
 
 if(WIN32)

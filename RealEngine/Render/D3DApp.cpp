@@ -190,7 +190,7 @@ void D3DApp::Setup()
         D3D12_DESCRIPTOR_HEAP_DESC cbvHeapDesc;
         cbvHeapDesc.NumDescriptors = 1;
         cbvHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
-        cbvHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
+        cbvHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE; // diff with rt and depth/stencil buffer descriptor heaps .these descriptor will be accessed by shader programs .
         cbvHeapDesc.NodeMask = 0;
 
         m_device->CreateDescriptorHeap(&cbvHeapDesc,IID_PPV_ARGS(&m_cbvHeap));
@@ -203,9 +203,16 @@ void D3DApp::LoadAsset()
 {
     // Create an empty root signature
     {
+        CD3DX12_ROOT_PARAMETER slotRootParameter[1];
+
+        CD3DX12_DESCRIPTOR_RANGE cbvTable;
+        cbvTable.Init(D3D12_DESCRIPTOR_RANGE_TYPE_CBV, 1, 0); // b0
+
+        slotRootParameter[0].InitAsDescriptorTable(1, &cbvTable);
+
         CD3DX12_ROOT_SIGNATURE_DESC rootSignatureDesc;
         rootSignatureDesc.Init(0,nullptr, 0,nullptr, D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT);
-
+        // rootSignatureDesc.Init(1, slotRootParameter);
         ComPtr<ID3DBlob> signature;
         ComPtr<ID3DBlob> error;
         ThrowIfFailed(D3D12SerializeRootSignature(&rootSignatureDesc,D3D_ROOT_SIGNATURE_VERSION_1,&signature, &error));
@@ -402,7 +409,25 @@ void D3DApp::PopulateCommandList()
 
     ThrowIfFailed(m_commandList->Reset(m_commandAllocator.Get(), m_pipelineState.Get()));
 
+    
+    std::unique_ptr<UploadBuffer<ObjectConstants>> m_ObjectCB = nullptr;
+    m_ObjectCB = std::make_unique<UploadBuffer<ObjectConstants>>(m_device.Get(), 1, true);
+    UINT objCBByteSize = D3DUtil::CalcConstantBufferByteSize(sizeof(ObjectConstants));
+    D3D12_GPU_VIRTUAL_ADDRESS cbAddress = m_ObjectCB->Resource()->GetGPUVirtualAddress();
+
+    int ElementIndex = 0;
+
+    D3D12_CONSTANT_BUFFER_VIEW_DESC NumICb;
+    NumICb.BufferLocation = cbAddress + ElementIndex* objCBByteSize;
+    NumICb.SizeInBytes = objCBByteSize;
+
+    m_device->CreateConstantBufferView(&NumICb, m_cbvHeap->GetCPUDescriptorHandleForHeapStart());
+
     m_commandList->SetGraphicsRootSignature(m_rootSignature.Get());
+
+    // RootParameterIndex: 设置的RootParameter的index.
+    // BaseDescriptor : heap中第一个要绑定的Desc的handle, 如果这个RootParamter desc table需要5个desc, 则这个地址及其后的四个将绑定到这一Paramter.
+    // m_commandList->SetGraphicsRootDescriptorTable(RootParameterIndex, BaseDescriptor);
     m_commandList->RSSetViewports(1, &m_viewport);
     m_commandList->RSSetScissorRects(1, &m_scissorRect);
     auto resourceBarrier = CD3DX12_RESOURCE_BARRIER::Transition(m_renderTargets[m_currentBackBuffer].Get(), D3D12_RESOURCE_STATE_PRESENT, D3D12_RESOURCE_STATE_RENDER_TARGET);

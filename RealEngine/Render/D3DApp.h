@@ -1,12 +1,15 @@
 #pragma once 
 #include "stdafx.h"
 #include <stdexcept>
-
+#include "Matrix.h"
 using Microsoft::WRL::ComPtr;
 // D3D12 : manage the resource in gpu memory manually(residency)
 // D3D11 : manage by system
 
-
+struct ObjectConstants
+{
+    RMatrix MVP;
+};
 
 class D3DApp
 {
