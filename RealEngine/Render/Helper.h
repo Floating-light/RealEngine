@@ -2,6 +2,10 @@
 #include "stdafx.h"
 #include <stdexcept>
 #include <iostream>
+#include <unordered_map>
+
+#include "directxcollision.h"
+
 using Microsoft::WRL::ComPtr;
 
 inline std::string HrToString(HRESULT hr)
@@ -84,4 +88,49 @@ private:
     UINT m_elementByteSize;
     BYTE* m_mappedData;
     ComPtr<ID3D12Resource> m_uploadBuffer;
+};
+
+struct SubmeshGeometry
+{
+    UINT IndexCount = 0;
+    UINT StartIndexLocation = 0;
+    INT BaseVertexLocation = 0 ;
+    DirectX::BoundingBox Bounds;
+};
+
+struct MeshGeometry
+{
+    std::wstring Name;
+    ComPtr<ID3DBlob> VertexBufferCPU;
+    ComPtr<ID3DBlob> IndexBufferCPU;
+
+    ComPtr<ID3D12Resource> VertexBufferGPU;
+    ComPtr<ID3D12Resource > IndexBufferGPU;
+
+    ComPtr<ID3D12Resource> VertexBufferUploader;
+    ComPtr<ID3D12Resource > IndexBufferUploader;
+
+    UINT VertexByteStride;
+    UINT VertexBufferByteSize;
+    DXGI_FORMAT IndexFormat = DXGI_FORMAT_R16_UINT;
+    UINT IndexBufferByteSize;
+
+    std::unordered_map<std::wstring, SubmeshGeometry> DrawArgs;
+
+    D3D12_VERTEX_BUFFER_VIEW VertexBufferView() const 
+    {
+        D3D12_VERTEX_BUFFER_VIEW vbv;
+        vbv.BufferLocation = VertexBufferGPU->GetGPUVirtualAddress();
+        vbv.StrideInBytes = VertexByteStride;
+        vbv.SizeInBytes = VertexBufferByteSize;
+        return vbv;
+    }
+    D3D12_INDEX_BUFFER_VIEW IndexBufferView() const 
+    {
+        D3D12_INDEX_BUFFER_VIEW ibv;
+        ibv.BufferLocation = IndexBufferGPU->GetGPUVirtualAddress();
+        ibv.Format = IndexFormat;
+        ibv.SizeInBytes= IndexBufferByteSize;
+        return ibv;
+    }
 };
