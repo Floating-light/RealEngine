@@ -60,7 +60,7 @@ public:
         CD3DX12_HEAP_PROPERTIES heap(D3D12_HEAP_TYPE_UPLOAD);
         CD3DX12_RESOURCE_DESC desc = CD3DX12_RESOURCE_DESC::Buffer(m_elementByteSize*elementCount);
         device->CreateCommittedResource(&heap, D3D12_HEAP_FLAG_NONE,&desc, D3D12_RESOURCE_STATE_GENERIC_READ, nullptr, IID_PPV_ARGS(&m_uploadBuffer));
-        m_uploadBuffer->Map(0, nullptr,&m_mappedData );
+        m_uploadBuffer->Map(0, nullptr,(void**)(&m_mappedData) );
         // wo do not need to unmap until we are done with the rsource 
         // however , we must not write to the resource while it is in 
         // use by the GPU(so we must use synchronization techniques)
