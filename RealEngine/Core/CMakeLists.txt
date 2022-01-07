@@ -7,8 +7,9 @@ target_sources(Core
 
     Module/ModuleManager.h
     Module/ModuleManager.cpp
-    Math/Matrix.h
-    Math/Matrix.cpp
+    Math/Matrix4.h
+    Math/Matrix4.cpp
+    Math/Math.cpp
 ) 
 
 target_include_directories(Core

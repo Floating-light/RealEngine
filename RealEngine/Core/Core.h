@@ -1,6 +1,9 @@
 #pragma once 
 
 #include "Logging.h"
+#include "Vector.h"
+#include "Rotator.h"
+#include "Transform.h"
 
 extern std::wstring ExecutableDir;
 
