@@ -2,6 +2,7 @@
 
 #include "Vector.h"
 #include "Rotator.h"
+#include "Matrix4.h"
 
 struct Transform
 {
@@ -31,4 +32,38 @@ public:
         , Translation(InTranslation)
         , Scale(InScale)
         {}
+
+    inline Matrix4 ToMatrixWithScale() const 
+    {
+        Matrix4 Out;
+        // alpha = z, beta = y, gama = x
+        const float cosx = cosf(Rotation.Roll);
+        const float sinx = sinf(Rotation.Pitch);
+        const float cosy = cosf(Rotation.Pitch);
+        const float siny = sinf(Rotation.Pitch);
+        const float cosz = cosf(Rotation.Yaw);
+        const float sinz = sinf(Rotation.Yaw);
+
+        Out.Mat[0][0] = cosz * cosy * Scale.X;
+        Out.Mat[1][1] = (sinz * siny  + cosz * cosx) * Scale.Y;
+        Out.Mat[2][2] = cosy * cosx * Scale.Z;
+
+        Out.Mat[0][1] = cosz * siny * sinx - sinz * cosx;
+        Out.Mat[0][2] = cosz * siny * cosx + sinz * sinx;
+        Out.Mat[1][0] = sinz * cosy ;
+        Out.Mat[1][2] = sinz * siny * cosx - cosz * sinx;
+        Out.Mat[2][0] = -siny;
+        Out.Mat[2][1] = cosy * sinx;
+
+        Out.Mat[0][3] = Translation.X;
+        Out.Mat[1][3] = Translation.Y;
+        Out.Mat[2][3] = Translation.Z;
+
+        Out.Mat[3][0] = 0.f;
+        Out.Mat[3][1] = 0.f;
+        Out.Mat[3][2] = 0.f;
+        Out.Mat[3][3] = 1.f;
+
+        return Out;
+    }
 };
