@@ -20,7 +20,7 @@ target_sources(Application
     Private/Application.cpp
     Application.h
     GenericPlatform/GenericApplication.h
-    GenericPlatform/GenericPlatformFactory.h
+    GenericPlatform/GenericPlatformMisc.h
     GenericPlatform/GenericWindow.h
 )
 
@@ -34,7 +34,7 @@ if(WIN32)
     PRIVATE
       WindowPlatform/WindowsApplication.cpp
       WindowPlatform/WindowsWindow.cpp
-      WindowPlatform/WindowsFactory.cpp
+      WindowPlatform/WindowsGenericPlatformMisc.cpp
       WindowPlatform/WindowsApplication.h
       WindowPlatform/WindowsWindow.h
   )

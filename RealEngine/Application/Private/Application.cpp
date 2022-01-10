@@ -1,7 +1,7 @@
 #include "Application.h"
 #include <iostream>
 
-#include "GenericPlatform/GenericPlatformFactory.h"
+#include "GenericPlatform/GenericPlatformMisc.h"
 #include "GenericPlatform/GenericApplication.h"
 #include "GenericPlatform/GenericWindow.h"
 

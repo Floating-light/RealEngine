@@ -1,4 +1,4 @@
-#include "../GenericPlatform/GenericPlatformFactory.h"
+#include "GenericPlatform/GenericPlatformMisc.h"
 
 #include "WindowsApplication.h"
 #include "WindowsMisc.h"
