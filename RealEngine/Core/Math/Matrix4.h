@@ -1,4 +1,6 @@
 #pragma once 
+#include "Vector.h"
+#include "RealSSE.h"
 
 struct Matrix4
 {
@@ -12,11 +14,11 @@ struct Matrix4
     
     void SetIdentity();
 
-    Matrix4 operator*(const Matrix4& M);
-    Matrix4 operator*=(const Matrix4& M);
+    Matrix4 operator*(const Matrix4& M) const;
+    void operator*=(const Matrix4& M);
 
-    bool operator==(const Matrix4& M);
-    bool operator!=(const Matrix4& M);
+    bool operator==(const Matrix4& M)const;
+    bool operator!=(const Matrix4& M)const;
 };
 
 inline Matrix4::Matrix4() : Mat{0.f}
@@ -32,27 +34,40 @@ inline Matrix4::Matrix4(const Vector& InX, const Vector& InY, const Vector& InZ,
     Mat[3][0] = InW.X; Mat[3][1] = InW.Y; Mat[3][2] = InW.Z; Mat[3][3] = 1.f;
 }
 
-void Matrix4::SetIdentity()
+inline void Matrix4::SetIdentity()
 {
     *this = Matrix4::Identity;
 };
 
-Matrix4 Matrix4::operator*(const Matrix4& M)
+inline Matrix4 Matrix4::operator*(const Matrix4& M) const 
 {
-    
+    Matrix4 Res;
+    RealSSE::MatrixMultiply(&Res, this, &M);
+    return Res;
 };
 
-Matrix4 Matrix4::operator*=(const Matrix4& M)
+inline void Matrix4::operator*=(const Matrix4& M)
 {
-
+    RealSSE::MatrixMultiply(this, this, &M);
 };
 
-bool Matrix4::operator==(const Matrix4& M)
+inline bool Matrix4::operator==(const Matrix4& M) const 
 {
+    for(int i = 0; i < 4; i++)
+    {
+        for(int j = 0; j < 4; j++)
+        {
+            if(Mat[i][j] != M.Mat[i][j])
+            {
+                return false;
+            }
+        }
+    }
 
+    return true;
 };
 
-bool Matrix4::operator!=(const Matrix4& M)
+inline bool Matrix4::operator!=(const Matrix4& M) const 
 {
-
+    return !(*this == M);
 };
