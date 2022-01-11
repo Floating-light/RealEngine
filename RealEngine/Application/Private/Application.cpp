@@ -4,18 +4,24 @@
 #include "GenericPlatform/GenericPlatformMisc.h"
 #include "GenericPlatform/GenericApplication.h"
 #include "GenericPlatform/GenericWindow.h"
+std::shared_ptr<RApplication> RApplication::Application = nullptr;
 
-RApplication *RApplication::Get()
+void RApplication::Create()
 {
-    static RApplication *single = new RApplication();
-    return single;
+    Application = std::make_shared<RApplication>();
+    Application->Initilization();
+}
+
+RApplication& RApplication::Get()
+{
+    CHECK(Application) << "Application is nullptr";
+    return *Application;
 }
 
 void RApplication::Initilization()
 {
-    std::cout << __FUNCTION__ << " : Initialization" << std::endl;
-
     PlatformApp = std::shared_ptr<RGenericApplication>(GenericPlatformMisc::CreatePlatformApplication());
+    PlatformApp->SetMessageHandler(Application);
 
     MainWindow = PlatformApp->MakeWindow();
     Windows.push_back(MainWindow);
@@ -35,4 +41,30 @@ std::shared_ptr<RGenericWindow> RApplication::GetMainWindow()
 void RApplication::ProcessInput()
 {
     GenericPlatformMisc::PumpMessages();
+}
+
+bool RApplication::OnKeyDown(const int KeyCode, const int CharacterCode, const bool IsRepeat)
+{
+    RLOG(INFO) << __FUNCTION__ << ", KeyCode : " << KeyCode << ", CharacterCode : " << CharacterCode ;
+    return false;
+}
+bool RApplication::OnKeyUp(const int KeyCode, const int CharacterCode, const bool IsRepeat)
+{
+    RLOG(INFO) << __FUNCTION__ << ", KeyCode : " << KeyCode << ", CharacterCode : " << CharacterCode ;
+    return false;
+}
+bool RApplication::OnMouseButtonDown(const std::shared_ptr<RGenericWindow>& Window, const EMouseButton Button)
+{
+    RLOG(INFO) << __FUNCTION__ << ", Button " << static_cast<int>(Button);
+    return false;
+}
+bool RApplication::OnMouseButtonUp(const EMouseButton Button)
+{
+    RLOG(INFO) << __FUNCTION__ << ", Button " << static_cast<int>(Button);
+    return false;
+}
+bool RApplication::OnRawMouseMove(const int X, const int Y)
+{
+    RLOG(INFO) << __FUNCTION__ << ",  (X ,y) " << X << ", " << Y;
+    return false;
 }

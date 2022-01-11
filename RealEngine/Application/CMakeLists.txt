@@ -11,7 +11,6 @@ message(STATUS "-------------->>> ${CMAKE_CURRENT_SOURCE_DIR}/GenericPlatform")
 target_include_directories(Application
   PUBLIC 
     "${CMAKE_CURRENT_SOURCE_DIR}"
-  PRIVATE
     "${CMAKE_CURRENT_SOURCE_DIR}/GenericPlatform"
 )
 
@@ -59,6 +58,6 @@ elseif(CMAKE_SYSTEM_NAME STREQUAL "Linux")
 endif()
 
 target_link_libraries(Application
-  PRIVATE
+  PUBLIC
     Core
 )

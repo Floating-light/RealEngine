@@ -22,9 +22,29 @@ WindowsApplication::WindowsApplication(HINSTANCE inInstance, HICON inIcon)
     windowsClass.hIcon = inIcon;
     ::RegisterClassEx(&windowsClass);
 }
-
+static std::shared_ptr<WindowsWindow> FindWindowByHandle(const std::vector<std::shared_ptr<WindowsWindow>> WindowsToSearch, HWND hWnd)
+{
+    for(const auto Item : WindowsToSearch)
+    {
+        if(Item->GetWindowHandle() == hWnd)
+        {
+            return Item;
+        }
+    }
+    return nullptr;
+}
 LRESULT CALLBACK WindowsApplication::WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
+    return WindowsPlatform->ProcessMessage(hWnd, message, wParam, lParam);
+}
+int WindowsApplication::ProcessMessage(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
+{
+    std::shared_ptr<WindowsWindow> CurrentEventWindow = FindWindowByHandle(Windows, hWnd);
+    if(!CurrentEventWindow)
+    {
+        return DefWindowProc(hWnd, message, wParam, lParam);
+    }
+    
     switch (message)
     {
     case WM_CREATE:
@@ -37,12 +57,14 @@ LRESULT CALLBACK WindowsApplication::WindowProc(HWND hWnd, UINT message, WPARAM 
 
     case WM_KEYDOWN:
         {
+            RLOG(INFO) << "Message : " << message << ", wParam : " << wParam << ", lParam : " << lParam;
             // pSample->OnKeyDown(static_cast<UINT8>(wParam));
         }
         return 0;
 
     case WM_KEYUP:
         {
+            RLOG(INFO) << "Message : " << message << ", wParam : " << wParam << ", lParam : " << lParam;
             // pSample->OnKeyUp(static_cast<UINT8>(wParam));
         }
         return 0;
@@ -74,5 +96,7 @@ std::shared_ptr<RGenericWindow> WindowsApplication::MakeWindow()
 
 void WindowsApplication::InitlializeWindow(std::shared_ptr<RGenericWindow> InWindow,const struct GenericWindowDesc& desc) 
 {
-    std::static_pointer_cast<WindowsWindow>(InWindow)->Initialize(desc,m_hInstance);
+    const auto InWindowsWind = std::static_pointer_cast<WindowsWindow>(InWindow);
+    Windows.push_back(InWindowsWind);
+    InWindowsWind->Initialize(desc,m_hInstance);
 }
