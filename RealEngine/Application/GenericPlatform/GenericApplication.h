@@ -9,7 +9,7 @@ public:
     virtual std::shared_ptr<RGenericWindow> MakeWindow() {return nullptr;};    
     virtual void InitlializeWindow(std::shared_ptr<RGenericWindow> InWindow,const GenericWindowDesc& desc) {} ;
     void SetMessageHandler(const std::shared_ptr<GenericApplicationMessageHandler>& InHandler);
-private:
+protected:
     std::shared_ptr<GenericApplicationMessageHandler> MessageHandler;
 };
 

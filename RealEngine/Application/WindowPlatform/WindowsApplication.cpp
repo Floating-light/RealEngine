@@ -1,6 +1,8 @@
 #include "WindowsApplication.h"
 #include "WindowPlatform/WindowsWindow.h"
 #include "Core.h"
+#include <iostream>
+#include <bitset>
 WindowsApplication* WindowsPlatform = nullptr;
 WindowsApplication* WindowsApplication::CreateWindowsApplication(HINSTANCE inInstance,HICON iconHandle)
 {
@@ -57,18 +59,27 @@ int WindowsApplication::ProcessMessage(HWND hWnd, UINT message, WPARAM wParam, L
 
     case WM_KEYDOWN:
         {
-            RLOG(INFO) << "Message : " << message << ", wParam : " << wParam << ", lParam : " << lParam;
+            RLOG(INFO) << "Key down Message : " << message << ", wParam : " << wParam << ", lParam : " << std::bitset<8*sizeof(__int64)>(lParam);
+            // MessageHandler->OnKeyDown()
             // pSample->OnKeyDown(static_cast<UINT8>(wParam));
         }
         return 0;
 
     case WM_KEYUP:
         {
-            RLOG(INFO) << "Message : " << message << ", wParam : " << wParam << ", lParam : " << lParam;
+            RLOG(INFO) << "Key up Message : " << message << ", wParam : " << wParam << ", lParam : " << std::bitset<8*sizeof(__int64)>(lParam);
             // pSample->OnKeyUp(static_cast<UINT8>(wParam));
         }
         return 0;
-
+    case WM_INPUT:
+        {
+            RLOG(INFO) << "Input message " ;
+        }
+        return 0;
+    case WM_CHAR:
+        {
+            RLOG(INFO) << "WM CHAR :" << message << ", wParam : " << wParam << ", lParam : " << std::bitset<8*sizeof(__int64)>(lParam);
+        }
     case WM_PAINT:
         {
             // pSample->OnUpdate();
