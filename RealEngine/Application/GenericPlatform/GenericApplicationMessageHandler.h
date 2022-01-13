@@ -33,4 +33,8 @@ public:
     {
         return false;
     }
+    virtual bool OnKeyChar(const wchar_t Character, const bool IsRepeat)
+    {
+        return false;
+    }
 };

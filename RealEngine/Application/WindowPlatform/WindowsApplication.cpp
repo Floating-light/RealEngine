@@ -3,6 +3,8 @@
 #include "Core.h"
 #include <iostream>
 #include <bitset>
+#include <windowsx.h>
+
 WindowsApplication* WindowsPlatform = nullptr;
 WindowsApplication* WindowsApplication::CreateWindowsApplication(HINSTANCE inInstance,HICON iconHandle)
 {
@@ -56,21 +58,143 @@ int WindowsApplication::ProcessMessage(HWND hWnd, UINT message, WPARAM wParam, L
             SetWindowLongPtr(hWnd, GWLP_USERDATA, reinterpret_cast<LONG_PTR>(pCreateStruct->lpCreateParams));
         }
         return 0;
-
+    case WM_SYSKEYDOWN:
     case WM_KEYDOWN:
         {
-            RLOG(INFO) << "Key down Message : " << message << ", wParam : " << wParam << ", lParam : " << std::bitset<8*sizeof(__int64)>(lParam);
-            // MessageHandler->OnKeyDown()
+            const int Win32Key = wParam;
+
+            int ActualKey = Win32Key;
+            bool bIsRepeat = (lParam & 0x40000000 ) != 0;
+            switch(Win32Key)
+            {
+            case VK_MENU: // Left and right alt
+                if(lParam & 0x1000000 == 0 )
+                {
+                    ActualKey = VK_LMENU;
+                    bIsRepeat = ModifierKeyState[EModifierKey::LeftAlt];
+                    ModifierKeyState[EModifierKey::LeftAlt] = true;
+                }
+                else
+                {
+                    ActualKey = VK_RMENU;
+                    bIsRepeat = ModifierKeyState[EModifierKey::RightAlt];
+                    ModifierKeyState[EModifierKey::RightAlt] = true;
+                }
+                break;
+            case VK_CONTROL:
+                if(lParam & 0x1000000 == 0 )
+                {
+                    ActualKey = VK_LCONTROL;
+                    bIsRepeat = ModifierKeyState[EModifierKey::LeftControl];
+                    ModifierKeyState[EModifierKey::LeftControl] = true;
+                }
+                else
+                {
+                    ActualKey = VK_RCONTROL;
+                    bIsRepeat = ModifierKeyState[EModifierKey::RightControl];
+                    ModifierKeyState[EModifierKey::RightControl] = true;
+                }
+                break;
+            case VK_SHIFT:
+                ActualKey = MapVirtualKey((lParam & 0x00ff0000) >> 16, MAPVK_VSC_TO_VK_EX);
+                if(ActualKey == VK_LSHIFT)
+                {
+                    bIsRepeat = ModifierKeyState[EModifierKey::LeftShift];
+                    ModifierKeyState[EModifierKey::LeftShift] = true;
+                }
+                else
+                {
+                    bIsRepeat = ModifierKeyState[EModifierKey::RightShift];
+                    ModifierKeyState[EModifierKey::RightShift] = true;
+                }
+                break;
+            case VK_CAPITAL:
+                ModifierKeyState[EModifierKey::CapsLock] = (::GetKeyState(VK_CAPITAL) && 0x0001) != 0;
+                break;
+            default:
+                break;
+            }
+            
+            // return 0 if not translation from virtual key to character exists.
+            int CharCode = ::MapVirtualKey(Win32Key, MAPVK_VK_TO_CHAR);
+
+            const bool Result = MessageHandler->OnKeyDown(ActualKey, CharCode, bIsRepeat);
+            if(Result || message != WM_SYSKEYDOWN)
+            {
+                return 0;
+            }
             // pSample->OnKeyDown(static_cast<UINT8>(wParam));
         }
-        return 0;
-
+        break;
+    case WM_SYSKEYUP:
     case WM_KEYUP:
         {
-            RLOG(INFO) << "Key up Message : " << message << ", wParam : " << wParam << ", lParam : " << std::bitset<8*sizeof(__int64)>(lParam);
-            // pSample->OnKeyUp(static_cast<UINT8>(wParam));
+            // Character code is stored in WPARAM
+			int Win32Key = wParam;
+
+			// The actual key to use.  Some keys will be translated into other keys. 
+			// I.E VK_CONTROL will be translated to either VK_LCONTROL or VK_RCONTROL as these
+			// keys are never sent on their own
+			int ActualKey = Win32Key;
+
+			bool bModifierKeyReleased = false;
+			switch( Win32Key )
+			{
+			case VK_MENU:
+				// Differentiate between left and right alt
+				if( (lParam & 0x1000000) == 0 )
+				{
+					ActualKey = VK_LMENU;
+					ModifierKeyState[EModifierKey::LeftAlt] = false;
+				}
+				else
+				{
+					ActualKey = VK_RMENU;
+					ModifierKeyState[EModifierKey::RightAlt] = false;
+				}
+				break;
+			case VK_CONTROL:
+				// Differentiate between left and right control
+				if( (lParam & 0x1000000) == 0 )
+				{
+					ActualKey = VK_LCONTROL;
+					ModifierKeyState[EModifierKey::LeftControl] = false;
+				}
+				else
+				{
+					ActualKey = VK_RCONTROL;
+					ModifierKeyState[EModifierKey::RightControl] = false;
+				}
+				break;
+			case VK_SHIFT:
+				// Differentiate between left and right shift
+				ActualKey = MapVirtualKey( (lParam & 0x00ff0000) >> 16, MAPVK_VSC_TO_VK_EX);
+				if (ActualKey == VK_LSHIFT)
+				{
+					ModifierKeyState[EModifierKey::LeftShift] = false;
+				}
+				else
+				{
+					ModifierKeyState[EModifierKey::RightShift] = false;
+				}
+				break;
+			case VK_CAPITAL:
+				ModifierKeyState[EModifierKey::CapsLock] = (::GetKeyState(VK_CAPITAL) & 0x0001) != 0;
+				break;
+			default:
+				// No translation needed
+				break;
+			}
+            // return 0 if not translation from virtual key to character exists.
+            const int CharCode = ::MapVirtualKey(Win32Key, MAPVK_VK_TO_CHAR);
+            const bool bIsRepeat = false;
+            const bool Result = MessageHandler->OnKeyUp(ActualKey, CharCode, bIsRepeat);
+            if(Result || message != WM_SYSKEYUP)
+            {
+                return 0;
+            }
         }
-        return 0;
+        break;
     case WM_INPUT:
         {
             RLOG(INFO) << "Input message " ;
@@ -78,8 +202,32 @@ int WindowsApplication::ProcessMessage(HWND hWnd, UINT message, WPARAM wParam, L
         return 0;
     case WM_CHAR:
         {
-            RLOG(INFO) << "WM CHAR :" << message << ", wParam : " << wParam << ", lParam : " << std::bitset<8*sizeof(__int64)>(lParam);
+            const bool bIsRepeat = (lParam & 0x4000000) != 0;
+            MessageHandler->OnKeyChar(wParam, bIsRepeat);
+            // RLOG(INFO) << "WM CHAR :" << message << ", wParam : " << wParam << ", lParam : " << std::bitset<8*sizeof(__int64)>(lParam);
+            return 0;
         }
+        break;
+    case WM_LBUTTONDBLCLK:
+	case WM_LBUTTONDOWN:
+	case WM_MBUTTONDBLCLK:
+	case WM_MBUTTONDOWN:
+	case WM_RBUTTONDBLCLK:
+	case WM_RBUTTONDOWN:
+	case WM_XBUTTONDBLCLK:
+	case WM_XBUTTONDOWN:
+	case WM_LBUTTONUP:
+	case WM_MBUTTONUP:
+	case WM_RBUTTONUP:
+	case WM_XBUTTONUP:
+        {
+            POINT CursorPoint;
+            CursorPoint.x = GET_X_LPARAM(lParam);
+            CursorPoint.y = GET_Y_LPARAM(lParam);
+            ::ClientToScreen(hWnd, &CursorPoint);
+
+        }
+        break;
     case WM_PAINT:
         {
             // pSample->OnUpdate();
