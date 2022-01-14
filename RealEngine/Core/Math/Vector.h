@@ -50,6 +50,7 @@ public:
     float LengthSquared() const ;
 
 };
+using Vector3D = Vector;
 
 inline Vector::Vector():X(0.f), Y(0.f), Z(0.f){}
 
@@ -136,7 +137,7 @@ inline Vector Vector::operator-=(const Vector& V)
 
 inline float Vector::Length() const 
 {
-    return sqrtf(X*X + Y*Y + Z*Z);
+    return std::sqrt(X*X + Y*Y + Z*Z);
 }
 
 inline float Vector::LengthSquared() const 
