@@ -1,9 +1,11 @@
 #include "WindowsApplication.h"
-#include "WindowPlatform/WindowsWindow.h"
-#include "Core.h"
+
 #include <iostream>
 #include <bitset>
 #include <windowsx.h>
+
+#include "WindowPlatform/WindowsWindow.h"
+#include "Core.h"
 
 WindowsApplication* WindowsPlatform = nullptr;
 WindowsApplication* WindowsApplication::CreateWindowsApplication(HINSTANCE inInstance,HICON iconHandle)
@@ -58,7 +60,7 @@ int WindowsApplication::ProcessMessage(HWND hWnd, UINT message, WPARAM wParam, L
             SetWindowLongPtr(hWnd, GWLP_USERDATA, reinterpret_cast<LONG_PTR>(pCreateStruct->lpCreateParams));
         }
         return 0;
-    case WM_SYSKEYDOWN:
+    case WM_SYSKEYDOWN: // Key down or repeat 
     case WM_KEYDOWN:
         {
             const int Win32Key = wParam;
@@ -126,7 +128,7 @@ int WindowsApplication::ProcessMessage(HWND hWnd, UINT message, WPARAM wParam, L
             // pSample->OnKeyDown(static_cast<UINT8>(wParam));
         }
         break;
-    case WM_SYSKEYUP:
+    case WM_SYSKEYUP: // Key up 
     case WM_KEYUP:
         {
             // Character code is stored in WPARAM
@@ -200,7 +202,7 @@ int WindowsApplication::ProcessMessage(HWND hWnd, UINT message, WPARAM wParam, L
             RLOG(INFO) << "Input message " ;
         }
         return 0;
-    case WM_CHAR:
+    case WM_CHAR: // Char
         {
             const bool bIsRepeat = (lParam & 0x4000000) != 0;
             MessageHandler->OnKeyChar(wParam, bIsRepeat);
@@ -219,13 +221,82 @@ int WindowsApplication::ProcessMessage(HWND hWnd, UINT message, WPARAM wParam, L
 	case WM_LBUTTONUP:
 	case WM_MBUTTONUP:
 	case WM_RBUTTONUP:
-	case WM_XBUTTONUP:
+	case WM_XBUTTONUP: // Mouse button down up doubleclick
         {
             POINT CursorPoint;
             CursorPoint.x = GET_X_LPARAM(lParam);
             CursorPoint.y = GET_Y_LPARAM(lParam);
             ::ClientToScreen(hWnd, &CursorPoint);
 
+            const Vector2D CursorPos(CursorPoint.x, CursorPoint.y);
+
+            EMouseButton MouseButtonType = EMouseButton::Invalid;
+
+            bool bDoubleClick = false;
+            bool bMouseUp = false;
+
+            switch (message)
+            {
+            case WM_LBUTTONDBLCLK:
+                bDoubleClick = true;
+                MouseButtonType = EMouseButton::Left;
+                break;
+            case WM_LBUTTONUP:
+                bMouseUp = true;
+                MouseButtonType = EMouseButton::Left;
+                break;
+            case WM_LBUTTONDOWN:
+                MouseButtonType = EMouseButton::Left;
+                break;
+            case WM_MBUTTONDBLCLK:
+                bDoubleClick = true;
+                MouseButtonType = EMouseButton::Middle;
+                break;
+            case WM_MBUTTONUP:
+                bMouseUp = true ;
+                MouseButtonType = EMouseButton::Middle;
+                break;
+            case WM_MBUTTONDOWN: 
+                MouseButtonType = EMouseButton::Middle;
+                break;
+            case WM_RBUTTONDBLCLK:
+                bDoubleClick = true;
+                MouseButtonType = EMouseButton::Right;
+                break;
+            case WM_RBUTTONUP:
+                bMouseUp = true;
+                MouseButtonType = EMouseButton::Right;
+                break;
+            case WM_RBUTTONDOWN:
+                MouseButtonType = EMouseButton::Right;
+                break;
+            case WM_XBUTTONDBLCLK:
+                bDoubleClick = true;
+                MouseButtonType = (HIWORD(wParam) & XBUTTON1) ? EMouseButton::Thumb01 : EMouseButton::Thumb02;
+                break;
+            case WM_XBUTTONUP:
+                bMouseUp = true;
+                MouseButtonType = (HIWORD(wParam) & XBUTTON1) ? EMouseButton::Thumb01 : EMouseButton::Thumb02;
+                break;
+            case WM_XBUTTONDOWN:
+                MouseButtonType = (HIWORD(wParam) & XBUTTON1) ? EMouseButton::Thumb01 : EMouseButton::Thumb02;
+                break;
+            default:
+                CHECK(0);
+            }
+            if(bMouseUp)
+            {
+                return MessageHandler->OnMouseButtonUp(MouseButtonType, CursorPos) ? 0 : 1;
+            }
+            else if (bDoubleClick)
+            {
+                MessageHandler->OnMouseDoubleClick(CurrentEventWindow, MouseButtonType, CursorPos);
+            }
+            else
+            {
+                MessageHandler->OnMouseButtonDown(CurrentEventWindow, MouseButtonType, CursorPos);
+            }
+            return 0;
         }
         break;
     case WM_PAINT:

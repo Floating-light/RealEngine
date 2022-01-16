@@ -1,5 +1,8 @@
 #pragma once 
 #include <memory>
+
+#include "Core.h"
+
 class RGenericWindow;
 
 enum class EMouseButton
@@ -7,6 +10,8 @@ enum class EMouseButton
     Left, 
     Middle, 
     Right, 
+    Thumb01,
+    Thumb02,
     Invalid
 };
 
@@ -21,11 +26,15 @@ public:
     {
         return false;
     }
-    virtual bool OnMouseButtonDown(const std::shared_ptr<RGenericWindow>& Window, const EMouseButton Button)
+    virtual bool OnMouseDoubleClick(const std::shared_ptr<RGenericWindow>& Window, const EMouseButton Button, const Vector2D CursorPos)
     {
         return false;
     }
-    virtual bool OnMouseButtonUp(const EMouseButton Button)
+    virtual bool OnMouseButtonDown(const std::shared_ptr<RGenericWindow>& Window, const EMouseButton Button, const Vector2D CursorPos)
+    {
+        return false;
+    }
+    virtual bool OnMouseButtonUp(const EMouseButton Button, const Vector2D CursorPos)
     {
         return false;
     }

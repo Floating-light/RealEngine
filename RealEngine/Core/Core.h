@@ -5,6 +5,7 @@
 #include "Rotator.h"
 #include "Transform.h"
 #include "Matrix4.h"
+#include "Vector2D.h"
 
 extern std::wstring ExecutableDir;
 

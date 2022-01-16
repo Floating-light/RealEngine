@@ -3,7 +3,7 @@
 #include <sstream>
 
 #include "Vector.h"
-#include "Math.h"
+#include "MathUtility.h"
 #include "Logging.h"
 
 // #define FORCEINLINE inline

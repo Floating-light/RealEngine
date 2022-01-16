@@ -53,14 +53,14 @@ bool RApplication::OnKeyUp(const int KeyCode, const int CharacterCode, const boo
     RLOG(INFO) << __FUNCTION__ << ", KeyCode : " << KeyCode << ", CharacterCode : " << CharacterCode ;
     return false;
 }
-bool RApplication::OnMouseButtonDown(const std::shared_ptr<RGenericWindow>& Window, const EMouseButton Button)
+bool RApplication::OnMouseButtonDown(const std::shared_ptr<RGenericWindow>& Window, const EMouseButton Button, const Vector2D CursorPos)
 {
-    RLOG(INFO) << __FUNCTION__ << ", Button " << static_cast<int>(Button);
+    RLOG(INFO) << __FUNCTION__ << ", Button " << static_cast<int>(Button) << ", Position " << CursorPos.ToString();
     return false;
 }
-bool RApplication::OnMouseButtonUp(const EMouseButton Button)
+bool RApplication::OnMouseButtonUp(const EMouseButton Button, const Vector2D CursorPos)
 {
-    RLOG(INFO) << __FUNCTION__ << ", Button " << static_cast<int>(Button);
+    RLOG(INFO) << __FUNCTION__ << ", Button " << static_cast<int>(Button)<< ", Position " << CursorPos.ToString();
     return false;
 }
 bool RApplication::OnRawMouseMove(const int X, const int Y)

@@ -20,8 +20,8 @@ public:
     // ~ Begin GenericApplicationMessageHandler interface 
     virtual bool OnKeyDown(const int KeyCode, const int CharacterCode, const bool IsRepeat)override;
     virtual bool OnKeyUp(const int KeyCode, const int CharacterCode, const bool IsRepeat)override;
-    virtual bool OnMouseButtonDown(const std::shared_ptr<RGenericWindow>& Window, const EMouseButton Button)override;
-    virtual bool OnMouseButtonUp(const EMouseButton Button)override;
+    virtual bool OnMouseButtonDown(const std::shared_ptr<RGenericWindow>& Window, const EMouseButton Button, const Vector2D CursorPos)override;
+    virtual bool OnMouseButtonUp(const EMouseButton Button, const Vector2D CursorPos)override;
     virtual bool OnRawMouseMove(const int X, const int Y)override;
 private:
     std::shared_ptr<RGenericWindow> MainWindow;
