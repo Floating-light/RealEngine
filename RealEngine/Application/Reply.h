@@ -3,7 +3,9 @@
 struct Reply
 {
 public:
-    Reply(bool InIsHandled):bIshandled(InIsHandled){}
+    Reply(bool InIsHandled)
+        : bIshandled(InIsHandled)
+    {}
 
     bool IsHandled() const ;
     static Reply Unhandled();

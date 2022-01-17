@@ -16,11 +16,17 @@ target_include_directories(Application
 
 target_sources(Application
   PRIVATE
-    Private/Application.cpp
+    Application.cpp
     Application.h
     GenericPlatform/GenericApplication.h
     GenericPlatform/GenericPlatformMisc.h
     GenericPlatform/GenericWindow.h
+    Input/ApplicationViewport.h
+    Input/Events.h
+    Input/InputTypes.h
+    Input/InputKeyManager.h
+    Input/InputKeyManager.cpp
+
 )
 
 # 跨平台
