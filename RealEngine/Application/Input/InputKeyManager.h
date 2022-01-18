@@ -17,6 +17,6 @@ private:
         InitKeyMappings();
     };
     static std::shared_ptr<RInputKeyManager> Instance;
-    std::unordered_map<int, RKey> KeyMapVirtualToEnum;
-    std::unordered_map<int, RKey> KeyMapCharToEnum;
+    std::unordered_map<int, RKey> KeyMapVirtualToKey;
+    std::unordered_map<int, RKey> KeyMapCharToKey;
 };

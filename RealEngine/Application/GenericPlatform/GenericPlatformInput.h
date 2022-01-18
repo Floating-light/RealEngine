@@ -1,7 +1,10 @@
 #pragma once 
+#include <unordered_map>
+#include <string>
 
 class GenericPlatformInput
 {
 public:
-    static int GetKeyMap(int* KeyCodes, std::string * KeyNames, int MaxMappings);
+    static void GetKeyMap(std::unordered_map<int, std::string>& KeyMap);
+    static void GetCharKeyMap(std::unordered_map<int, std::string>& CharKeyMap);
 };

@@ -21,6 +21,8 @@ target_sources(Application
     GenericPlatform/GenericApplication.h
     GenericPlatform/GenericPlatformMisc.h
     GenericPlatform/GenericWindow.h
+    GenericPlatform/GenericPlatformInput.h
+    GenericPlatform/GenericPlatformInput.cpp
     Input/ApplicationViewport.h
     Input/Events.h
     Input/InputTypes.h

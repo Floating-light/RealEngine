@@ -174,10 +174,16 @@ public:
 	// SLATECORE_API virtual FText ToText() const;
 	
 	/** Is this event a pointer event (touch or cursor). */
-	virtual bool IsPointerEvent() const;
+	virtual bool IsPointerEvent() const
+	{
+		return false;
+	}
 
 	/** Is this event a key event. */
-	virtual bool IsKeyEvent() const;
+	virtual bool IsKeyEvent() const
+	{
+		return false;
+	}
 
 protected:
 
@@ -257,7 +263,10 @@ public:
 		return KeyCode;
 	}
 
-	virtual bool IsKeyEvent() const override;
+	virtual bool IsKeyEvent() const override
+	{
+		return true;
+	}
 
 private:
 	// Name of the key that was pressed.
@@ -280,6 +289,10 @@ public:
     {
 
     }
+	virtual bool IsPointerEvent() const override
+	{
+		return true;
+	}
 private:
     Vector2D ScreenSpacePosition;
     Vector2D LastScreenSpacePosition;
