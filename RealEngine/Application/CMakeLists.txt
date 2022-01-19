@@ -18,6 +18,8 @@ target_sources(Application
   PRIVATE
     Application.cpp
     Application.h
+    Reply.h
+    Reply.cpp
     GenericPlatform/GenericApplication.h
     GenericPlatform/GenericPlatformMisc.h
     GenericPlatform/GenericWindow.h

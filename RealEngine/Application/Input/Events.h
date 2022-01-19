@@ -293,6 +293,10 @@ public:
 	{
 		return true;
 	}
+	RKey GetKey() const 
+	{
+		return Key;
+	}
 private:
     Vector2D ScreenSpacePosition;
     Vector2D LastScreenSpacePosition;

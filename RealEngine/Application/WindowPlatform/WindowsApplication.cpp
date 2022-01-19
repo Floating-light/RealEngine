@@ -299,6 +299,14 @@ int WindowsApplication::ProcessMessage(HWND hWnd, UINT message, WPARAM wParam, L
             return 0;
         }
         break;
+    case WM_NCMOUSEMOVE:
+    case WM_MOUSEMOVE:
+        {
+            POINT CursorPos;
+            ::GetCursorPos(&CursorPos);
+            return MessageHandler->OnRawMouseMove(CursorPos.x, CursorPos.y);
+        }
+        break;
     case WM_PAINT:
         {
             // pSample->OnUpdate();

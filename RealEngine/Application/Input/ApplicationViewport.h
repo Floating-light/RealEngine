@@ -2,20 +2,22 @@
 #include "Reply.h"
 #include "Events.h"
 
-class FGeometry{};
+class RGeometry{};
 class IAppViewport
 {
-	virtual Reply OnMouseButtonDown( const FGeometry& MyGeometry, const RPointerEvent& MouseEvent )
+public:
+	virtual ~IAppViewport() {} ;
+	virtual Reply OnMouseButtonDown( const RGeometry& MyGeometry, const RPointerEvent& MouseEvent )
 	{
 		return Reply::Unhandled();
 	}
 
-	virtual Reply OnMouseButtonUp( const FGeometry& MyGeometry, const RPointerEvent& MouseEvent )
+	virtual Reply OnMouseButtonUp( const RGeometry& MyGeometry, const RPointerEvent& MouseEvent )
 	{
 		return Reply::Unhandled();
 	}
 
-	virtual void OnMouseEnter( const FGeometry& MyGeometry, const RPointerEvent& MouseEvent )
+	virtual void OnMouseEnter( const RGeometry& MyGeometry, const RPointerEvent& MouseEvent )
 	{
 
 	}
@@ -25,27 +27,27 @@ class IAppViewport
 		
 	}
 
-	virtual Reply OnMouseMove( const FGeometry& MyGeometry, const RPointerEvent& MouseEvent )
+	virtual Reply OnMouseMove( const RGeometry& MyGeometry, const RPointerEvent& MouseEvent )
 	{
 		return Reply::Unhandled();
 	}
 
-	virtual Reply OnMouseWheel( const FGeometry& MyGeometry, const RPointerEvent& MouseEvent )
+	virtual Reply OnMouseWheel( const RGeometry& MyGeometry, const RPointerEvent& MouseEvent )
 	{
 		return Reply::Unhandled();
 	}
 
-	virtual Reply OnMouseButtonDoubleClick( const FGeometry& InMyGeometry, const RPointerEvent& InMouseEvent )
+	virtual Reply OnMouseButtonDoubleClick( const RGeometry& InMyGeometry, const RPointerEvent& InMouseEvent )
 	{
 		return Reply::Unhandled();
 	}
 
-	virtual Reply OnKeyDown( const FGeometry& MyGeometry, const RKeyEvent& InKeyEvent )
+	virtual Reply OnKeyDown( const RGeometry& MyGeometry, const RKeyEvent& InKeyEvent )
 	{
 		return Reply::Unhandled();
 	}
 
-	virtual Reply OnKeyUp( const FGeometry& MyGeometry, const RKeyEvent& InKeyEvent )
+	virtual Reply OnKeyUp( const RGeometry& MyGeometry, const RKeyEvent& InKeyEvent )
 	{
 		return Reply::Unhandled();
 	}

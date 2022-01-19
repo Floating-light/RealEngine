@@ -2,6 +2,7 @@
 
 #include "Application.h"
 #include "Render.h"
+#include "GameViewportClient.h"
 
 REngine* REngine::Get()
 {
@@ -14,6 +15,9 @@ void REngine::OnInit()
     RApplication::Create();
     
     RRenderer::Get().Init(RApplication::Get().GetMainWindow());
+
+    GameViewportClient = std::shared_ptr<RGameViewportClient>(new RGameViewportClient());
+    RApplication::Get().RegisterGameViewport(GameViewportClient);
 }
 
 void REngine::OnUpdate()

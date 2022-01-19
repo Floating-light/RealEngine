@@ -6,6 +6,8 @@
 #include "GenericPlatform/GenericWindow.h"
 #include "Input/InputKeyManager.h"
 #include "Input/Events.h"
+#include "Input/ApplicationViewport.h"
+
 std::shared_ptr<RApplication> RApplication::Application = nullptr;
 
 void RApplication::Create()
@@ -40,6 +42,11 @@ std::shared_ptr<RGenericWindow> RApplication::GetMainWindow()
     return MainWindow;
 }
 
+void RApplication::RegisterGameViewport(std::shared_ptr<IAppViewport> InViewport)
+{
+    GameViewport = InViewport;
+}
+
 void RApplication::ProcessInput()
 {
     GenericPlatformMisc::PumpMessages();
@@ -50,7 +57,10 @@ bool RApplication::OnKeyDown(const int KeyCode, const int CharacterCode, const b
     RKey Key = RInputKeyManager::Get().GetKeyFromCodes(KeyCode, CharacterCode);
     RKeyEvent Event(Key,PlatformApp->GetModifierKeys(),IsRepeat, KeyCode, CharacterCode);
     
-    RLOG(INFO) << __FUNCTION__ << "Key down : " << Event.GetKey().ToString() << ",  Is repeat : " << Event.IsRepeat() ;
+    if(GameViewport)
+    {
+        GameViewport->OnKeyDown(RGeometry(), Event);
+    }
     return false;
 }
 
@@ -59,7 +69,11 @@ bool RApplication::OnKeyUp(const int KeyCode, const int CharacterCode, const boo
     RKey Key = RInputKeyManager::Get().GetKeyFromCodes(KeyCode, CharacterCode);
     RKeyEvent Event(Key,PlatformApp->GetModifierKeys(),IsRepeat, KeyCode, CharacterCode);
 
-    RLOG(INFO) << __FUNCTION__ << "Key uP : " << Event.GetKey().ToString() << ",  Is repeat : " << Event.IsRepeat() ;
+    if(GameViewport)
+    {
+        GameViewport->OnKeyUp(RGeometry(), Event);
+    }
+
 
     return false;
 }
@@ -89,18 +103,40 @@ static RKey TranslateMouseButtonToKey(const EMouseButton Button)
 }
 bool RApplication::OnMouseButtonDown(const std::shared_ptr<RGenericWindow>& Window, const EMouseButton Button, const Vector2D CursorPos)
 {
+    static Vector2D LastPos(-1,-1);
     RKey Key = TranslateMouseButtonToKey(Button);
-    // RPointerEvent MouseEvent();
-    RLOG(INFO) << __FUNCTION__ << ", Button " << static_cast<int>(Button) << ", Position " << CursorPos.ToString();
+    RPointerEvent MouseEvent(CursorPos, LastPos, Key);
+    LastPos = CursorPos;
+
+    if(GameViewport)
+    {
+        GameViewport->OnMouseButtonDown(RGeometry(), MouseEvent);
+    }
     return false;
 }
 bool RApplication::OnMouseButtonUp(const EMouseButton Button, const Vector2D CursorPos)
 {
-    RLOG(INFO) << __FUNCTION__ << ", Button " << static_cast<int>(Button)<< ", Position " << CursorPos.ToString();
+    static Vector2D LastPos(-1,-1);
+    RKey Key = TranslateMouseButtonToKey(Button);
+    RPointerEvent MouseEvent(CursorPos, LastPos, Key);
+    LastPos = CursorPos;
+
+    if(GameViewport)
+    {
+        GameViewport->OnMouseButtonUp(RGeometry(), MouseEvent);
+    }
+
     return false;
 }
 bool RApplication::OnRawMouseMove(const int X, const int Y)
 {
-    RLOG(INFO) << __FUNCTION__ << ",  (X ,y) " << X << ", " << Y;
+    static Vector2D LastMovePosition(-1,-1);
+    const Vector2D CurPos(X, Y);
+    RPointerEvent MouseEvent(CurPos, LastMovePosition, RKey::Invalid);
+    LastMovePosition = CurPos;
+    if(GameViewport)
+    {
+        GameViewport->OnMouseMove(RGeometry(), MouseEvent);
+    }
     return false;
 }

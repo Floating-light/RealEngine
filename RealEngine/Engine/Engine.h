@@ -1,4 +1,7 @@
 #pragma once 
+#include <memory>
+
+class RGameViewportClient;
 
 class REngine
 {
@@ -7,5 +10,6 @@ public:
     void OnInit();
     void OnUpdate();
     void OnDestoryed();
-    
+private:
+    std::shared_ptr<RGameViewportClient> GameViewportClient;
 };

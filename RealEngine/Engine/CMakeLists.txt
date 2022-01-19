@@ -4,6 +4,8 @@ target_sources(Engine
   PRIVATE
     ${CMAKE_CURRENT_LIST_DIR}/Private/Engine.cpp
     ${CMAKE_CURRENT_LIST_DIR}/Engine.h
+    ${CMAKE_CURRENT_LIST_DIR}/GameViewportClient.h
+    ${CMAKE_CURRENT_LIST_DIR}/GameViewportClient.cpp
 )
 
 target_include_directories(Engine
