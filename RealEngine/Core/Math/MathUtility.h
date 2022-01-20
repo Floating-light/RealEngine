@@ -29,4 +29,18 @@ public:
     {
         return A >= (T)0 ? A : -A;
     }
+
+    static float InvSqrt(float In)
+    {
+        return 1.0f / std::sqrtf(In);
+    }
+    static float Sqrt(float In)
+    {
+        return std::sqrtf(In);
+    }
+    static int  IsFinite(float In)
+    {
+        return _finite(In);
+    }
+
 };

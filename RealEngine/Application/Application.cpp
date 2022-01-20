@@ -47,6 +47,11 @@ void RApplication::RegisterGameViewport(std::shared_ptr<IAppViewport> InViewport
     GameViewport = InViewport;
 }
 
+void RApplication::SetOnMainWindowClosed(const std::function<void()>& InFunc )
+{
+    OnMainWindowsClosedFunc = InFunc;
+}
+
 void RApplication::ProcessInput()
 {
     GenericPlatformMisc::PumpMessages();
@@ -139,4 +144,15 @@ bool RApplication::OnRawMouseMove(const int X, const int Y)
         GameViewport->OnMouseMove(RGeometry(), MouseEvent);
     }
     return false;
+}
+
+void RApplication::OnWindowClose(const std::shared_ptr<RGenericWindow>& Window) 
+{
+    if(MainWindow = Window)
+    {
+        if(OnMainWindowsClosedFunc)
+        {
+            OnMainWindowsClosedFunc();
+        }
+    }
 }

@@ -444,11 +444,11 @@ void D3DApp::PopulateCommandList()
     m_commandList->IASetVertexBuffers(0,1,&m_vertexBufferView);
     m_commandList->DrawInstanced(6, 1,0,0);
     
-    m_commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_LINESTRIP);
-    m_commandList->IASetVertexBuffers(0,1,&m_lineVertexBufferView);
-    m_commandList->IASetIndexBuffer(&m_lineIndexbufferView);
-    // m_commandList->DrawInstanced(4, 1,0,0);
-    m_commandList->DrawIndexedInstanced(5,1,0,0,0);
+    // m_commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_LINESTRIP);
+    // m_commandList->IASetVertexBuffers(0,1,&m_lineVertexBufferView);
+    // m_commandList->IASetIndexBuffer(&m_lineIndexbufferView);
+    // // m_commandList->DrawInstanced(4, 1,0,0);
+    // m_commandList->DrawIndexedInstanced(5,1,0,0,0);
 
     auto rt2PresentBarrier = CD3DX12_RESOURCE_BARRIER::Transition(m_renderTargets[m_currentBackBuffer].Get(), D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PRESENT);
     m_commandList->ResourceBarrier(1, &rt2PresentBarrier);

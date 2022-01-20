@@ -315,11 +315,21 @@ int WindowsApplication::ProcessMessage(HWND hWnd, UINT message, WPARAM wParam, L
         break;
 
     case WM_DESTROY:
-    {
-        RCoreGlobal::SetRequireExit();
-        PostQuitMessage(0);
-        return 0;
-    }
+        {
+            RCoreGlobal::SetRequireExit();
+            PostQuitMessage(0);
+            return 0;
+        }
+        break;
+    case WM_CLOSE:
+        {
+            if(CurrentEventWindow)
+            {
+                MessageHandler->OnWindowClose(CurrentEventWindow);
+            }
+            // return 0;
+        }
+        break;
     }
 
     // Handle any messages the switch statement didn't.

@@ -46,4 +46,7 @@ public:
     {
         return false;
     }
+    virtual void OnWindowClose(const std::shared_ptr<RGenericWindow>& Window)
+    {
+    }
 };

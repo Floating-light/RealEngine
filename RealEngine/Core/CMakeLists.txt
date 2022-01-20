@@ -10,6 +10,7 @@ target_sources(Core
     Math/Matrix4.h
     Math/Matrix4.cpp
     Math/Math.cpp
+    Math/Vector4D.h
 ) 
 
 target_include_directories(Core

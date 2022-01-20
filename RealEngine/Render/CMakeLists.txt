@@ -22,7 +22,10 @@ target_sources(Renderer
     ${CMAKE_CURRENT_LIST_DIR}/GameTime.h
     ${CMAKE_CURRENT_LIST_DIR}/Helper.cpp
     ${CMAKE_CURRENT_LIST_DIR}/Helper.h
-
+    PrimitiveInfo.h
+    SceneInfo.h
+    ViewInfo.h
+    ViewInfo.cpp
     # ${CMAKE_CURRENT_LIST_DIR}/d3dx12.h
     # ${CMAKE_CURRENT_LIST_DIR}/Helper.h
     # ${CMAKE_CURRENT_LIST_DIR}/stdafx.h
@@ -37,6 +40,7 @@ target_link_libraries(Renderer
   PRIVATE
     GraphicInterface 
     Application
+    Core
   )
 
 target_link_libraries(Renderer

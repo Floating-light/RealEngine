@@ -3,6 +3,8 @@
 #include "Application.h"
 #include "Render.h"
 #include "GameViewportClient.h"
+#include "PrimitiveInfo.h"
+#include "Vector4D.h"
 
 REngine* REngine::Get()
 {
@@ -18,6 +20,8 @@ void REngine::OnInit()
 
     GameViewportClient = std::shared_ptr<RGameViewportClient>(new RGameViewportClient());
     RApplication::Get().RegisterGameViewport(GameViewportClient);
+    RVector4D V4(1.f,1.f,1.f,1.f);
+    RApplication::Get().SetOnMainWindowClosed(std::bind(&REngine::OnDestoryed, this));
 }
 
 void REngine::OnUpdate()
@@ -28,11 +32,13 @@ void REngine::OnUpdate()
 
     // Render 
     RViewInfo ViewInfo;
-    ViewInfo.RenderWindow = RApplication::Get().GetMainWindow();
-    // RRenderer::Get().DoRender(ViewInfo);
+    ViewInfo.SetRenderWindow(RApplication::Get().GetMainWindow());
+    
+    // ViewInfo contain the primitive information to rendering .
+    RRenderer::Get().DoRender(ViewInfo);
 }
 
 void REngine::OnDestoryed()
 {
-
+    RLOG(INFO) << __FUNCTION__ << "Engine destory " ;
 }
