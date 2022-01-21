@@ -409,7 +409,6 @@ void D3DApp::PopulateCommandList()
 
     ThrowIfFailed(m_commandList->Reset(m_commandAllocator.Get(), m_pipelineState.Get()));
 
-    
     std::unique_ptr<UploadBuffer<ObjectConstants>> m_ObjectCB = nullptr;
     m_ObjectCB = std::make_unique<UploadBuffer<ObjectConstants>>(m_device.Get(), 1, true);
     UINT objCBByteSize = D3DUtil::CalcConstantBufferByteSize(sizeof(ObjectConstants));

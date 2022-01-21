@@ -8,6 +8,11 @@ void RViewInfo::AddPrimitive(const std::shared_ptr<RPrimitiveObject>& Primitive)
     }
 }
 
+void RViewInfo::SetPrimitives(const std::vector<std::shared_ptr<RPrimitiveObject>>& InPrimitives)
+{
+    Primitives = InPrimitives;
+}
+
 void RViewInfo::SetRenderWindow(const std::shared_ptr<RGenericWindow>& Window)
 {
     if(Window)

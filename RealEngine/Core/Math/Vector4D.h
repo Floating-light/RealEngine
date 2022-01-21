@@ -5,6 +5,11 @@
 
 #include "Vector.h"
 #include "Vector2D.h"
+
+struct RVector4D;
+
+using RColor = RVector4D;
+
 struct RVector4D
 {
 public:
@@ -360,8 +365,15 @@ public:
 #else
 	inline void DiagnosticCheckNaN() { }
 #endif
+	static const RColor White;
+	static const RColor Gray;
+	static const RColor Black;
+	static const RColor Transparent;
+	static const RColor Red;
+	static const RColor Green;
+	static const RColor Blue;
+	static const RColor Yellow ;
 };
-
 
 /* RVector4D inline functions
  *****************************************************************************/

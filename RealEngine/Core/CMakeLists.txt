@@ -11,6 +11,7 @@ target_sources(Core
     Math/Matrix4.cpp
     Math/Math.cpp
     Math/Vector4D.h
+    Math/Color.cpp
 ) 
 
 target_include_directories(Core

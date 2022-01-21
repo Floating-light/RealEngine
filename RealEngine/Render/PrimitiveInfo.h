@@ -2,11 +2,17 @@
 #include <vector>
 
 #include "Math/Vector.h"
+#include "Math/Vector4D.h"
+
+struct RVertex
+{
+    Vector3D Vertex;
+    RColor Color;
+};
 
 struct RPrimitiveObject
 {
 public:
-    std::vector<Vector3D> Vertex;
-    std::vector<Vector3D> Color;
+    std::vector<RVertex> VertexData;
     std::vector<uint32_t> Indices;
 };
