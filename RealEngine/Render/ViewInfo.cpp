@@ -20,3 +20,9 @@ void RViewInfo::SetRenderWindow(const std::shared_ptr<RGenericWindow>& Window)
         RenderWindow = Window;
     }
 }
+
+std::vector<std::shared_ptr<RPrimitiveObject>> RViewInfo::GetPrimitives() const 
+{
+    return Primitives;
+}
+

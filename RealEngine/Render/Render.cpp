@@ -22,6 +22,8 @@ void RRenderer::Init(std::shared_ptr<RGenericWindow> Window)
 void RRenderer::DoRender(RViewInfo& ViewInfo)
 {
     // RLOG(INFO)<< "---------------->>> " << std::endl;
+    std::vector<std::shared_ptr<RPrimitiveObject>> LocalPrimitives = ViewInfo.GetPrimitives();
+
     TestApp->OnUpdate(0.1);
     TestApp->OnRender();
 }
