@@ -39,6 +39,7 @@ void D3DApp::InitializeViewport(void* hHwnd, unsigned int width, unsigned int he
 
 void D3DApp::Setup()
 {
+    // 1. 是否开启Debug
 #if defined(DEBUG) || defined(_DEBUG)
     {
         ComPtr<ID3D12Debug> debugController;
@@ -46,13 +47,15 @@ void D3DApp::Setup()
         debugController->EnableDebugLayer();
     }
 #endif
+    // 2. 创建Factory 
     UINT dxgiFactoryFlags = 0;
     ThrowIfFailed(CreateDXGIFactory2(dxgiFactoryFlags, IID_PPV_ARGS(&m_factory)));
 
-    // Hardware adapter
+    // 3. Hardware adapter
     ComPtr<IDXGIAdapter1> adapter;
     GetHardwareAdapter(m_factory.Get(), &adapter);
 
+    // 4. Device
     if(FAILED(D3D12CreateDevice(adapter.Get(), D3D_FEATURE_LEVEL_11_0, IID_PPV_ARGS(&m_device))))
     {
         // https://docs.microsoft.com/en-us/windows/win32/direct3darticles/directx-warp
@@ -86,7 +89,7 @@ void D3DApp::Setup()
     m_dsvDescriptorSize = m_device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_DSV);
     m_cbvUavDescriptorSize = m_device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
 
-    // Create command queue
+    // 4. Create command queue
     D3D12_COMMAND_QUEUE_DESC queueDesc = {};
     queueDesc.Type = D3D12_COMMAND_LIST_TYPE::D3D12_COMMAND_LIST_TYPE_DIRECT;
     queueDesc.Flags = D3D12_COMMAND_QUEUE_FLAG_NONE;
@@ -388,8 +391,6 @@ void D3DApp::OnUpdate(double DeltaTime)
     // V[1].position.y = -1.0f * abs(sinf(Data));
     // V[2].position.x = -1.0f * abs(sinf(Data));
     // V[2].position.y = -1.0f * abs(sinf(Data));
-
-
 }
 void D3DApp::OnRender()
 {
