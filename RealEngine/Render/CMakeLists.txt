@@ -26,6 +26,8 @@ target_sources(Renderer
     SceneInfo.h
     ViewInfo.h
     ViewInfo.cpp
+    Device.h
+    Device.cpp
     # ${CMAKE_CURRENT_LIST_DIR}/d3dx12.h
     # ${CMAKE_CURRENT_LIST_DIR}/Helper.h
     # ${CMAKE_CURRENT_LIST_DIR}/stdafx.h
