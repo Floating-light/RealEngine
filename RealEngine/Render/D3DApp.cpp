@@ -26,6 +26,7 @@ D3DApp::D3DApp()
 
     // m_aspectRatio = 1;
 }
+
 void D3DApp::InitializeViewport(void* hHwnd, unsigned int width, unsigned int height, const std::wstring& title)
 {
     m_clientWidth = width;
