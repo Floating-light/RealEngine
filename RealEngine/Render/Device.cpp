@@ -83,3 +83,15 @@ RDevice::RDevice()
     m_dsvDescriptorSize = mDevice->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_DSV);
     m_cbvUavDescriptorSize = mDevice->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
 }
+ComPtr<IDXGIFactory4> RDevice::GetFactory() const 
+{
+    return mFactory;
+}
+ComPtr<ID3D12Device> RDevice::GetDevice() const 
+{
+    return mDevice;
+}
+ComPtr<IDXGIAdapter1> RDevice::GetAdapter() const 
+{
+    return mAdapter;
+}

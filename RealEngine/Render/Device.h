@@ -6,6 +6,10 @@ using Microsoft::WRL::ComPtr;
 class RDevice
 {
     RDevice();
+
+    ComPtr<IDXGIFactory4> GetFactory() const ;
+    ComPtr<ID3D12Device> GetDevice() const ;
+    ComPtr<IDXGIAdapter1> GetAdapter() const ;
 private:
     ComPtr<IDXGIFactory4> mFactory;
     ComPtr<ID3D12Device> mDevice;
