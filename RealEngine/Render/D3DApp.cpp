@@ -352,7 +352,11 @@ void D3DApp::LoadAsset()
 
         // 会调用 Cmd 来Copy buffer , 所以必须执行 commandList.
         // 且
-        m_lineIndicesRes = D3DUtil::CreateDefaultBuffer(m_device.Get(),m_commandList.Get(),LineIndices,sizeof(LineIndices),UploadLineIndicesRes );
+        m_lineIndicesRes = D3DUtil::CreateDefaultBuffer(m_device.Get(),
+                                                        m_commandList.Get(),
+                                                        LineIndices,
+                                                        sizeof(LineIndices),
+                                                        UploadLineIndicesRes );
 
         m_lineIndexbufferView.BufferLocation = m_lineIndicesRes->GetGPUVirtualAddress();
         m_lineIndexbufferView.SizeInBytes = sizeof(LineIndices);

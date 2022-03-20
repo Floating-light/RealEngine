@@ -2,9 +2,9 @@
 
 #include "stdafx.h"
 
-class RHIVewport
+class RHIViewport
 {
 public:
-    RHIVewport(){};
-
+    RHIViewport(){};
+    virtual ~RHIViewport(){}
 };
