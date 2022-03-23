@@ -42,8 +42,22 @@ D3D12_HEAP_TYPE_UPLOAD ：优化的CPU访问，但GPU访问效率不高。通常
 D3D12_HEAP_TYPE_READBACK ： 用于CPU从GPU读回数据。GPU-write-once, CPU-readable data.
 D3D12_HEAP_TYPE_CUSTOM
 ```
-通常，一些静态的物体每一帧都不会发生改变，应该被保存在DefaultHeap中，但DefaultHeap又不可被GPU读取，所以还要先把数据穿到UploadHeap，由它把资源上传至GPU，再复制到DeafultHeap中。
+通常，一些静态的物体每一帧都不会发生改变，应该被保存在DefaultHeap中，但DefaultHeap又不可被GPU读取，所以还要先把数据传到UploadHeap，由它把资源上传至GPU，再复制到DeafultHeap中。
 
+这一过程需要调用一系列D3D的函数：
+
+1. 创建这两种Buffer(UploadHeap,DefaultHeap),其中这两种Buffer的状态：
+    * DefaultBuffer D3D12_RESOURCE_STATE_COPY_DEST，因为稍后要把buffer Copy到这儿来
+    * UploadBuffer D3D12_RESOURCE_STATE_GENERIC_READ， 稍后从中读取Buffer copy到DefaultBuffer中
+2. 将真正的Buffer数据用D3D12_SUBRESOURCE_DATA表示
+3. 借助d3dx12.h中的UpdateSubresources<1>方法, 先调用ID3D12Device::GetCopyableFootprints获取Dest的Footprints
+    * 调用UpdateSubresources()
+    * 将Buffer数据读到中间UploadHeap的Resource中(ID3D12Resource::Map())
+    * 然后调用ID3D12GraphicsCommandList::CopyBufferRegion或ID3D12GraphicsCommandList::CopyTextureRegion将UploadHeap中的Resource复制到DefaultHeap中的Resource
+4. 把DefaultBuffer中的Resource的状态转换为我们期望的用途(D3D12_RESOURCE_STATE_INDEX_BUFFER)
+    * 创建Barrier, CD3DX12_RESOURCE_BARRIER::Transition()
+    * ID3D12GraphicsCommandList::ResourceBarrier()
+5. 完成上述操作后，必须在得知复制命令已经完成之后(Fence)才能释放uploadBuffer. 
 * Descriptor heap 
 An array of descriptors. Where each descriptor fully describes an object to the GPU.
 
