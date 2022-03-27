@@ -13,6 +13,14 @@ public:
     {
 
     }
+	bool operator==(const RKey& InKey) const 
+	{
+		return KeyName == InKey.KeyName;
+	}
+	bool operator!=(const RKey& InKey) const 
+	{
+		return !(*this == InKey);
+	}
     std::string ToString() const 
     {
         return std::string(KeyName);

@@ -25,4 +25,3 @@ std::vector<std::shared_ptr<RPrimitiveObject>> RViewInfo::GetPrimitives() const
 {
     return Primitives;
 }
-

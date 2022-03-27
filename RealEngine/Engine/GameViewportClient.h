@@ -11,5 +11,12 @@ public:
     virtual Reply OnMouseButtonDown( const RGeometry& MyGeometry, const RPointerEvent& MouseEvent );
 	virtual Reply OnMouseButtonUp( const RGeometry& MyGeometry, const RPointerEvent& MouseEvent );
     virtual Reply OnMouseMove( const RGeometry& MyGeometry, const RPointerEvent& MouseEvent );
+    // ~ IAppViewport
 
+    void GetViewPoint(Vector& OutLocation, Rotator& OutRotation) const;
+    void GetViewProjTransform(Matrix4& OutMat) const;
+    
+private:
+    Vector Location;
+    Rotator Rotation;
 };

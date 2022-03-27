@@ -15,6 +15,8 @@ public:
     void SetPrimitives(const std::vector<std::shared_ptr<RPrimitiveObject>>& InPrimitives);
 
     std::vector<std::shared_ptr<RPrimitiveObject>> GetPrimitives() const ;
+public:
+    Matrix4 ViewProjectionMat;
 private:
     RSceneInfo* SceneInfor;
     std::shared_ptr<RGenericWindow> RenderWindow;

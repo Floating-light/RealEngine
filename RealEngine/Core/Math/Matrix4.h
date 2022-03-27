@@ -9,6 +9,7 @@ struct Matrix4
     static const Matrix4 Identity ;
 
     Matrix4() ;
+    Matrix4(float In);
 
     Matrix4(const Vector& InX, const Vector& InY, const Vector& InZ, const Vector& InW);
     
@@ -19,6 +20,7 @@ struct Matrix4
 
     bool operator==(const Matrix4& M)const;
     bool operator!=(const Matrix4& M)const;
+
 };
 
 inline Matrix4::Matrix4() : Mat{0.f}
@@ -70,4 +72,17 @@ inline bool Matrix4::operator==(const Matrix4& M) const
 inline bool Matrix4::operator!=(const Matrix4& M) const 
 {
     return !(*this == M);
+};
+
+
+struct LookFromMatrix : public Matrix4
+{
+    LookFromMatrix(const Vector& EyeLocation, const Vector& LookDirection, const Vector& UpDirection);
+};
+
+struct LookAtMatrix : public LookFromMatrix
+{
+    LookAtMatrix(const Vector& EyeLocation, const Vector& LookAtPosition, const Vector& UpDirection)
+        : LookFromMatrix(EyeLocation, LookAtPosition - EyeLocation, UpDirection)
+    {}
 };

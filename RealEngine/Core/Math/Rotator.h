@@ -1,5 +1,5 @@
 #pragma once 
-
+#include "MathUtility.h"
 struct Rotator
 {
 public:
@@ -24,6 +24,11 @@ public:
     Rotator operator*=(float Scall) ;
     Rotator operator==(const Rotator& R)const ;
     Rotator operator!=(const Rotator& R) const ;
+
+    Vector ToVector()const 
+    {
+
+    }
 };
 
 inline Rotator Rotator::operator+(const Rotator& R) const 
