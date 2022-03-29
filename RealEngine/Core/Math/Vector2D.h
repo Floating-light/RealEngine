@@ -4,12 +4,12 @@
 
 #include "Vector.h"
 #include "MathUtility.h"
+#include "MathUtilityDefine.h"
 #include "Logging.h"
 
 // #define FORCEINLINE inline
 #define CORE_API
-#define KINDA_SMALL_NUMBER	(1.e-4f)
-#define SMALL_NUMBER		(1.e-8f)
+
 /**
  * A vector in 2-D space composed of components (X, Y) with floating point precision.
  */
