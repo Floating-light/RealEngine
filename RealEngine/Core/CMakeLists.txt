@@ -9,9 +9,17 @@ target_sources(Core
     Module/ModuleManager.cpp
     Math/Matrix4.h
     Math/Matrix4.cpp
-    Math/Math.cpp
     Math/Vector4D.h
     Math/Color.cpp
+    Math/MathUtility.h
+    Math/MathUtilityDefine.h
+    Math/Quat.h
+    Math/RealSSE.h
+    Math/Rotator.h
+    Math/Transform.h
+    Math/Vector.h
+    Math/Vector2D.h
+    Math/Math.cpp
 ) 
 
 target_include_directories(Core

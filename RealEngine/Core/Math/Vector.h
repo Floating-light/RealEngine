@@ -9,6 +9,7 @@ public:
     float Z;
     static const Vector ZeroVector;
     static const Vector OneVector;
+    static const Vector XAxisVector;
     Vector();
     Vector(float In);
     Vector(float InX, float InY, float InZ);
@@ -143,4 +144,9 @@ inline float Vector::Length() const
 inline float Vector::LengthSquared() const 
 {
     return X*X + Y*Y + Z*Z;
+}
+
+inline Vector operator*(float Scale, const Vector& V)
+{
+	return V.operator*(Scale);
 }

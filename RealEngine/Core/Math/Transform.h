@@ -46,6 +46,8 @@ inline Vector Transform::TransformVectorNoScale(const Vector& V) const
     Vector Res;
     VectorStoreFloat3(RotatedVec, &Res);
     return Res;
+
+    return Rotation.RotateVector(V);
 }
 
 inline Matrix4 Transform::ToMatrixWithScale() const 

@@ -3,6 +3,9 @@
 #include <emmintrin.h>
 
 using VectorRegister = __m128;
+
+// #define PLATFORM_ENABLE_VECTORINTRINSICS
+
 // Replicates on element into all four elements
 #define VectorReplicate(Vec, Index) _mm_shuffle_ps(Vec, Vec, _MM_SHUFFLE(Index, Index, Index, Index) )
 // return a VectorRegister with w = 0, xyz using ptr.
@@ -11,7 +14,11 @@ using VectorRegister = __m128;
 #define SHUFFLEMASK(A0,A1,B2,B3) ( (A0) | ((A1)<<2) | ((B2)<<4) | ((B3)<<6) )
 
 #define VectorSwizzle( Vec, X, Y, Z, W )	_mm_shuffle_ps( Vec, Vec, SHUFFLEMASK(X,Y,Z,W) )
+
 #define VectorStoreAligned( Vec, Ptr )	_mm_store_ps( (float*)(Ptr), Vec )
+
+#define VectorLoadAligned( Ptr )		_mm_load_ps( (const float*)(Ptr) )
+
 inline VectorRegister MakeVectorRegister( float X, float Y, float Z, float W )
 {
 	return _mm_setr_ps( X, Y, Z, W );

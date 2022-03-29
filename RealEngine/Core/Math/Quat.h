@@ -744,7 +744,6 @@ inline RQuat::RQuat(Vector Axis, float AngleRad)
 	DiagnosticCheckNaN();
 }
 
-
 inline RQuat RQuat::operator+(const RQuat& Q) const
 {
 #if PLATFORM_ENABLE_VECTORINTRINSICS
@@ -1063,7 +1062,7 @@ inline Vector RQuat::RotateVector(Vector V) const
 	// V' = V + w*(T) + (Q x T)
 
 	const Vector Q(X, Y, Z);
-	const Vector T = 2.f * Vector::CrossProduct(Q, V);
+	const Vector T =  Vector::CrossProduct(Q, V) * 2.0f;
 	const Vector Result = V + (W * T) + Vector::CrossProduct(Q, T);
 	return Result;
 }
@@ -1079,7 +1078,7 @@ inline Vector RQuat::UnrotateVector(Vector V) const
 
 inline RQuat RQuat::Inverse() const
 {
-	checkSlow(IsNormalized());
+	// checkSlow(IsNormalized());
 
 #if PLATFORM_ENABLE_VECTORINTRINSICS
 	return RQuat(VectorQuaternionInverse(VectorLoadAligned(this)));
@@ -1134,7 +1133,7 @@ inline Vector RQuat::GetUpVector() const
 	return GetAxisZ();
 }
 
-inline Vector RQuat::Vector() const
+inline Vector RQuat::ToVector() const
 {
 	return GetAxisX();
 }
@@ -1191,34 +1190,34 @@ inline bool RQuat::ContainsNaN() const
 }
 
 
-template<> struct TIsPODType<RQuat> { enum { Value = true }; };
+// template<> struct TIsPODType<RQuat> { enum { Value = true }; };
 
 /* RMath inline functions
  *****************************************************************************/
 
-template<class U>
-FORCEINLINE_DEBUGGABLE RQuat RMath::Lerp( const RQuat& A, const RQuat& B, const U& Alpha)
-{
-	return RQuat::Slerp(A, B, Alpha);
-}
+// template<class U>
+// FORCEINLINE_DEBUGGABLE RQuat RMath::Lerp( const RQuat& A, const RQuat& B, const U& Alpha)
+// {
+// 	return RQuat::Slerp(A, B, Alpha);
+// }
 
-template<class U>
-FORCEINLINE_DEBUGGABLE RQuat RMath::BiLerp(const RQuat& P00, const RQuat& P10, const RQuat& P01, const RQuat& P11, float FracX, float FracY)
-{
-	RQuat Result;
+// template<class U>
+// FORCEINLINE_DEBUGGABLE RQuat RMath::BiLerp(const RQuat& P00, const RQuat& P10, const RQuat& P01, const RQuat& P11, float FracX, float FracY)
+// {
+// 	RQuat Result;
 
-	Result = Lerp(
-		RQuat::Slerp_NotNormalized(P00,P10,FracX),
-		RQuat::Slerp_NotNormalized(P01,P11,FracX),
-		FracY
-		);
+// 	Result = Lerp(
+// 		RQuat::Slerp_NotNormalized(P00,P10,FracX),
+// 		RQuat::Slerp_NotNormalized(P01,P11,FracX),
+// 		FracY
+// 		);
 
-	return Result;
-}
+// 	return Result;
+// }
 
-template<class U>
-FORCEINLINE_DEBUGGABLE RQuat RMath::CubicInterp( const RQuat& P0, const RQuat& T0, const RQuat& P1, const RQuat& T1, const U& A)
-{
-	return RQuat::Squad(P0, T0, P1, T1, A);
-}
+// template<class U>
+// FORCEINLINE_DEBUGGABLE RQuat RMath::CubicInterp( const RQuat& P0, const RQuat& T0, const RQuat& P1, const RQuat& T1, const U& A)
+// {
+// 	return RQuat::Squad(P0, T0, P1, T1, A);
+// }
 

@@ -1,4 +1,5 @@
 #pragma once 
+#include "MathUtilityDefine.h"
 #include "Vector.h"
 class RMath
 {
@@ -99,5 +100,25 @@ public:
 		// 10-degree minimax approximation
 		float p = ( ( ( ( -2.6051615e-07f * y2 + 2.4760495e-05f ) * y2 - 0.0013888378f ) * y2 + 0.041666638f ) * y2 - 0.5f ) * y2 + 1.0f;
 		*ScalarCos = sign*p;
+	}
+	static inline float Acos( float Value ) { return acosf( (Value<-1.f) ? -1.f : ((Value<1.f) ? Value : 1.f) ); }
+
+	/**
+	 * Returns value based on comparand. The main purpose of this function is to avoid
+	 * branching based on floating point comparison which can be avoided via compiler
+	 * intrinsics.
+	 *
+	 * Please note that we don't define what happens in the case of NaNs as there might
+	 * be platform specific differences.
+	 *
+	 * @param	Comparand		Comparand the results are based on
+	 * @param	ValueGEZero		Return value if Comparand >= 0
+	 * @param	ValueLTZero		Return value if Comparand < 0
+	 *
+	 * @return	ValueGEZero if Comparand >= 0, ValueLTZero otherwise
+	 */
+	static constexpr inline float FloatSelect( float Comparand, float ValueGEZero, float ValueLTZero )
+	{
+		return Comparand >= 0.f ? ValueGEZero : ValueLTZero;
 	}
 };
