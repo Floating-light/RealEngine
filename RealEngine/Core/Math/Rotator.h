@@ -1,5 +1,8 @@
 #pragma once 
 #include "MathUtility.h"
+
+struct RQuat;
+
 struct Rotator
 {
 public:
@@ -29,6 +32,12 @@ public:
     {
 
     }
+    /**
+     * @brief Get Rotation as a quaternion
+     * 
+     * @return RQuat 
+     */
+    RQuat Quaternion() const ;
 };
 
 inline Rotator Rotator::operator+(const Rotator& R) const 

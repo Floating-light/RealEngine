@@ -15,7 +15,7 @@ Reply RGameViewportClient::OnKeyDown( const RGeometry& MyGeometry, const RKeyEve
     }
     else if(InKeyEvent.GetKey() == RKey::S)
     {
-        LocalMove.X 
+        // LocalMove.X 
     }
     return Reply::Unhandled();
 }

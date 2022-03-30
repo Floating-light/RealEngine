@@ -403,7 +403,7 @@ public:
 	inline Vector ToVector() const;
 
 	/** Get the Rotator representation of this Quaternion. */
-	 Rotator Rotator() const;
+	 Rotator GetRotator() const;
 
 	/**
 	 * Get the axis of rotation of the Quaternion.
@@ -637,7 +637,6 @@ inline RQuat::RQuat(const Matrix4& M)
 // 		DiagnosticCheckNaN();
 // 	}
 }
-
 
 inline RQuat::RQuat(const Rotator& R)
 {
