@@ -16,6 +16,8 @@ public:
 
     std::vector<std::shared_ptr<RPrimitiveObject>> GetPrimitives() const ;
 public:
+    Matrix4 ViewMat;
+    Matrix4 ProjectionMat;
     Matrix4 ViewProjectionMat;
 private:
     RSceneInfo* SceneInfor;

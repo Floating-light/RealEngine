@@ -63,7 +63,7 @@ void REngine::OnUpdate()
     RViewInfo ViewInfo;
     ViewInfo.SetRenderWindow(RApplication::Get().GetMainWindow());
     ViewInfo.SetPrimitives(Objects);
-    GameViewportClient->GetViewProjTransform(ViewInfo.ViewProjectionMat);
+    GameViewportClient->SetUpView(ViewInfo);
     
     // ViewInfo contain the primitive information to rendering .
     RRenderer::Get().DoRender(ViewInfo);

@@ -86,7 +86,7 @@ namespace RealSSE
     // {
     //     return _mm_shuffle_ps(Vec, Vec, _MM_SHUFFLE(Index, Index, Index, Index) );
     // }
-
+	// Generic matrix multiply 
     inline void MatrixMultiply(void* Result, const void* Mat1, const void* Mat2)
     {
         const VectorRegister *A = (const VectorRegister*) Mat1;

@@ -1,4 +1,5 @@
 #include "GameViewportClient.h"
+#include "ViewInfo.h"
 
 RGameViewportClient::RGameViewportClient()
 {
@@ -11,13 +12,28 @@ Reply RGameViewportClient::OnKeyDown( const RGeometry& MyGeometry, const RKeyEve
     Vector LocalMove;
     if(InKeyEvent.GetKey() == RKey::W)
     {
-        LocalMove.X +=5;
+        LocalMove += Rotation.ToVector()*2;
     }
     else if(InKeyEvent.GetKey() == RKey::S)
     {
+        LocalMove -= Rotation.ToVector()*2;
         // LocalMove.X 
     }
-    return Reply::Unhandled();
+    else if(InKeyEvent.GetKey() == RKey::A)
+    {
+        LocalMove -= RQuat(Rotation).RotateVector(Vector(0.0,1.0,0.0))*2;
+    }
+    else if(InKeyEvent.GetKey() ==RKey::D)
+    {
+        LocalMove += RQuat(Rotation).RotateVector(Vector(0.0,1.0,0.0))*2;
+    }
+    else
+    {
+        return Reply::Unhandled();
+    }
+    Location += LocalMove;
+
+    return Reply::Handled();
 }
 Reply RGameViewportClient::OnKeyUp( const RGeometry& MyGeometry, const RKeyEvent& InKeyEvent )
 {
@@ -43,6 +59,14 @@ Reply RGameViewportClient::OnMouseMove( const RGeometry& MyGeometry, const RPoin
     return Reply::Unhandled();
 }
 
+void RGameViewportClient::SetUpView(struct RViewInfo& InOutViewInfo)
+{
+    GetViewTransform(InOutViewInfo.ViewMat);
+    InOutViewInfo.ProjectionMat.SetIdentity();
+
+    InOutViewInfo.ViewProjectionMat = InOutViewInfo.ProjectionMat*InOutViewInfo.ViewMat;
+}
+
 void RGameViewportClient::GetViewPoint(Vector& OutLocation, Rotator& OutRotation) const 
 {
     OutLocation = Location;
@@ -66,7 +90,7 @@ void CalculViewTransform(const Vector& InLocation, const Rotator& InRotation, Ma
     OutMat = ViewTrans;
 }
 
-void RGameViewportClient::GetViewProjTransform(Matrix4& OutMat) const
+void RGameViewportClient::GetViewTransform(Matrix4& OutMat) const
 {
     Vector ViewLocation;
     Rotator ViewRotation;

@@ -1,6 +1,7 @@
 #pragma once 
-#include "Input/ApplicationViewport.h"
+#include "Core.h"
 
+#include "Input/ApplicationViewport.h"
 class RGameViewportClient : public IAppViewport
 {
 public:
@@ -14,8 +15,8 @@ public:
     // ~ IAppViewport
 
     void GetViewPoint(Vector& OutLocation, Rotator& OutRotation) const;
-    void GetViewProjTransform(Matrix4& OutMat) const;
-    
+    void GetViewTransform(Matrix4& OutMat) const;
+    void SetUpView(struct RViewInfo& InOutViewInfo);
 private:
     Vector Location;
     Rotator Rotation;

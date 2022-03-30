@@ -44,6 +44,7 @@ inline void Matrix4::SetIdentity()
 inline Matrix4 Matrix4::operator*(const Matrix4& M) const 
 {
     Matrix4 Res;
+    
     RealSSE::MatrixMultiply(&Res, this, &M);
     return Res;
 };
