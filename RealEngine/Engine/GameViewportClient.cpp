@@ -64,7 +64,7 @@ void RGameViewportClient::SetUpView(struct RViewInfo& InOutViewInfo)
     GetViewTransform(InOutViewInfo.ViewMat);
     InOutViewInfo.ProjectionMat.SetIdentity();
 
-    InOutViewInfo.ViewProjectionMat = InOutViewInfo.ProjectionMat*InOutViewInfo.ViewMat;
+    InOutViewInfo.ViewProjectionMat = InOutViewInfo.ViewMat*InOutViewInfo.ProjectionMat;
 }
 
 void RGameViewportClient::GetViewPoint(Vector& OutLocation, Rotator& OutRotation) const 
