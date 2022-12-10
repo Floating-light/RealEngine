@@ -1,5 +1,7 @@
 #pragma once 
 
+#include <cassert>
+
 #include "Vector.h"
 #include "Rotator.h"
 #include "Quat.h"
@@ -39,15 +41,18 @@ public:
 
 inline Vector Transform::TransformVectorNoScale(const Vector& V) const 
 {
+    assert(0);
     // const VectorRegister InputV = VectorLoadFloat3_W0(&V);
+    // const VectorRegister Rot = VectorLoadFloat3_W0(&Rotation);
 
-    // const VectorRegister RotatedVec = VectorQuaternionRotateVector(Rotation, InputV);
+    // const VectorRegister RotatedVec = VectorQuaternionRotateVector(Rot, InputV);
 
     // Vector Res;
     // VectorStoreFloat3(RotatedVec, &Res);
     // return Res;
 
-    return Rotation.RotateVector(V);
+    // return Rotation.RotateVector(V);
+    return Vector();
 }
 
 inline Matrix4 Transform::ToMatrixWithScale() const 

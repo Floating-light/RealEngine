@@ -1,6 +1,7 @@
 #pragma once 
 
 #include <string>
+#include <cassert>
 
 #include "MathUtilityDefine.h"
 #include "Vector.h"
@@ -638,11 +639,13 @@ inline RQuat::RQuat(const Matrix4& M)
 // 	}
 }
 
-inline RQuat::RQuat(const Rotator& R)
-{
-	*this = R.Quaternion();
-	DiagnosticCheckNaN();
-}
+
+// inline RQuat::RQuat(const Rotator& R)
+// {
+// 	assert(0);
+// 	// *this = R.Quaternion();
+// 	// DiagnosticCheckNaN();
+// }
 
 
 inline Vector RQuat::operator*(const Vector& V) const

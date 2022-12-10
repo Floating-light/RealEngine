@@ -1,5 +1,7 @@
 #pragma once 
 
+#include <cassert>
+
 #include "Logging.h"
 #include "Vector.h"
 #include "Rotator.h"

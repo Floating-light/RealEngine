@@ -16,8 +16,7 @@ Reply RGameViewportClient::OnKeyDown( const RGeometry& MyGeometry, const RKeyEve
     }
     else if(InKeyEvent.GetKey() == RKey::S)
     {
-        LocalMove -= Rotation.ToVector()*2;
-        // LocalMove.X 
+        LocalMove.X -=5;
     }
     else if(InKeyEvent.GetKey() == RKey::A)
     {
