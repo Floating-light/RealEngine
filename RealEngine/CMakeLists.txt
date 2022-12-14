@@ -1,5 +1,8 @@
+add_subdirectory(ThirdParty/assimp)
 
 add_subdirectory(Core)
+
+add_subdirectory(AssetImporter)
 
 add_subdirectory(GraphicInterface)
 

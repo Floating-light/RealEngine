@@ -1,4 +1,4 @@
-add_library(Logging "")
+add_library(Logging)
 
 target_sources(Logging 
   PRIVATE
@@ -8,7 +8,7 @@ target_sources(Logging
 
 target_include_directories( Logging 
   PUBLIC
-    "${CMAKE_CURRENT_SOURCE_DIR}"
+    ${CMAKE_CURRENT_SOURCE_DIR}
 )
 
 find_package(glog 0.6.0 REQUIRED)
@@ -16,7 +16,8 @@ find_package(glog 0.6.0 REQUIRED)
 set_target_properties(Logging PROPERTIES LINKER_LANGUAGE CXX)
 
 target_link_libraries(Logging 
-  glog::glog
+  PUBLIC
+    glog::glog
 )
 
 # Copy dll https://stackoverflow.com/questions/10671916/how-to-copy-dll-files-into-the-same-folder-as-the-executable-using-cmake

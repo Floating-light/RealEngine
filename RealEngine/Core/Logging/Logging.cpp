@@ -11,6 +11,6 @@ void InitLogger(const std::wstring& logFilePath)
     FLAGS_colorlogtostderr = 1;
     // FLAGS_alsologtostderr = 1;
     FLAGS_logtostderr = 1;
-
+    
     RLOG(INFO) << "Init logger complete" ;
 }

@@ -1,4 +1,5 @@
 add_executable(${PROJECT_NAME} WIN32)
+message(STATUS "Project name -------------->>> ${PROJECT_NAME}")
 
 target_sources(${PROJECT_NAME}
     PRIVATE

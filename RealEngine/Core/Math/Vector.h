@@ -134,6 +134,7 @@ inline Vector Vector::operator+=(const Vector& V)
 inline Vector Vector::operator-=(const Vector& V) 
 {
     X -= V.X; Y -= V.Y; Z -= V.Z;
+    return *this;
 }
 
 inline float Vector::Length() const 

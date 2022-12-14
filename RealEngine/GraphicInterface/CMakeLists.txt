@@ -17,10 +17,10 @@ if(WIN32)
     PRIVATE
     Windows/WindowsPlatformRHI.cpp
   )
-  target_link_libraries(GraphicInterface 
-  PUBLIC
-    RHID3D12
-  )
+  # target_link_libraries(GraphicInterface 
+  # PUBLIC
+  #   RHID3D12
+  # )
   # Work, must be public, 
   target_link_options(GraphicInterface
     PUBLIC
@@ -31,4 +31,5 @@ endif()
 target_link_libraries(GraphicInterface 
   PUBLIC
     Core
+    RHID3D12
   )

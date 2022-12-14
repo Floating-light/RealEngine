@@ -1,5 +1,6 @@
 #pragma once 
 #include "MathUtilityDefine.h"
+#include "Logging.h"
 #include "Vector.h"
 class RMath
 {

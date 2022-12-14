@@ -5,6 +5,7 @@
 #include "GameViewportClient.h"
 #include "PrimitiveInfo.h"
 #include "Vector4D.h"
+#include "AssetImporter.h"
 
 REngine* REngine::Get()
 {
@@ -27,7 +28,7 @@ void REngine::OnInit()
     std::shared_ptr<RPrimitiveObject>  Obj1 = std::make_shared<RPrimitiveObject>();
     Obj1->VertexData = 
     {
-        RVertex{Vector3D(-1.0f, -1.0f, -1.0f), RColor::White},
+        RVertex{Vector3D(-1.0f, -1.0f, -1.0f),  RColor::White},
         RVertex{Vector3D(-1.0f, +1.0f, -1.0f), RColor::Black},
         RVertex{Vector3D(+1.0f, +1.0f, -1.0f), RColor::Blue},
         RVertex{Vector3D(+1.0f, -1.0f, -1.0f), RColor::Red},
@@ -50,7 +51,11 @@ void REngine::OnInit()
         2, 3, 6, 
         3, 6, 7
     };
-    Objects.push_back(Obj1);
+
+    // Objects.push_back(Obj1);
+    std::wstring RaiDenPath = L"E:/MyProject/DirectX-Graphics-Samples/MiniEngine/ModelViewer/GenShin/Beelzebul.pmx";
+    std::shared_ptr<RPrimitiveObject> RaiDenShougunObj = RAssetImporter::ImportModel(RaiDenPath);
+    Objects.push_back(RaiDenShougunObj);
 }
 
 void REngine::OnUpdate()

@@ -1,5 +1,7 @@
 add_library(Core)
 
+add_subdirectory(Logging)
+
 target_sources(Core
   PRIVATE
     "Core.h"
@@ -43,11 +45,10 @@ if(WIN32)
   ) 
 endif()
 
-add_subdirectory(Logging)
+set_target_properties(Core PROPERTIES LINKER_LANGUAGE CXX)
 
 target_link_libraries(Core 
   PUBLIC
     Logging
 )
 
-set_target_properties(Core PROPERTIES LINKER_LANGUAGE CXX)

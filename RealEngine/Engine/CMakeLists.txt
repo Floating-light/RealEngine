@@ -17,4 +17,5 @@ target_link_libraries(Engine
   PRIVATE
     Application
     Renderer
+    AssetImporter
 )

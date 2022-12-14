@@ -30,7 +30,8 @@ public:
 
     Vector ToVector()const 
     {
-
+        RLOG(ERROR) << "Not implementation ";
+        return Vector();
     }
     /**
      * @brief Get Rotation as a quaternion

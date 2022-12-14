@@ -233,8 +233,8 @@ void D3DApp::LoadAsset()
         UINT compileFlags = 0;
 #endif
         std::wstring shaderPath = GetShaderPath() + L"MainShader.hlsl";
-        ThrowIfFailed(D3DCompileFromFile(shaderPath.c_str(), nullptr, nullptr,
-        "VSMain","vs_5_0", compileFlags,0,&vertexShader, nullptr ));
+        ThrowIfFailed(D3DCompileFromFile(shaderPath.c_str(), /*Defines*/nullptr, /*Inlcude*/nullptr,
+        "VSMain","vs_5_0", compileFlags,0,&vertexShader, /*Error*/nullptr ));
         ThrowIfFailed(D3DCompileFromFile(shaderPath.c_str(), nullptr, nullptr, 
         "PSMain", "ps_5_0",compileFlags, 0, &pixelShader, nullptr ));
 
