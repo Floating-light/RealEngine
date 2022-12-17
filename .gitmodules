@@ -1,0 +1,3 @@
+[submodule "RealEngine/ThirdParty/assimp"]
+	path = RealEngine/ThirdParty/assimp
+	url = https://github.com/assimp/assimp.git
