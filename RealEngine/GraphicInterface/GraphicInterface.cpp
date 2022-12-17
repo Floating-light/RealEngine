@@ -12,6 +12,7 @@ void RHIInit()
     else
     {
         RLOG(FATAL) << "Create graphic interface failed " << std::endl;
+        MyRLOG(LogLevel::Debug,"asdfasdf {}", 109);
     }
 }
 void RHIExit()

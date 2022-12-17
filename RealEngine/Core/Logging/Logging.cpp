@@ -13,4 +13,5 @@ void InitLogger(const std::wstring& logFilePath)
     
     RLOG(INFO) << "Init logger complete" ;
     spdlog::info("init spdlog <<<<<<<<<<<<<<<<< ===========");
+    MyRLOG(LogLevel::Error, "Error log ");
 }

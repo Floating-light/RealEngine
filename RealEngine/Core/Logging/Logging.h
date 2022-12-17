@@ -19,7 +19,7 @@ inline std::ostream& operator<<(std::ostream& out, const std::wstring& str)
 
 extern void __declspec(dllexport) InitLogger(const std::wstring& logFilePath );
 
-enum class LogLevel : uint8_t
+enum LogLevel : uint8_t
 {
     Debug,
     Info,
@@ -29,24 +29,36 @@ enum class LogLevel : uint8_t
 };
 #define RLOG LOG
 template<typename... TArgs>
-static void MyRLOG(LogLevel level, TArgs&&... args)
+void fatalCallback(fmt::format_string<TArgs...>  fmt,TArgs&&... args)
+{
+    // https://stackoverflow.com/questions/68675303/how-to-create-a-function-that-forwards-its-arguments-to-fmtformat-keeping-the
+    const std::string format_str = fmt::format(fmt, std::forward<TArgs>(args)...);
+    // const std::string format_str = fmt::vformat(fmt, fmt::make_format_args(std::forward<TARGS>(args)...));
+    throw std::runtime_error(format_str);
+}
+template<typename... TArgs>
+static void MyRLOG(LogLevel level,fmt::format_string<TArgs...> fmt, TArgs&&... args)
 {
     switch (level)
     {
     case LogLevel::Debug:
-        spdlog::debug(std::forward<TArgs>(args)...);
+        spdlog::debug(fmt, std::forward<TArgs>(args)...);
         break;
     case LogLevel::Info:
-        spdlog::info(std::forward<TArgs>(args)...);
+        spdlog::info(fmt, std::forward<TArgs>(args)...);
+        break;
     case LogLevel::Warning:
-        spdlog::warn(std::forward<TArgs>(args)...);
+        spdlog::warn(fmt, std::forward<TArgs>(args)...);
+        break;
     case LogLevel::Error:
-        spdlog::error(std::forward<TArgs>(args)...);
+        spdlog::error(fmt, std::forward<TArgs>(args)...);
+        break;
     case LogLevel::Fatal:
-        stdlog::critical(std::forward<TArgs>(args)...);
-        const std::string format_str = fmt::format(std::format<TArgs>(args)...);
-        throw std::runtime_error(format_str);
+        spdlog::critical(fmt, std::forward<TArgs>(args)...);
+        fatalCallback(fmt, std::forward<TArgs>(args)...);
+        break;
     default:
         break;
     }
 }
+

@@ -22,7 +22,6 @@ set_target_properties(Logging PROPERTIES LINKER_LANGUAGE CXX)
 target_link_libraries(Logging 
   PUBLIC
     glog::glog
-  PRIVATE
     spdlog::spdlog
 )
 
