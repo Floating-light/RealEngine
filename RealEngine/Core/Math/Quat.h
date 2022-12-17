@@ -640,12 +640,12 @@ inline RQuat::RQuat(const Matrix4& M)
 }
 
 
-// inline RQuat::RQuat(const Rotator& R)
-// {
-// 	assert(0);
-// 	// *this = R.Quaternion();
-// 	// DiagnosticCheckNaN();
-// }
+inline RQuat::RQuat(const Rotator& R)
+{
+	assert(0);
+	// *this = R.Quaternion();
+	// DiagnosticCheckNaN();
+}
 
 
 inline Vector RQuat::operator*(const Vector& V) const

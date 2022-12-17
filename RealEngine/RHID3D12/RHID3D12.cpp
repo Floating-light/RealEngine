@@ -1,5 +1,5 @@
 #include "RHID3D12.h"
-#include "Logging.h"
+#include "Core.h"
 #include "D3D12Adapter.h"
 // ZMACRO_MSVCStaticLib_cpp(RHID3D12)
 RDEFINE_MOUDLE(RHID3D12Module,D3D12RHI)
@@ -16,7 +16,7 @@ void RHID3D12::InitRHI()
     ComPtr<IDXGIFactory4> dxgiFactory4;
     if(FAILED(CreateDXGIFactory2(dxgiFactoryFlags, IID_PPV_ARGS(&dxgiFactory4))))
     {
-        RLOG(FATAL) << "CreateDXGIFactory2 failed " << std::endl;
+        RLOG(Fatal, "CreateDXGIFactory2 failed ");
         return ;
     }
     ComPtr<IDXGIAdapter> Adapter;
@@ -24,15 +24,10 @@ void RHID3D12::InitRHI()
     {
         DXGI_ADAPTER_DESC desc;
         Adapter->GetDesc(&desc);
-        RLOG(INFO) << "Description : " << desc.Description 
-                   << ", VendorId : " << desc.VendorId
-                   << ", DeviceId : " << desc.DeviceId
-                   << ", SubSysId : " << desc.SubSysId
-                   << ", Revision : " << desc.Revision
-                   << ", DedicatedVideoMemory : " << desc.DedicatedVideoMemory
-                   << ", DedicatedSystemMomory : " << desc.DedicatedSystemMemory
-                   << ", SharedSystemMemory : " << desc.SharedSystemMemory
-                   << ", AdapterLuid : LowPart: " << desc.AdapterLuid.LowPart << ", HighPart: " << desc.AdapterLuid.HighPart << std::endl;
+        RLOG(Info, "Description: {}, VendorId: {}, DeviceId: {}, SubSysId: {}, Revision: {}, DedicatedVideoMemory: {}, DedicatedSystemMomory: {}, SharedSystemMemory: {}, AdapterLuid lowPart {}, HighPart: {}",
+            RUtility::WideStringToString(desc.Description), desc.VendorId, desc.DeviceId, desc.SubSysId, desc.Revision,desc.DedicatedVideoMemory,
+             desc.DedicatedSystemMemory, desc.SharedSystemMemory, desc.AdapterLuid.LowPart, desc.AdapterLuid.HighPart);
+
         if(SUCCEEDED(D3D12CreateDevice(Adapter.Get(),D3D_FEATURE_LEVEL_11_0,_uuidof(ID3D12Device), nullptr)))
         {
             break;

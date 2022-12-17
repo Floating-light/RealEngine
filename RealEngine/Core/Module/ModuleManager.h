@@ -24,20 +24,20 @@ class RModuleManager
 {
 public:
     using ModuleFactoryFunc = std::function<IModuleInterface*(void)>;
-    using ModuleFactoryMap = std::unordered_map<std::wstring, ModuleFactoryFunc>;
+    using ModuleFactoryMap = std::unordered_map<std::string, ModuleFactoryFunc>;
     static RModuleManager& Get();
-    void RegisterStaticLinkedModule(const std::wstring& ModuleName, const ModuleFactoryFunc& Factory)
+    void RegisterStaticLinkedModule(const std::string& ModuleName, const ModuleFactoryFunc& Factory)
     {
         m_moduleFactoryMap.emplace(ModuleName, Factory);
     }
-    IModuleInterface* GetModule(const std::wstring& Name);
+    IModuleInterface* GetModule(const std::string& Name);
     template<class T>
-    static T* GetModule(const std::wstring& Name)
+    static T* GetModule(const std::string& Name)
     {
         return static_cast<T*>(RModuleManager::Get().GetModule(Name));
     }
     ModuleFactoryMap m_moduleFactoryMap;
-    std::unordered_map<std::wstring, IModuleInterface*> InstancedModule;
+    std::unordered_map<std::string, IModuleInterface*> InstancedModule;
 private:
     RModuleManager(){}
 };
@@ -46,7 +46,7 @@ template<class T>
 struct RMoudleInterfaceRegisterant
 {
 public:
-    RMoudleInterfaceRegisterant(const std::wstring& ModuleName)
+    RMoudleInterfaceRegisterant(const std::string& ModuleName)
     {
         RModuleManager::Get().RegisterStaticLinkedModule(ModuleName, 
         []()
@@ -57,5 +57,5 @@ public:
 };
 
 #define RDEFINE_MOUDLE(MoudleClass, MoudleName) \
-    RMoudleInterfaceRegisterant<MoudleClass> ModuleRegestrant_##MoudleName(L#MoudleName);\
+    RMoudleInterfaceRegisterant<MoudleClass> ModuleRegestrant_##MoudleName(#MoudleName);\
     extern "C" void ForceStaticLibraryReference_##MoudleName() { }

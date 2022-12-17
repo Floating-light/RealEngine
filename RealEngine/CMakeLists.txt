@@ -1,5 +1,4 @@
-# use submodule https://zhuanlan.zhihu.com/p/87053283
-add_subdirectory(ThirdParty/assimp)
+add_subdirectory(ThirdParty)
 
 add_subdirectory(Core)
 

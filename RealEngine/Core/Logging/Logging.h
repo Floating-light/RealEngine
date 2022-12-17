@@ -1,5 +1,4 @@
 #pragma once 
-#include "glog/logging.h"
 #include "spdlog/spdlog.h"
 inline std::ostream& operator<<(std::ostream& out, const wchar_t* str) 
 { 
@@ -18,7 +17,7 @@ inline std::ostream& operator<<(std::ostream& out, const std::wstring& str)
 }
 
 extern void __declspec(dllexport) InitLogger(const std::wstring& logFilePath );
-
+#define CHECK(Param) void(0);
 enum LogLevel : uint8_t
 {
     Debug,
@@ -27,7 +26,7 @@ enum LogLevel : uint8_t
     Error,
     Fatal
 };
-#define RLOG LOG
+// #define RLOG LOG
 template<typename... TArgs>
 void fatalCallback(fmt::format_string<TArgs...>  fmt,TArgs&&... args)
 {
@@ -36,8 +35,9 @@ void fatalCallback(fmt::format_string<TArgs...>  fmt,TArgs&&... args)
     // const std::string format_str = fmt::vformat(fmt, fmt::make_format_args(std::forward<TARGS>(args)...));
     throw std::runtime_error(format_str);
 }
+// https://stackoverflow.com/questions/4804298/how-to-convert-wstring-into-string
 template<typename... TArgs>
-static void MyRLOG(LogLevel level,fmt::format_string<TArgs...> fmt, TArgs&&... args)
+static void RLOG(LogLevel level,fmt::format_string<TArgs...> fmt, TArgs&&... args)
 {
     switch (level)
     {

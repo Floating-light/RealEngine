@@ -1,6 +1,7 @@
 #include "GenericPlatformInput.h"
 
 #include "Core.h"
+#include "windows.h"
 
 void GenericPlatformInput::GetKeyMap(std::unordered_map<int, std::string>& KeyMap)
 {

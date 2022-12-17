@@ -7,7 +7,7 @@ RModuleManager& RModuleManager::Get()
     return Singleton;
 }
 
-IModuleInterface* RModuleManager::GetModule(const std::wstring& Name)
+IModuleInterface* RModuleManager::GetModule(const std::string& Name)
 {
     auto InsItr = InstancedModule.find(Name);
     if(InsItr != InstancedModule.end())
@@ -19,7 +19,7 @@ IModuleInterface* RModuleManager::GetModule(const std::wstring& Name)
     {
         return Itr->second();
     }
-    RLOG(ERROR) << "Cannot find moudle " << Name << std::endl;
+    RLOG(Error,"Cannot find moudle {}", Name);
     return nullptr;
 }
 

@@ -33,11 +33,9 @@ static void ProcessMesh(const aiScene* scene, const unsigned int Index,std::shar
             std::memcpy((void*)&OutPrimit->Indices[IndicesBegin+i*3], (void*)Mesh->mFaces[i].mIndices, 3*sizeof(uint32_t));
         }
         OutPrimit->mName = Mesh->mName.C_Str();
-        
-        RLOG(INFO) << "Name : " << Mesh->mName.C_Str() 
-        << ", Mesh Index : " << Index
-        << ", Num vertices : " << Mesh->mNumVertices
-        << ", Num Faces : " << Mesh->mNumFaces;
+
+        RLOG(Info, "Name : {}, MeshIndex : {}, Num vertices : {}, Num Faces : {}",
+            Mesh->mName.C_Str(), Index, Mesh->mNumVertices, Mesh->mNumFaces);
     }
 }
 
@@ -45,9 +43,8 @@ static void ProcessNode(const aiScene* scene, const aiNode* Node,std::shared_ptr
 {
     if(!Node)
         return ;
-    RLOG(INFO) << "mChildren : " << Node->mNumChildren
-    << " ,Node name : " << Node->mName.C_Str()
-    << " ,Mesh Num : " << Node->mNumMeshes;
+    RLOG(Info, "mChildren : {}, Node name: {}, Mesh num: {}", 
+        Node->mNumChildren, Node->mName.C_Str(), Node->mNumMeshes);
     uint32_t TotalNumVert = 0, TotalNumInd = 0;
 
     for(int i = 0 ; i < Node->mNumMeshes; ++i)
@@ -61,7 +58,7 @@ static void ProcessNode(const aiScene* scene, const aiNode* Node,std::shared_ptr
     {
         for(int i = 0 ; i< Node->mMetaData->mNumProperties; ++i)
         {
-            RLOG(INFO) << "Key : " << Node->mMetaData->mKeys[i].C_Str();
+            RLOG(Info, "Key : {}", Node->mMetaData->mKeys[i].C_Str());
         }
     }
     for(int i = 0; i<Node->mNumChildren;++i)
@@ -80,14 +77,12 @@ std::shared_ptr<RPrimitiveObject> RAssetImporter::ImportModel(const std::wstring
     std::shared_ptr<RPrimitiveObject> Primitive = std::make_shared<RPrimitiveObject>();
     if(scene == nullptr)
     {
-        RLOG(ERROR) << "Load file failed : " << nFilePath ;
+        RLOG(Error, "Load file failed : {} ", nFilePath );
     }
     else
     {
-        scene->mRootNode->mChildren;
         ProcessNode(scene, scene->mRootNode, Primitive);
-        RLOG(INFO) << "Total mesh number " << scene->mMeshes;
-
+        RLOG(Info, "Total mesh number {}", scene->mNumMeshes);
     }
     return Primitive;
 }

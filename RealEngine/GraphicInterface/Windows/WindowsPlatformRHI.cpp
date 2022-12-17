@@ -3,7 +3,7 @@
 
 RGraphicInterface* CreatePlatformRHI()
 {
-    GraphicModuleBase* D3D12Module = RModuleManager::Get().GetModule<GraphicModuleBase>(L"D3D12RHI");
+    GraphicModuleBase* D3D12Module = RModuleManager::Get().GetModule<GraphicModuleBase>("D3D12RHI");
     
     if(D3D12Module)
     {
@@ -11,7 +11,7 @@ RGraphicInterface* CreatePlatformRHI()
     }
     else
     {
-        RLOG(ERROR) << "Create platform rhi failed " << std::endl;
+        RLOG(Error, "Create platform rhi failed ");
         return nullptr;
     }
 }

@@ -7,7 +7,7 @@
 #include "MathUtilityDefine.h"
 #include "Logging.h"
 
-// #define FORCEINLINE inline
+#define FORCEINLINE inline
 #define CORE_API
 
 /**

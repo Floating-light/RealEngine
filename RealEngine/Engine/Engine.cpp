@@ -53,7 +53,7 @@ void REngine::OnInit()
     };
 
     // Objects.push_back(Obj1);
-    std::wstring RaiDenPath = L"E:/MyProject/DirectX-Graphics-Samples/MiniEngine/ModelViewer/GenShin/Beelzebul.pmx";
+    std::wstring RaiDenPath = L"resources/GenShin/Beelzebul.pmx";
     std::shared_ptr<RPrimitiveObject> RaiDenShougunObj = RAssetImporter::ImportModel(RaiDenPath);
     Objects.push_back(RaiDenShougunObj);
 }
@@ -76,5 +76,5 @@ void REngine::OnUpdate()
 
 void REngine::OnDestoryed()
 {
-    RLOG(INFO) << __FUNCTION__ << "Engine destory " ;
+    RLOG(Info, "{}: Engine destory", __FUNCTION__);
 }

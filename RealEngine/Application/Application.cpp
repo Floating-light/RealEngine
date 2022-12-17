@@ -18,7 +18,7 @@ void RApplication::Create()
 
 RApplication& RApplication::Get()
 {
-    CHECK(Application) << "Application is nullptr";
+    // CHECK(Application) << "Application is nullptr";
     return *Application;
 }
 

@@ -199,7 +199,7 @@ int WindowsApplication::ProcessMessage(HWND hWnd, UINT message, WPARAM wParam, L
         break;
     case WM_INPUT:
         {
-            RLOG(INFO) << "Input message " ;
+            RLOG(Info, "Input message ");
         }
         return 0;
     case WM_CHAR: // Char

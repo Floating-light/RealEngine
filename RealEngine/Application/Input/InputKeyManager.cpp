@@ -157,7 +157,7 @@ RKey RInputKeyManager::GetKeyFromCodes(const int KeyCode, const int CharCode) co
     }
     else
     {
-        RLOG(ERROR) << "Can not find a RKey of KeyCode [" << KeyCode << "], Or CharCode : [" << CharCode << "]" ;
+        RLOG(Error, "Can not find a RKey of KeyCode [{}], Or CharCode : [{}]",KeyCode,CharCode );
         Result =  RKey::Invalid;
     }
     return Result;

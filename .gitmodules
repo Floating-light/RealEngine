@@ -1,3 +1,6 @@
 [submodule "RealEngine/ThirdParty/assimp"]
 	path = RealEngine/ThirdParty/assimp
 	url = https://github.com/assimp/assimp.git
+[submodule "RealEngine/ThirdParty/spdlog"]
+	path = RealEngine/ThirdParty/spdlog
+	url = https://github.com/gabime/spdlog.git

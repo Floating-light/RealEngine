@@ -30,7 +30,7 @@ public:
 
     Vector ToVector()const 
     {
-        RLOG(ERROR) << "Not implementation ";
+        RLOG(Error, "Not implementation ");
         return Vector();
     }
     /**

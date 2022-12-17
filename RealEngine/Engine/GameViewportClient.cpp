@@ -8,7 +8,7 @@ RGameViewportClient::RGameViewportClient()
 
 Reply RGameViewportClient::OnKeyDown( const RGeometry& MyGeometry, const RKeyEvent& InKeyEvent )
 {
-    RLOG(INFO) << __FUNCTION__ << " : " << InKeyEvent.GetKey().ToString() ;
+    RLOG(Info, "{} : {}", __FUNCTION__, InKeyEvent.GetKey().ToString());
     Vector LocalMove;
     if(InKeyEvent.GetKey() == RKey::W)
     {
@@ -36,20 +36,17 @@ Reply RGameViewportClient::OnKeyDown( const RGeometry& MyGeometry, const RKeyEve
 }
 Reply RGameViewportClient::OnKeyUp( const RGeometry& MyGeometry, const RKeyEvent& InKeyEvent )
 {
-    RLOG(INFO) << __FUNCTION__ << " : " << InKeyEvent.GetKey().ToString() ;
-
+    RLOG(Info, "{} : {}", __FUNCTION__,  InKeyEvent.GetKey().ToString());
     return Reply::Unhandled();
 }
 Reply RGameViewportClient::OnMouseButtonDown( const RGeometry& MyGeometry, const RPointerEvent& MouseEvent )
 {
-    RLOG(INFO) << __FUNCTION__ << " : " << MouseEvent.GetKey().ToString() ;
-
+    RLOG(Info, "{} : {}", __FUNCTION__, MouseEvent.GetKey().ToString());
     return Reply::Unhandled();
 }
 Reply RGameViewportClient::OnMouseButtonUp( const RGeometry& MyGeometry, const RPointerEvent& MouseEvent )
 {
-    RLOG(INFO) << __FUNCTION__ << " : " << MouseEvent.GetKey().ToString() ;
-
+    RLOG(Info, "{} : {}", __FUNCTION__, MouseEvent.GetKey().ToString());
     return Reply::Unhandled();
 }
 Reply RGameViewportClient::OnMouseMove( const RGeometry& MyGeometry, const RPointerEvent& MouseEvent )
