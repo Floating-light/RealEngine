@@ -11,6 +11,7 @@ class RGraphicInterface
 public:
     virtual void InitRHI() = 0;
 	virtual IGraphicViewport* CreateViewport(void* handle, int width, int height) = 0;
+	
 };
 
 class GraphicModuleBase : public IModuleInterface
