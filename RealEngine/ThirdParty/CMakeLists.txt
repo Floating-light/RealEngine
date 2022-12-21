@@ -8,3 +8,5 @@ if(NOT TARGET spdlog)
     set(SPDLOG_WCHAR_TO_UTF8_SUPPORT ON)
     add_subdirectory(spdlog)
 endif()
+
+add_subdirectory(RHID3D12ThirdParty)

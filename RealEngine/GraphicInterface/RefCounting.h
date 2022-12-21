@@ -67,11 +67,6 @@ public:
         return mReference;
     }
 
-    operator (ReferencedType*)() const 
-    {
-        return mReference;
-    }
-
     ReferencedType* GetReference() const 
     {
         return mReference;

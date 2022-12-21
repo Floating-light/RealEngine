@@ -2,7 +2,7 @@
 #include <string_view>
 #include <cassert>
 
-struct RRHIResource
+class RRHIResource
 {
 protected:
 	RRHIResource(std::string_view Name) 
@@ -32,3 +32,4 @@ private:
     size_t mReferenceCount;
     std::string mName;
 };
+
