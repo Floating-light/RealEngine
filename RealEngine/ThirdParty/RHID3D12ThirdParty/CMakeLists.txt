@@ -8,11 +8,12 @@ target_include_directories(RHID3D12ThirdParty
 target_sources(RHID3D12ThirdParty
   PUBLIC
     d3dx12.h
+    D3D12Core.h
+    D3D12Core.cpp
   )
-set_target_properties(RHID3D12ThirdParty PROPERTIES LINKER_LANGUAGE CXX)
 
 target_link_libraries(RHID3D12ThirdParty
-  PRIVATE
+  PUBLIC
     dxgi.lib
     d3d12.lib
     User32.lib

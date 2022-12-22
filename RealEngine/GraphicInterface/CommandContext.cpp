@@ -1,13 +1,25 @@
 #include "CommandContext.h"
+#include "RHIBuffer.h"
 
 RRHIBuffer *RCommandContext::CreateBuffer(const void *Data, uint32_t Size, uint32_t Stride, std::string_view DebugName)
 {
-    mCommandList;
     D3D12_HEAP_PROPERTIES UploadHeapProps = GetUploadBufferHeapProps();
     D3D12_RESOURCE_DESC ResourceDesc = GetUploadBufferResourceDesc(Size);
     
     Microsoft::WRL::ComPtr<ID3D12Resource> UploadBuffer;
-    mDevice->CreateCommittedResource(&UploadHeapProps,D3D12_HEAP_FLAG_NONE,&ResourceDesc, D3D12_RESOURCE_STATE_GENERIC_READ, nullptr,IID_PPV_ARGS(&UploadBuffer));
+    ASSERT(mDevice->CreateCommittedResource(&UploadHeapProps,D3D12_HEAP_FLAG_NONE,&ResourceDesc, D3D12_RESOURCE_STATE_GENERIC_READ, nullptr,IID_PPV_ARGS(&UploadBuffer)));
+    void* MapedData;
+    UploadBuffer->Map(0,&CD3DX12_RANGE(0,Size), &MapedData);
+    memcpy(MapedData, Data, Size);
+    UploadBuffer->Unmap(0,&CD3DX12_RANGE(0,Size));
+
+    RRHIBuffer* NewBuffer= new RRHIBuffer(Size/Stride,Stride,Size,DebugName);
+    NewBuffer->mResource;
+
+    ASSERT(mDevice->CreateCommittedResource(&CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_DEFAULT),D3D12_HEAP_FLAG_NONE,
+        &CD3DX12_RESOURCE_DESC::Buffer(Size,D3D12_RESOURCE_FLAG_NONE,0),
+         D3D12_RESOURCE_STATE_COMMON, nullptr, IID_PPV_ARGS(&(NewBuffer->mResource))));
+
     return nullptr;
 }
 

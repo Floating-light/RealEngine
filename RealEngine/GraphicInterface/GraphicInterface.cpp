@@ -11,7 +11,8 @@ void RHIInit()
     }
     else
     {
-        RLOG(Fatal, "Create graphic interface failed ");
+        // RLOG(Fatal, "Create graphic interface failed ");
+        // 暂时全部实现在这个模块
     }
 }
 void RHIExit()

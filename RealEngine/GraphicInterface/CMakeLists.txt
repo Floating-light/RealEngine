@@ -6,6 +6,8 @@ target_sources(GraphicInterface
     GraphicInterface.cpp
     GraphicViewport.h
     GraphicViewport.cpp
+    CommandContext.h
+    CommandContext.cpp
 )
 
 target_include_directories(GraphicInterface
@@ -22,14 +24,20 @@ if(WIN32)
   #   RHID3D12
   # )
   # Work, must be public, 
-  target_link_options(GraphicInterface
-    PUBLIC
-      "LINKER:/include:ForceStaticLibraryReference_D3D12RHI"
-  )
+  # target_link_options(GraphicInterface
+  #   PUBLIC
+  #     "LINKER:/include:ForceStaticLibraryReference_D3D12RHI"
+  # )
 endif()
 
 target_link_libraries(GraphicInterface 
   PUBLIC
     Core
-    RHID3D12
+  )
+target_link_libraries(GraphicInterface
+  PRIVATE
+    dxgi.lib
+    d3d12.lib
+    User32.lib
+    d3dcompiler.lib
   )
