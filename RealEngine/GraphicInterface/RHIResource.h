@@ -16,12 +16,17 @@ public:
     inline size_t AddRef() 
     {
         ++mReferenceCount;
+        assert(mReferenceCount > 0);
         return mReferenceCount;
     } 
     inline size_t Release()
     {
         const size_t NewRefCount = --mReferenceCount;
         assert(mReferenceCount >=0);
+        if(NewRefCount == 0)
+        {
+            delete this;
+        }
         return NewRefCount;
     }
     inline size_t GetRefCount() const 

@@ -3,7 +3,7 @@
 
 #include "Math/Vector.h"
 #include "Math/Vector4D.h"
-
+#include "GraphicInterface.h"
 struct RVertex
 {
     RVertex()
@@ -23,7 +23,7 @@ struct RVertex
 
     Vector3D Vertex;
     Vector3D Normal;
-    Vector2D UV;
+    Vector2D UV;`
     RColor Color;
 };
 
@@ -33,4 +33,8 @@ public:
     std::vector<RVertex> VertexData;
     std::vector<uint32_t> Indices;
     std::string mName;
+
+    void IntializeBuffer()const;
+    TRefCountPtr<RRHIBuffer> VertexBuffer;
+    TRefCountPtr<RRHIBuffer> IndexBuffer;
 };

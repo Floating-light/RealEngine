@@ -42,7 +42,7 @@ target_include_directories(Renderer
   )
 
 target_link_libraries(Renderer
-  PRIVATE
+  PUBLIC
     GraphicInterface 
     Application
     Core

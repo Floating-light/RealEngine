@@ -1,5 +1,6 @@
 #include "GraphicInterface.h"
 #include "Logging.h"
+#include "CommandContext.h"
 
 RGraphicInterface* GGraphicInterface = nullptr;
 
@@ -22,7 +23,5 @@ void RHIExit()
 
 TRefCountPtr<RRHIBuffer> RGraphicInterface::CreateBuffer(const void *Data, uint32_t Size, uint32_t Stride, std::string_view DebugName)
 {
-    RRHIBuffer* NewBuffer = nullptr;
-    
-    return TRefCountPtr<RRHIBuffer>();
+    return mCommandContext->CreateBuffer(Data, Size, Stride,DebugName);
 }
