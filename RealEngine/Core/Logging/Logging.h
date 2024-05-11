@@ -26,6 +26,10 @@ enum LogLevel : uint8_t
     Error,
     Fatal
 };
+namespace RLogger
+{
+    extern spdlog::logger* GLogger;
+}
 // #define RLOG LOG
 template<typename... TArgs>
 void fatalCallback(fmt::format_string<TArgs...>  fmt,TArgs&&... args)
@@ -39,22 +43,23 @@ void fatalCallback(fmt::format_string<TArgs...>  fmt,TArgs&&... args)
 template<typename... TArgs>
 static void RLOG(LogLevel level,fmt::format_string<TArgs...> fmt, TArgs&&... args)
 {
+    assert(RLogger::GLogger);
     switch (level)
     {
     case LogLevel::Debug:
-        spdlog::debug(fmt, std::forward<TArgs>(args)...);
+        RLogger::GLogger->debug(fmt, std::forward<TArgs>(args)...); 
         break;
     case LogLevel::Info:
-        spdlog::info(fmt, std::forward<TArgs>(args)...);
+        RLogger::GLogger->info(fmt, std::forward<TArgs>(args)...); 
         break;
     case LogLevel::Warning:
-        spdlog::warn(fmt, std::forward<TArgs>(args)...);
+        RLogger::GLogger->warn(fmt, std::forward<TArgs>(args)...); 
         break;
     case LogLevel::Error:
-        spdlog::error(fmt, std::forward<TArgs>(args)...);
+        RLogger::GLogger->error(fmt, std::forward<TArgs>(args)...); 
         break;
     case LogLevel::Fatal:
-        spdlog::critical(fmt, std::forward<TArgs>(args)...);
+        RLogger::GLogger->critical(fmt, std::forward<TArgs>(args)...); 
         fatalCallback(fmt, std::forward<TArgs>(args)...);
         break;
     default:

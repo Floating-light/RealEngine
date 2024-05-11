@@ -82,7 +82,7 @@ std::shared_ptr<RPrimitiveObject> RAssetImporter::ImportModel(const std::wstring
     else
     {
         ProcessNode(scene, scene->mRootNode, Primitive);
-        RLOG(Info, "Total mesh number {}", scene->mNumMeshes);
+        RLOG(Debug, "Total mesh number {}", scene->mNumMeshes);
     }
     return Primitive;
 }

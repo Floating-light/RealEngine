@@ -23,7 +23,7 @@ struct RVertex
 
     Vector3D Vertex;
     Vector3D Normal;
-    Vector2D UV;`
+    Vector2D UV;
     RColor Color;
 };
 

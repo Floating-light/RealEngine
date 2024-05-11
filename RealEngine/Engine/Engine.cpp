@@ -53,7 +53,7 @@ void REngine::OnInit()
     };
 
     // Objects.push_back(Obj1);
-    std::wstring RaiDenPath = L"resources/GenShin/Beelzebul.pmx";
+    std::wstring RaiDenPath = L"E:/Workspace/RealEngine/build/bin/Debug/resources/GenShin/Beelzebul.pmx";
     std::shared_ptr<RPrimitiveObject> RaiDenShougunObj = RAssetImporter::ImportModel(RaiDenPath);
     Objects.push_back(RaiDenShougunObj);
 }
