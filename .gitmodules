@@ -4,3 +4,6 @@
 [submodule "RealEngine/ThirdParty/spdlog"]
 	path = RealEngine/ThirdParty/spdlog
 	url = https://github.com/gabime/spdlog.git
+[submodule "RealEngine/ThirdParty/DirectXTex"]
+	path = RealEngine/ThirdParty/DirectXTex
+	url = https://github.com/microsoft/DirectXTex.git
