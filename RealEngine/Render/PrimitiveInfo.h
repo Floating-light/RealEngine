@@ -30,11 +30,11 @@ struct RVertex
 struct RPrimitiveObject
 {
 public:
-    std::vector<RVertex> VertexData;
-    std::vector<uint32_t> Indices;
+    std::vector<RVertex> mVertexData;
+    std::vector<uint32_t> mIndicesData;
     std::string mName;
 
-    void IntializeBuffer()const;
-    TRefCountPtr<RRHIBuffer> VertexBuffer;
-    TRefCountPtr<RRHIBuffer> IndexBuffer;
+    void IntializeBuffer();
+    TRefCountPtr<RRHIBuffer> mVertexBuffer;
+    TRefCountPtr<RRHIBuffer> mIndexBuffer;
 };

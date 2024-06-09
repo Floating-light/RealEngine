@@ -14,6 +14,7 @@ RRenderer& RRenderer::Get()
 static D3DApp* TestApp = nullptr;
 void RRenderer::Init(std::shared_ptr<RGenericWindow> Window)
 {
+    RHIInit();
     TestApp = new D3DApp();
     TestApp->InitializeViewport(Window->GetWindowHandle(),1280, 720,L"Test");
     TestApp->Setup();

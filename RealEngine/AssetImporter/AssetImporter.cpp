@@ -14,23 +14,23 @@ static void ProcessMesh(const aiScene* scene, const unsigned int Index,std::shar
     if(Index < scene->mNumMeshes)
     {
         aiMesh* Mesh = scene->mMeshes[Index];
-        const size_t InitialSize = OutPrimit->VertexData.size();
-        OutPrimit->VertexData.resize(InitialSize + Mesh->mNumVertices);
+        const size_t InitialSize = OutPrimit->mVertexData.size();
+        OutPrimit->mVertexData.resize(InitialSize + Mesh->mNumVertices);
         for(int i = 0; i < Mesh->mNumVertices; ++i)
         {
-            RVertex& Vert = OutPrimit->VertexData[InitialSize + i];
+            RVertex& Vert = OutPrimit->mVertexData[InitialSize + i];
             static_assert(sizeof(Vector3D) == sizeof(aiVector3D));
             std::memcpy((void*)&Vert.Vertex,(void*)&Mesh->mVertices[i],sizeof(aiVector3D));
             std::memcpy((void*)&Vert.Normal, (void*)&Mesh->mNormals[i], sizeof(aiVector3D));
             assert(Mesh->mNumUVComponents[0] == 2 && Mesh->mTextureCoords[0]);
             std::memcpy((void*)&Vert.UV, (void*)&Mesh->mTextureCoords[0][i], sizeof(Vector2D));
         }
-        const size_t IndicesBegin = OutPrimit->Indices.size();
-        OutPrimit->Indices.resize(IndicesBegin + 3 * Mesh->mNumFaces);
+        const size_t IndicesBegin = OutPrimit->mIndicesData.size();
+        OutPrimit->mIndicesData.resize(IndicesBegin + 3 * Mesh->mNumFaces);
         for(int i = 0;i < Mesh->mNumFaces; ++i)
         {
             assert(Mesh->mFaces[i].mNumIndices == 3);
-            std::memcpy((void*)&OutPrimit->Indices[IndicesBegin+i*3], (void*)Mesh->mFaces[i].mIndices, 3*sizeof(uint32_t));
+            std::memcpy((void*)&OutPrimit->mIndicesData[IndicesBegin+i*3], (void*)Mesh->mFaces[i].mIndices, 3*sizeof(uint32_t));
         }
         OutPrimit->mName = Mesh->mName.C_Str();
 

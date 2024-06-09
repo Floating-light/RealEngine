@@ -23,6 +23,7 @@ target_sources(Renderer
     ${CMAKE_CURRENT_LIST_DIR}/Helper.cpp
     ${CMAKE_CURRENT_LIST_DIR}/Helper.h
     PrimitiveInfo.h
+    PrimitiveInfo.cpp
     SceneInfo.h
     ViewInfo.h
     ViewInfo.cpp
@@ -30,7 +31,6 @@ target_sources(Renderer
     Device.cpp
     Viewport.h
     Viewport.cpp
-    
     # ${CMAKE_CURRENT_LIST_DIR}/d3dx12.h
     # ${CMAKE_CURRENT_LIST_DIR}/Helper.h
     # ${CMAKE_CURRENT_LIST_DIR}/stdafx.h

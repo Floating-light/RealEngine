@@ -26,7 +26,7 @@ void REngine::OnInit()
     RApplication::Get().SetOnMainWindowClosed(std::bind(&REngine::OnDestoryed, this));
     Objects.empty();
     std::shared_ptr<RPrimitiveObject>  Obj1 = std::make_shared<RPrimitiveObject>();
-    Obj1->VertexData = 
+    Obj1->mVertexData = 
     {
         RVertex{Vector3D(-1.0f, -1.0f, -1.0f),  RColor::White},
         RVertex{Vector3D(-1.0f, +1.0f, -1.0f), RColor::Black},
@@ -37,7 +37,7 @@ void REngine::OnInit()
         RVertex{Vector3D(+1.0f, +1.0f, +1.0f), RColor::Yellow},
         RVertex{Vector3D(+1.0f, -1.0f, +1.0f), RColor::Green}
     };
-    Obj1->Indices = 
+    Obj1->mIndicesData = 
     {
         0, 1, 2,
         0, 2, 3,
@@ -55,6 +55,7 @@ void REngine::OnInit()
     // Objects.push_back(Obj1);
     std::wstring RaiDenPath = L"E:/Workspace/RealEngine/build/bin/Debug/resources/GenShin/Beelzebul.pmx";
     std::shared_ptr<RPrimitiveObject> RaiDenShougunObj = RAssetImporter::ImportModel(RaiDenPath);
+    RaiDenShougunObj->IntializeBuffer();
     Objects.push_back(RaiDenShougunObj);
 }
 

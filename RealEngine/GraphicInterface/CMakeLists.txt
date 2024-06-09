@@ -2,12 +2,15 @@ add_library(GraphicInterface "")
 
 target_sources(GraphicInterface 
   PRIVATE
+    D3D12ThirdPart.h
     GraphicInterface.h
     GraphicInterface.cpp
     GraphicViewport.h
     GraphicViewport.cpp
     CommandContext.h
     CommandContext.cpp
+    Adapter.h
+    Adapter.cpp
 )
 
 target_include_directories(GraphicInterface

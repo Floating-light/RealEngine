@@ -16,7 +16,6 @@ RRHIBuffer *RCommandContext::CreateBuffer(const void *Data, uint32_t Size, uint3
 
     D3D12_RESOURCE_STATES InitialState = D3D12_RESOURCE_STATES::D3D12_RESOURCE_STATE_COMMON;
     RRHIBuffer* NewBuffer= new RRHIBuffer(Size/Stride,Stride,Size,InitialState,DebugName);
-    NewBuffer->mResource;
 
     CD3DX12_HEAP_PROPERTIES DefaultHeapDesc(D3D12_HEAP_TYPE_DEFAULT);
     CD3DX12_RESOURCE_DESC NewBufferDesc = CD3DX12_RESOURCE_DESC::Buffer(Size,D3D12_RESOURCE_FLAG_NONE,0);
@@ -27,7 +26,6 @@ RRHIBuffer *RCommandContext::CreateBuffer(const void *Data, uint32_t Size, uint3
     TransitionResource(NewBuffer, D3D12_RESOURCE_STATES::D3D12_RESOURCE_STATE_COPY_DEST,true);
     mCommandList->CopyBufferRegion(NewBuffer->GetResource(), 0, UploadBuffer.Get(), 0, Size);
     TransitionResource(NewBuffer, D3D12_RESOURCE_STATE_GENERIC_READ,true);
-
 
     return NewBuffer;
 }

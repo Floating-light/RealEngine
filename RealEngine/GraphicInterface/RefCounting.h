@@ -3,6 +3,7 @@
 template<typename ReferencedType>
 class TRefCountPtr
 {
+    using ReferenceType = ReferencedType*;
 public:
     TRefCountPtr():
         mReference(nullptr)
@@ -62,9 +63,34 @@ public:
         return *this = InPtr.mReference;
     }
 
+    TRefCountPtr& operator=(TRefCountPtr&& InPtr)
+    {
+        if(this != &InPtr)
+        {
+            ReferencedType* OldReference = mReference;
+            mReference = InPtr.mReference;
+            InPtr.mReference = nullptr;
+            if(OldReference)
+            {
+                OldReference->Release();
+            }
+        }
+        return *this;
+    }
+
     ReferencedType* operator->() const 
     {
         return mReference;
+    }
+    operator ReferenceType() const 
+    {
+        return mReference;
+    }
+    // Can be passed to com interface 
+    ReferencedType** GetInitReference()
+    {
+        *this = nullptr;
+        return &mReference;
     }
 
     ReferencedType* GetReference() const 
