@@ -10,3 +10,4 @@ if(NOT TARGET spdlog)
 endif()
 
 add_subdirectory(RHID3D12ThirdParty)
+add_subdirectory(DirectXTex)

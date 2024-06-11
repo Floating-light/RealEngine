@@ -34,22 +34,22 @@ void RGraphicInterface::InitRHI()
         RLOG(Fatal, "CreateDXGIFactory2 failed ");
         return ;
     }
-    ComPtr<IDXGIAdapter> Adapter;
+    // ComPtr<IDXGIAdapter> Adapter;
     TRefCountPtr<IDXGIAdapter> MyAdapter;
     for(int i = 0; DXGI_ERROR_NOT_FOUND != dxgiFactory4->EnumAdapters(i, MyAdapter.GetInitReference()); ++i)
     {
         DXGI_ADAPTER_DESC desc;
-        Adapter->GetDesc(&desc);
+        MyAdapter->GetDesc(&desc);
         RLOG(Info, "Description: {}, VendorId: {}, DeviceId: {}, SubSysId: {}, Revision: {}, DedicatedVideoMemory: {}, DedicatedSystemMomory: {}, SharedSystemMemory: {}, AdapterLuid lowPart {}, HighPart: {}",
             RUtility::WideStringToString(desc.Description), desc.VendorId, desc.DeviceId, desc.SubSysId, desc.Revision,desc.DedicatedVideoMemory,
              desc.DedicatedSystemMemory, desc.SharedSystemMemory, desc.AdapterLuid.LowPart, desc.AdapterLuid.HighPart);
 
-        if(SUCCEEDED(D3D12CreateDevice(Adapter.Get(),D3D_FEATURE_LEVEL_11_0,_uuidof(ID3D12Device), nullptr)))
+        if(SUCCEEDED(D3D12CreateDevice(MyAdapter.GetReference(),D3D_FEATURE_LEVEL_11_0,_uuidof(ID3D12Device), nullptr)))
         {
             break;
         }
     }
-    if(MyAdapter.IsValid())
+    if(MyAdapter)
     {
         mAdapter = std::shared_ptr<RAdapter>(new RAdapter(MyAdapter));
     }

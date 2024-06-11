@@ -24,7 +24,6 @@ void REngine::OnInit()
     RApplication::Get().RegisterGameViewport(GameViewportClient);
     
     RApplication::Get().SetOnMainWindowClosed(std::bind(&REngine::OnDestoryed, this));
-    Objects.empty();
     std::shared_ptr<RPrimitiveObject>  Obj1 = std::make_shared<RPrimitiveObject>();
     Obj1->mVertexData = 
     {
@@ -55,7 +54,7 @@ void REngine::OnInit()
     // Objects.push_back(Obj1);
     std::wstring RaiDenPath = L"E:/Workspace/RealEngine/build/bin/Debug/resources/GenShin/Beelzebul.pmx";
     std::shared_ptr<RPrimitiveObject> RaiDenShougunObj = RAssetImporter::ImportModel(RaiDenPath);
-    RaiDenShougunObj->IntializeBuffer();
+    //RaiDenShougunObj->IntializeBuffer();
     Objects.push_back(RaiDenShougunObj);
 }
 
@@ -77,5 +76,5 @@ void REngine::OnUpdate()
 
 void REngine::OnDestoryed()
 {
-    RLOG(Info, "{}: Engine destory", __FUNCTION__);
+    RLOG(Info, "{}: Engine destory", __FUNCTION__); 
 }
