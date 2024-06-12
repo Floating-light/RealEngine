@@ -29,7 +29,8 @@ void InitLogger(const std::wstring& logFilePath)
     auto file_sink = std::make_shared<spdlog::sinks::basic_file_sink_mt>("logs/log.txt", true);
     file_sink->set_level(spdlog::level::trace);
 
-    RLogger::GLogger = new spdlog::logger("GlobalLogger", { console_sink ,windebug_sink ,file_sink });
+    RLogger::GLogger = new spdlog::logger("", { console_sink ,windebug_sink ,file_sink });
+
     // BOOL ret = SetConsoleCP(CP_UTF8);
     RLOG(LogLevel::Info, "init spdlog <<<<<<<<<<<<<<<<< ===========");
     // if(!ret)

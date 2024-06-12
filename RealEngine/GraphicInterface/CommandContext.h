@@ -1,5 +1,6 @@
 #pragma once 
 #include <string_view>
+#include <queue>
 
 #include "D3D12ThirdPart.h"
 #include "RefCounting.h"
@@ -9,15 +10,37 @@ class RCommandContext;
 
 class RCommandContextManger
 {
+public:
+    RCommandContextManger() {};
 
+    RCommandContext* AllocateContext(D3D12_COMMAND_LIST_TYPE Type);
+    void FreeContext(RCommandContext* InContext);
+    void DestroyAllContexts();
+private:
+    // 四种CommmandList
+    std::vector<std::unique_ptr<RCommandContext>> m_ContextPool[4];
+    std::queue<RCommandContext*> m_AvailableContexts[4];
+    std::mutex m_ContextAllocationMutex;
 };
 
 class RCommandContext
 {
+    friend class RCommandContextManger;
+private:
+    RCommandContext() = default; 
+    void Reset();  
 public:
-    RCommandContext() = default;
     RCommandContext(const RCommandContext&) = delete;
     RCommandContext& operator=(const RCommandContext&) = delete;
+
+    static RCommandContext& Begin(const std::string ID);
+
+    void Initialize();
+
+    uint64_t Flush(bool WaitForCompletion = false);
+    uint64_t Finish(bool WaitForCompletion = false);
+
+    D3D12_COMMAND_LIST_TYPE GetContextType()const; 
 
     RRHIBuffer* CreateBuffer(const void *Data, uint32_t Size, uint32_t Stride, std::string_view DebugName);
 private:

@@ -1,6 +1,47 @@
 #include "CommandContext.h"
 #include "RHIBuffer.h"
 
+RCommandContext* RCommandContextManger::AllocateContext(D3D12_COMMAND_LIST_TYPE Type) 
+{
+    std::lock_guard<std::mutex> LockGuard(m_ContextAllocationMutex); 
+    std::queue<RCommandContext*>& AvailableQueue = m_AvailableContexts[Type]; 
+    RCommandContext* Ret = nullptr; 
+    if (AvailableQueue.empty()) 
+    {
+        Ret = new RCommandContext(); 
+        m_ContextPool[Type].emplace_back(Ret); 
+        Ret->Initialize(); 
+    }
+    else
+    {
+        Ret = AvailableQueue.front();
+        AvailableQueue.pop();
+        Ret->Reset();
+    }
+    return Ret;
+}
+
+void RCommandContextManger::FreeContext(RCommandContext* InContext)
+{
+    assert(InContext != nullptr);
+    std::lock_guard<std::mutex> LockGuard(m_ContextAllocationMutex);
+    m_AvailableContexts[InContext->GetContextType()].push(InContext);
+}
+
+void RCommandContextManger::DestroyAllContexts()
+{
+    for (size_t i = 0; i < 4; i++)
+    {
+        m_ContextPool[i].clear();
+    }
+}
+
+
+void RCommandContext::Initialize() 
+{
+
+}
+
 RRHIBuffer *RCommandContext::CreateBuffer(const void *Data, uint32_t Size, uint32_t Stride, std::string_view DebugName)
 {
     D3D12_HEAP_PROPERTIES UploadHeapProps = GetUploadBufferHeapProps();
@@ -74,3 +115,4 @@ void RCommandContext::TransitionResource(RRHIBuffer* Buffer, D3D12_RESOURCE_STAT
         mCommandList->ResourceBarrier(1, &BarrierDesc);
     }
 }
+
