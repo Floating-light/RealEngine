@@ -11,6 +11,10 @@ target_sources(GraphicInterface
     CommandContext.cpp
     Adapter.h
     Adapter.cpp
+    CommandListManager.h
+    CommandListManager.cpp
+    CommandAllocatorPool.h
+    CommandAllocatorPool.cpp
 )
 
 target_include_directories(GraphicInterface
