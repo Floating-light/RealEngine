@@ -1,5 +1,7 @@
 #include "CommandContext.h"
 #include "RHIBuffer.h"
+#include "GraphicInterface.h"
+#include "CommandListManager.h"
 
 RCommandContext* RCommandContextManger::AllocateContext(D3D12_COMMAND_LIST_TYPE Type) 
 {
@@ -8,7 +10,7 @@ RCommandContext* RCommandContextManger::AllocateContext(D3D12_COMMAND_LIST_TYPE 
     RCommandContext* Ret = nullptr; 
     if (AvailableQueue.empty()) 
     {
-        Ret = new RCommandContext(); 
+        Ret = new RCommandContext(Type); 
         m_ContextPool[Type].emplace_back(Ret); 
         Ret->Initialize(); 
     }
@@ -36,10 +38,27 @@ void RCommandContextManger::DestroyAllContexts()
     }
 }
 
-
-void RCommandContext::Initialize() 
+void RCommandContext::Initialize()
 {
+    RCommandListManager* CMDManager = GGraphicInterface->GetCommandListManager();
+    CMDManager->CreateNewCommandList(m_Type, &m_CommandList, &m_CurrentAllocator);
+}
 
+uint64_t RCommandContext::Finish(bool WaitForCompletion) 
+{
+    // TODO:
+    RCommandListManager* CMDManager = GGraphicInterface->GetCommandListManager();
+    RCommandQueue& Queue = CMDManager->GetQueue(m_Type);
+    
+    uint64_t CompleteFence = Queue.ExecuteCommandList(m_CommandList);
+
+    Queue.DiscardAllocator(CompleteFence, m_CurrentAllocator);
+    m_CurrentAllocator = nullptr;
+
+    //if (WaitForCompletion)
+        //CMDManager.WaitForFence();
+    GGraphicInterface->GetCommandContextManger()->FreeContext(this);
+    return 0;
 }
 
 RRHIBuffer *RCommandContext::CreateBuffer(const void *Data, uint32_t Size, uint32_t Stride, std::string_view DebugName)

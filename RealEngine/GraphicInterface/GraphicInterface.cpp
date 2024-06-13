@@ -2,6 +2,7 @@
 #include "Logging.h"
 #include "CommandContext.h"
 #include "Adapter.h"
+#include "CommandListManager.h"
 
 RGraphicInterface* GGraphicInterface = nullptr;
 
@@ -14,13 +15,13 @@ void RHIInit()
     }
     else
     {
-        // RLOG(Fatal, "Create graphic interface failed ");
+        RLOG(Fatal, "Create graphic interface failed ");
         // 暂时全部实现在这个模块
     }
 }
 void RHIExit()
 {
-    
+    delete GGraphicInterface;
 }
 
 void RGraphicInterface::InitRHI()
@@ -53,10 +54,20 @@ void RGraphicInterface::InitRHI()
     {
         mAdapter = std::shared_ptr<RAdapter>(new RAdapter(MyAdapter));
     }
-    mCommandContext = nullptr;
+    ContextManager = std::make_unique<RCommandContextManger>();
+    CommandListManager = std::make_unique<RCommandListManager>();
+    // TODO:
+    //CommandListManager->Create(Device);
 }
 
 TRefCountPtr<RRHIBuffer> RGraphicInterface::CreateBuffer(const void *Data, uint32_t Size, uint32_t Stride, std::string_view DebugName)
 {
     return mCommandContext->CreateBuffer(Data, Size, Stride,DebugName);
+}
+
+RCommandContext* RGraphicInterface::BeginCommandContext(const std::string& ID) 
+{
+    RCommandContext* NewContext = ContextManager->AllocateContext(D3D12_COMMAND_LIST_TYPE_DIRECT);   
+    NewContext->SetID(ID);
+    return NewContext; 
 }

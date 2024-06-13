@@ -28,15 +28,20 @@ class RCommandContext
 {
     friend class RCommandContextManger;
 private:
-    RCommandContext() = default; 
-    void Reset();  
+    RCommandContext(D3D12_COMMAND_LIST_TYPE InType): 
+        m_Type(InType), 
+        m_CommandList(nullptr),
+        m_CurrentAllocator(nullptr),
+        m_Device(nullptr)
+    {};
+    void Reset();
 public:
     RCommandContext(const RCommandContext&) = delete;
     RCommandContext& operator=(const RCommandContext&) = delete;
 
-    static RCommandContext& Begin(const std::string ID);
-
     void Initialize();
+
+    void SetID(const std::string& ID) { m_ID = ID; }; 
 
     uint64_t Flush(bool WaitForCompletion = false);
     uint64_t Finish(bool WaitForCompletion = false);
@@ -52,7 +57,10 @@ private:
     void TransitionResource(RRHIBuffer* Buffer, D3D12_RESOURCE_STATES NewState, bool FlushImmediate);
 
 private:
-    ID3D12GraphicsCommandList* mCommandList;
-    ID3D12CommandAllocator* mCurrentAllocator; 
-    ID3D12Device* mDevice;
+    D3D12_COMMAND_LIST_TYPE m_Type;
+    ID3D12GraphicsCommandList* m_CommandList;
+    ID3D12CommandAllocator* m_CurrentAllocator; 
+    ID3D12Device* m_Device;
+
+    std::string m_ID;
 };
