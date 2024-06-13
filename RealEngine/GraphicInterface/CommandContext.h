@@ -39,6 +39,8 @@ public:
     RCommandContext(const RCommandContext&) = delete;
     RCommandContext& operator=(const RCommandContext&) = delete;
 
+    ~RCommandContext();
+
     void Initialize();
 
     void SetID(const std::string& ID) { m_ID = ID; }; 
@@ -46,7 +48,7 @@ public:
     uint64_t Flush(bool WaitForCompletion = false);
     uint64_t Finish(bool WaitForCompletion = false);
 
-    D3D12_COMMAND_LIST_TYPE GetContextType()const; 
+    D3D12_COMMAND_LIST_TYPE GetContextType()const { return m_Type; };
 
     RRHIBuffer* CreateBuffer(const void *Data, uint32_t Size, uint32_t Stride, std::string_view DebugName);
 private:

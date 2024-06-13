@@ -38,6 +38,25 @@ void RCommandContextManger::DestroyAllContexts()
     }
 }
 
+void RCommandContext::Reset() 
+{
+    assert(m_CurrentAllocator == nullptr);
+    assert(m_CommandList != nullptr);
+    RCommandListManager* CMDManager = GGraphicInterface->GetCommandListManager();
+    RCommandQueue& Queue = CMDManager->GetQueue(m_Type);
+    
+    m_CurrentAllocator = Queue.RequestAllocator(); 
+    m_CommandList->Reset(m_CurrentAllocator, nullptr);
+}
+
+RCommandContext::~RCommandContext() 
+{
+    if (m_CommandList != nullptr)
+    {
+        m_CommandList->Release(); 
+    }
+}
+
 void RCommandContext::Initialize()
 {
     RCommandListManager* CMDManager = GGraphicInterface->GetCommandListManager();
@@ -67,7 +86,7 @@ RRHIBuffer *RCommandContext::CreateBuffer(const void *Data, uint32_t Size, uint3
     D3D12_RESOURCE_DESC ResourceDesc = GetUploadBufferResourceDesc(Size);
     
     Microsoft::WRL::ComPtr<ID3D12Resource> UploadBuffer;
-    ASSERT(mDevice->CreateCommittedResource(&UploadHeapProps,D3D12_HEAP_FLAG_NONE,&ResourceDesc, D3D12_RESOURCE_STATE_GENERIC_READ, nullptr,IID_PPV_ARGS(&UploadBuffer)));
+    ASSERT(m_Device->CreateCommittedResource(&UploadHeapProps,D3D12_HEAP_FLAG_NONE,&ResourceDesc, D3D12_RESOURCE_STATE_GENERIC_READ, nullptr,IID_PPV_ARGS(&UploadBuffer))); 
     void* MapedData;
     CD3DX12_RANGE MapedRange(0,Size);
     UploadBuffer->Map(0,&MapedRange, &MapedData);
@@ -80,11 +99,11 @@ RRHIBuffer *RCommandContext::CreateBuffer(const void *Data, uint32_t Size, uint3
     CD3DX12_HEAP_PROPERTIES DefaultHeapDesc(D3D12_HEAP_TYPE_DEFAULT);
     CD3DX12_RESOURCE_DESC NewBufferDesc = CD3DX12_RESOURCE_DESC::Buffer(Size,D3D12_RESOURCE_FLAG_NONE,0);
 
-    ASSERT(mDevice->CreateCommittedResource(&DefaultHeapDesc,D3D12_HEAP_FLAG_NONE,
+    ASSERT(m_Device->CreateCommittedResource(&DefaultHeapDesc,D3D12_HEAP_FLAG_NONE,
         &NewBufferDesc,InitialState, nullptr, IID_PPV_ARGS(&(NewBuffer->mResource))));
 
     TransitionResource(NewBuffer, D3D12_RESOURCE_STATES::D3D12_RESOURCE_STATE_COPY_DEST,true);
-    mCommandList->CopyBufferRegion(NewBuffer->GetResource(), 0, UploadBuffer.Get(), 0, Size);
+    m_CommandList->CopyBufferRegion(NewBuffer->GetResource(), 0, UploadBuffer.Get(), 0, Size); 
     TransitionResource(NewBuffer, D3D12_RESOURCE_STATE_GENERIC_READ,true);
 
     return NewBuffer;
@@ -131,7 +150,7 @@ void RCommandContext::TransitionResource(RRHIBuffer* Buffer, D3D12_RESOURCE_STAT
             D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES, D3D12_RESOURCE_BARRIER_FLAG_NONE);
         Buffer->mUsage = NewState;
 
-        mCommandList->ResourceBarrier(1, &BarrierDesc);
+        m_CommandList->ResourceBarrier(1, &BarrierDesc); 
     }
 }
 

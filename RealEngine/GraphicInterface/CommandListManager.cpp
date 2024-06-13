@@ -22,7 +22,7 @@ void RCommandQueue::Create(ID3D12Device* InDevice)
 	assert(!IsReady());
 	assert(m_AllocatorPool.Size() == 0);
 
-	D3D12_COMMAND_QUEUE_DESC QueueDesc;
+	D3D12_COMMAND_QUEUE_DESC QueueDesc = {};
 	QueueDesc.Type = m_Type;
 	QueueDesc.NodeMask = 0x1;// 多GPU情况下，在第几个GPU上执行，
 	assert(SUCCEEDED(InDevice->CreateCommandQueue(&QueueDesc,IID_PPV_ARGS(&m_CommandQueue))));
@@ -94,6 +94,8 @@ RCommandListManager::~RCommandListManager()
 
 void RCommandListManager::Create(ID3D12Device* InDevice) 
 {
+	m_Device = InDevice;
+
 	m_GraphicsQueue.Create(InDevice);
 	m_ComputeQueue.Create(InDevice);
 	m_CopyQueue.Create(InDevice); 

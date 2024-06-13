@@ -30,6 +30,8 @@ private:
 
 	RCommandContext* mCommandContext;
 	std::shared_ptr<RAdapter> mAdapter;
+	Microsoft::WRL::ComPtr<ID3D12Device> m_Device = nullptr;
+
 };
 
 class GraphicModuleBase : public IModuleInterface

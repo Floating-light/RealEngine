@@ -28,6 +28,25 @@ void RGraphicInterface::InitRHI()
 {
     using Microsoft::WRL::ComPtr;
 
+    uint32_t useDebugLayers = 1;
+    if (useDebugLayers)
+    {
+        ComPtr<ID3D12Debug> debugInterface;
+        if (SUCCEEDED(D3D12GetDebugInterface(IID_PPV_ARGS(&debugInterface)))) 
+        {
+            debugInterface->EnableDebugLayer();
+            uint32_t useGPUBasedValidation = 1;
+            if (useGPUBasedValidation)
+            {
+                ComPtr<ID3D12Debug1> debugInterface1;
+                if (SUCCEEDED(debugInterface->QueryInterface(IID_PPV_ARGS(&debugInterface1))))
+                {
+                    debugInterface1->SetEnableGPUBasedValidation(true);
+                }
+            }
+        }
+    }
+
     UINT dxgiFactoryFlags = 0;
     ComPtr<IDXGIFactory4> dxgiFactory4;
     if(FAILED(CreateDXGIFactory2(dxgiFactoryFlags, IID_PPV_ARGS(&dxgiFactory4))))
@@ -45,19 +64,19 @@ void RGraphicInterface::InitRHI()
             RUtility::WideStringToString(desc.Description), desc.VendorId, desc.DeviceId, desc.SubSysId, desc.Revision,desc.DedicatedVideoMemory,
              desc.DedicatedSystemMemory, desc.SharedSystemMemory, desc.AdapterLuid.LowPart, desc.AdapterLuid.HighPart);
 
-        if(SUCCEEDED(D3D12CreateDevice(MyAdapter.GetReference(),D3D_FEATURE_LEVEL_11_0,_uuidof(ID3D12Device), nullptr)))
+        if(SUCCEEDED(D3D12CreateDevice(MyAdapter.GetReference(),D3D_FEATURE_LEVEL_11_0,IID_PPV_ARGS(&m_Device))))
         {
             break;
         }
     }
+    assert(m_Device != nullptr); 
     if(MyAdapter)
     {
         mAdapter = std::shared_ptr<RAdapter>(new RAdapter(MyAdapter));
     }
     ContextManager = std::make_unique<RCommandContextManger>();
     CommandListManager = std::make_unique<RCommandListManager>();
-    // TODO:
-    //CommandListManager->Create(Device);
+    CommandListManager->Create(m_Device.Get()); 
 }
 
 TRefCountPtr<RRHIBuffer> RGraphicInterface::CreateBuffer(const void *Data, uint32_t Size, uint32_t Stride, std::string_view DebugName)
