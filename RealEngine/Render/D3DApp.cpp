@@ -1,5 +1,7 @@
 #include "D3DApp.h"
 #include "Helper.h"
+#include "GraphicInterface.h"
+#include "CommandContext.h"
 
 #include <iostream>
 #include <vector>
@@ -397,6 +399,21 @@ void D3DApp::OnUpdate(double DeltaTime)
     // V[2].position.x = -1.0f * abs(sinf(Data));
     // V[2].position.y = -1.0f * abs(sinf(Data));
 }
+void D3DApp::PopulateCommandListNew() 
+{
+    RCommandContext* Context = GGraphicInterface->BeginCommandContext("MainRender"); 
+    ID3D12GraphicsCommandList* CommandList = Context->GetCommandList(); 
+
+    CommandList->SetGraphicsRootSignature(m_rootSignature.Get());
+    CommandList->RSSetViewports(1, &m_viewport);
+    CommandList->RSSetScissorRects(1, &m_scissorRect);
+
+    auto PresentBufferTransition = CD3DX12_RESOURCE_BARRIER::Transition(m_renderTargets[m_currentBackBuffer].Get(), D3D12_RESOURCE_STATE_PRESENT, D3D12_RESOURCE_STATE_RENDER_TARGET); 
+    CommandList->ResourceBarrier(1, &PresentBufferTransition);
+
+    
+}
+
 void D3DApp::OnRender()
 {
     PopulateCommandList();

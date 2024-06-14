@@ -50,6 +50,9 @@ public:
 
     D3D12_COMMAND_LIST_TYPE GetContextType()const { return m_Type; };
 
+    // 暂时用着
+    ID3D12GraphicsCommandList* GetCommandList() const { return m_CommandList; }  
+
     RRHIBuffer* CreateBuffer(const void *Data, uint32_t Size, uint32_t Stride, std::string_view DebugName);
 private:
     D3D12_HEAP_PROPERTIES GetUploadBufferHeapProps() const;
