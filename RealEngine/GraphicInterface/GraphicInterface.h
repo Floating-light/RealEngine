@@ -15,7 +15,9 @@ class RAdapter;
 class RGraphicInterface
 {
 public:
+	
     virtual void InitRHI() ;
+	virtual void DeInitRHI();
 	virtual IGraphicViewport* CreateViewport(void* handle, int width, int height) {return nullptr;};
 	virtual TRefCountPtr<RRHIBuffer> CreateBuffer(const void* Data, uint32_t Size, uint32_t Stride, std::string_view DebugName);
 
@@ -28,10 +30,8 @@ private:
 	std::unique_ptr<RCommandContextManger> ContextManager;
 	std::unique_ptr<RCommandListManager> CommandListManager;
 
-	RCommandContext* mCommandContext;
 	std::shared_ptr<RAdapter> mAdapter;
 	Microsoft::WRL::ComPtr<ID3D12Device> m_Device = nullptr;
-
 };
 
 class GraphicModuleBase : public IModuleInterface

@@ -12,10 +12,10 @@ class RCommandContextManger
 {
 public:
     RCommandContextManger() {};
+    void DestroyAllContexts(); 
 
     RCommandContext* AllocateContext(D3D12_COMMAND_LIST_TYPE Type);
     void FreeContext(RCommandContext* InContext);
-    void DestroyAllContexts();
 private:
     // 四种CommmandList
     std::vector<std::unique_ptr<RCommandContext>> m_ContextPool[4];

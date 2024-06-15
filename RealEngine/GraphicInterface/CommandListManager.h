@@ -7,13 +7,12 @@ class RCommandQueue
 	friend class RCommandListManager;
 	friend class RCommandContext;
 
-public:
 	RCommandQueue(D3D12_COMMAND_LIST_TYPE InType);
 	~RCommandQueue();
 
-	void Create(ID3D12Device* InDevice);
-	void ShutDown();
-
+	void Create(ID3D12Device* InDevice); 
+	void ShutDown(); 
+public:
 	bool IsReady() { return m_CommandQueue != nullptr; };
 
 	bool IsFenceComplete(uint64_t FenceValue);
@@ -51,18 +50,7 @@ public:
 	RCommandQueue& GetGraphicsQueue() { return m_GraphicsQueue; };
 	RCommandQueue& GetComputeQueue() { return m_ComputeQueue; };
 	RCommandQueue& GetCopyQueue() { return m_CopyQueue; };
-	RCommandQueue& GetQueue(D3D12_COMMAND_LIST_TYPE InType)
-	{
-		switch (InType)
-		{
-		case D3D12_COMMAND_LIST_TYPE_COMPUTE: 
-			return m_ComputeQueue; 
-		case D3D12_COMMAND_LIST_TYPE_COPY: 
-			return m_CopyQueue; 
-		default:
-			return m_GraphicsQueue; 
-		}
-	}
+	RCommandQueue& GetQueue(D3D12_COMMAND_LIST_TYPE InType);
 	// 创建SwapChain需要它
 	ID3D12CommandQueue* GetCommandQueue()const { return m_GraphicsQueue.GetCommandQueue(); };
 
@@ -74,3 +62,16 @@ private:
 	RCommandQueue m_ComputeQueue;
 	RCommandQueue m_CopyQueue;
 };
+
+inline RCommandQueue& RCommandListManager::GetQueue(D3D12_COMMAND_LIST_TYPE InType)
+{
+	switch (InType)
+	{
+	case D3D12_COMMAND_LIST_TYPE_COMPUTE:
+		return m_ComputeQueue;
+	case D3D12_COMMAND_LIST_TYPE_COPY:
+		return m_CopyQueue;
+	default:
+		return m_GraphicsQueue;
+	}
+}

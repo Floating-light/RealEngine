@@ -6,6 +6,7 @@ RCommandQueue::RCommandQueue(D3D12_COMMAND_LIST_TYPE InType):
 	m_AllocatorPool(InType),
 	m_Fence(nullptr),
 	// 避免冲突，初始化高位为根据不同类型CommandList递增的值，| 1就是+1，
+	// 将CommandList的type编码到FenceValue的高八位，通过FenceValue >> 56 即可得到它对应哪个CommandQueue
 	m_NextFenceValue((uint64_t)InType << 56 | 1),
 	m_LastCompletedFenceValue((uint64_t)InType << 56)
 {

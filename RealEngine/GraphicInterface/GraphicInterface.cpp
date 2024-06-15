@@ -21,6 +21,7 @@ void RHIInit()
 }
 void RHIExit()
 {
+    GGraphicInterface->DeInitRHI();
     delete GGraphicInterface;
 }
 
@@ -79,9 +80,17 @@ void RGraphicInterface::InitRHI()
     CommandListManager->Create(m_Device.Get()); 
 }
 
+void RGraphicInterface::DeInitRHI()
+{
+    CommandListManager->ShutDown();
+    ContextManager->DestroyAllContexts();
+}
+
 TRefCountPtr<RRHIBuffer> RGraphicInterface::CreateBuffer(const void *Data, uint32_t Size, uint32_t Stride, std::string_view DebugName)
 {
-    return mCommandContext->CreateBuffer(Data, Size, Stride,DebugName);
+    // TODO:
+    //return mCommandContext->CreateBuffer(Data, Size, Stride,DebugName);
+    return nullptr;
 }
 
 RCommandContext* RGraphicInterface::BeginCommandContext(const std::string& ID) 
