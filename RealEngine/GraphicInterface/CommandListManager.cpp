@@ -56,6 +56,32 @@ void RCommandQueue::ShutDown()
 	m_CommandQueue = nullptr;
 }
 
+bool RCommandQueue::IsFenceComplete(uint64_t FenceValue)
+{
+	// 避免每次都从m_Fence查询
+	if (FenceValue > m_LastCompletedFenceValue)
+		m_LastCompletedFenceValue = (std::max)(m_LastCompletedFenceValue, m_Fence->GetCompletedValue()); 
+
+	return FenceValue <= m_LastCompletedFenceValue;
+}
+
+void RCommandQueue::WaitForFence(uint64_t FenceValue)
+{
+	if (IsFenceComplete(FenceValue))
+	{
+		return;
+	}
+
+	// 多线程情况下，保证fence只有一个event SetEventOnCompletion()
+	// 但可能会导致别的线程多等待不必要的fence
+	{ 
+		std::lock_guard<std::mutex> lock(m_EventMutex); 
+		m_Fence->SetEventOnCompletion(FenceValue, m_FenceEventHandle); 
+		WaitForSingleObject(m_FenceEventHandle, INFINITE); 
+		m_LastCompletedFenceValue = FenceValue; 
+	}
+}
+
 uint64_t RCommandQueue::ExecuteCommandList(ID3D12CommandList* InList)
 {
 	std::lock_guard<std::mutex> lock_gurad(m_FenceMutex);
@@ -116,4 +142,8 @@ void RCommandListManager::CreateNewCommandList(D3D12_COMMAND_LIST_TYPE InType, I
 	*Allocator = Que.RequestAllocator(); 
 	assert(SUCCEEDED(m_Device->CreateCommandList(1,InType,*Allocator, nullptr, IID_PPV_ARGS(List)))); 
 	(*List)->SetName(L"MyCommandList");
+}
+void RCommandListManager::WaitForFence(uint64_t FenceValue)
+{
+	GetQueue(D3D12_COMMAND_LIST_TYPE(FenceValue >> 56)).WaitForFence(FenceValue);
 }

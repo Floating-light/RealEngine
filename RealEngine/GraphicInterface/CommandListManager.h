@@ -16,6 +16,10 @@ public:
 
 	bool IsReady() { return m_CommandQueue != nullptr; };
 
+	bool IsFenceComplete(uint64_t FenceValue);
+	void WaitForFence(uint64_t FenceValue);
+
+	ID3D12CommandQueue* GetCommandQueue()const { return m_CommandQueue; }; 
 private:
 	uint64_t ExecuteCommandList(ID3D12CommandList* InList);
 	ID3D12CommandAllocator* RequestAllocator(void);
@@ -59,7 +63,11 @@ public:
 			return m_GraphicsQueue; 
 		}
 	}
+	// 创建SwapChain需要它
+	ID3D12CommandQueue* GetCommandQueue()const { return m_GraphicsQueue.GetCommandQueue(); };
+
 	void CreateNewCommandList(D3D12_COMMAND_LIST_TYPE InType, ID3D12GraphicsCommandList** List, ID3D12CommandAllocator** Allocator);
+	void WaitForFence(uint64_t FenceValue);
 private:
 	ID3D12Device* m_Device; 
 	RCommandQueue m_GraphicsQueue;

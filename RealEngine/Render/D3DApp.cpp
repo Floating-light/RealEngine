@@ -2,6 +2,7 @@
 #include "Helper.h"
 #include "GraphicInterface.h"
 #include "CommandContext.h"
+#include "CommandListManager.h"
 
 #include <iostream>
 #include <vector>
@@ -399,7 +400,7 @@ void D3DApp::OnUpdate(double DeltaTime)
     // V[2].position.x = -1.0f * abs(sinf(Data));
     // V[2].position.y = -1.0f * abs(sinf(Data));
 }
-void D3DApp::PopulateCommandListNew() 
+uint64_t D3DApp::PopulateCommandListNew() 
 {
     RCommandContext* Context = GGraphicInterface->BeginCommandContext("MainRender"); 
     ID3D12GraphicsCommandList* CommandList = Context->GetCommandList(); 
@@ -411,19 +412,38 @@ void D3DApp::PopulateCommandListNew()
     auto PresentBufferTransition = CD3DX12_RESOURCE_BARRIER::Transition(m_renderTargets[m_currentBackBuffer].Get(), D3D12_RESOURCE_STATE_PRESENT, D3D12_RESOURCE_STATE_RENDER_TARGET); 
     CommandList->ResourceBarrier(1, &PresentBufferTransition);
 
+    CD3DX12_CPU_DESCRIPTOR_HANDLE rtvHandle(m_rtvHeap->GetCPUDescriptorHandleForHeapStart(), m_currentBackBuffer,m_rtvDescriptorSize);
+    CommandList->OMSetRenderTargets(1,&rtvHandle,0,nullptr);
     
+    const float clearColor[] = {0.0f, 0.9f,0.0f, 1.0f};
+    CommandList->ClearRenderTargetView(rtvHandle, clearColor, 0, nullptr); 
+    CommandList->IASetPrimitiveTopology(D3D10_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+
+    CommandList->SetPipelineState(m_pipelineState.Get());
+    CommandList->IASetVertexBuffers(0, 1, &m_vertexBufferView);
+    CommandList->DrawInstanced(6, 1, 0, 0);
+
+    auto RT_Present = CD3DX12_RESOURCE_BARRIER::Transition(m_renderTargets[m_currentBackBuffer].Get(), D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PRESENT);
+    CommandList->ResourceBarrier(1, &RT_Present);
+    return Context->Finish(); 
 }
 
 void D3DApp::OnRender()
 {
-    PopulateCommandList();
+    //PopulateCommandList();
 
-    ID3D12CommandList* ppCommandLists[] = { m_commandList.Get()};
-    m_commandQueue->ExecuteCommandLists(_countof(ppCommandLists), ppCommandLists);
+    //ID3D12CommandList* ppCommandLists[] = { m_commandList.Get()};
+    //m_commandQueue->ExecuteCommandLists(_countof(ppCommandLists), ppCommandLists);
 
+    //ThrowIfFailed(m_swapChain->Present(0, 0));
+
+    //WaitForPreviousFrame();
+
+    uint64_t FenceVal = PopulateCommandListNew(); 
     ThrowIfFailed(m_swapChain->Present(0, 0));
+    GGraphicInterface->GetCommandListManager()->WaitForFence(FenceVal); 
+    m_currentBackBuffer = m_swapChain->GetCurrentBackBufferIndex(); 
 
-    WaitForPreviousFrame();
 }
 // https://www.braynzarsoft.net/viewtutorial/q16390-04-direct3d-12-drawing
 void D3DApp::PopulateCommandList()
@@ -642,7 +662,9 @@ void D3DApp::CreateSwapChain()
 
     ComPtr<IDXGISwapChain> SwapChainToCreate;
     // need a command queue to refersh swapchain
-    ThrowIfFailed(m_factory->CreateSwapChain(m_commandQueue.Get(), &desc, &SwapChainToCreate));
+    ;
+    ThrowIfFailed(m_factory->CreateSwapChain(GGraphicInterface->GetCommandListManager()->GetCommandQueue(), &desc, &SwapChainToCreate));
+    //ThrowIfFailed(m_factory->CreateSwapChain(m_commandQueue.Get(), &desc, &SwapChainToCreate));
     ThrowIfFailed(SwapChainToCreate.As(&m_swapChain));
 
     ThrowIfFailed(m_factory->MakeWindowAssociation(m_hHwnd, DXGI_MWA_NO_ALT_ENTER));

@@ -21,7 +21,7 @@ public:
     void OnUpdate(double DeltaTime);
     void OnRender();
     void PopulateCommandList();
-    void PopulateCommandListNew();
+    uint64_t PopulateCommandListNew();
     void OnKeyDown(UINT8 key){};
     void OnKeyUp(UINT8 key){};
     // A GPU(adapter) connect to multiple monitor(display output )

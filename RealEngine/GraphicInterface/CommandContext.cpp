@@ -77,7 +77,7 @@ uint64_t RCommandContext::Finish(bool WaitForCompletion)
     //if (WaitForCompletion)
         //CMDManager.WaitForFence();
     GGraphicInterface->GetCommandContextManger()->FreeContext(this);
-    return 0;
+    return CompleteFence; 
 }
 
 RRHIBuffer *RCommandContext::CreateBuffer(const void *Data, uint32_t Size, uint32_t Stride, std::string_view DebugName)
