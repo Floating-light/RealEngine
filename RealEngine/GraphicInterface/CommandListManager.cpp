@@ -57,6 +57,13 @@ void RCommandQueue::ShutDown()
 	m_CommandQueue = nullptr;
 }
 
+uint64_t RCommandQueue::IncrementFence()
+{
+	std::lock_guard<std::mutex> lock(m_FenceMutex);
+	m_CommandQueue->Signal(m_Fence, m_NextFenceValue);
+	return m_NextFenceValue++;
+}
+
 bool RCommandQueue::IsFenceComplete(uint64_t FenceValue)
 {
 	// 避免每次都从m_Fence查询
@@ -81,6 +88,11 @@ void RCommandQueue::WaitForFence(uint64_t FenceValue)
 		WaitForSingleObject(m_FenceEventHandle, INFINITE); 
 		m_LastCompletedFenceValue = FenceValue; 
 	}
+}
+
+void RCommandQueue::WaitForIdle()
+{
+	WaitForFence(IncrementFence());
 }
 
 uint64_t RCommandQueue::ExecuteCommandList(ID3D12CommandList* InList)

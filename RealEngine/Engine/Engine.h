@@ -9,7 +9,7 @@ public:
     static REngine* Get();
     void OnInit();
     void OnUpdate();
-    void OnDestoryed();
+    void Destoryed();
 private:
     std::shared_ptr<RGameViewportClient> GameViewportClient;
 };

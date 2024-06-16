@@ -28,6 +28,8 @@ int RealLuanch::Run(const wchar_t* Cmd)
     {
         REngine::Get()->OnUpdate();
     }
+    REngine::Get()->Destoryed(); 
+    RHIExit(); 
     return 0;
 }
 

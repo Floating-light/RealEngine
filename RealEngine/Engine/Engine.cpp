@@ -23,7 +23,7 @@ void REngine::OnInit()
     GameViewportClient = std::shared_ptr<RGameViewportClient>(new RGameViewportClient());
     RApplication::Get().RegisterGameViewport(GameViewportClient);
     
-    RApplication::Get().SetOnMainWindowClosed(std::bind(&REngine::OnDestoryed, this));
+    //RApplication::Get().SetOnMainWindowClosed(std::bind(&REngine::Destoryed, this)); 
     std::shared_ptr<RPrimitiveObject>  Obj1 = std::make_shared<RPrimitiveObject>();
     Obj1->mVertexData = 
     {
@@ -74,7 +74,8 @@ void REngine::OnUpdate()
     RRenderer::Get().DoRender(ViewInfo);
 }
 
-void REngine::OnDestoryed()
+void REngine::Destoryed()
 {
+    RRenderer::Get().Destroy();
     RLOG(Info, "{}: Engine destory", __FUNCTION__); 
 }

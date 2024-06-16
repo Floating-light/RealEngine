@@ -23,6 +23,13 @@ void RHIExit()
 {
     GGraphicInterface->DeInitRHI();
     delete GGraphicInterface;
+
+    Microsoft::WRL::ComPtr<IDXGIDebug1> debug1 = nullptr;
+    ASSERT(DXGIGetDebugInterface1(0, IID_PPV_ARGS(&debug1))); 
+    auto hr = debug1->ReportLiveObjects(DXGI_DEBUG_ALL, DXGI_DEBUG_RLO_ALL); 
+    if (FAILED(hr)) {
+        // 处理错误
+    }
 }
 
 void RGraphicInterface::InitRHI()
@@ -49,15 +56,15 @@ void RGraphicInterface::InitRHI()
     }
 
     UINT dxgiFactoryFlags = 0;
-    ComPtr<IDXGIFactory4> dxgiFactory4;
-    if(FAILED(CreateDXGIFactory2(dxgiFactoryFlags, IID_PPV_ARGS(&dxgiFactory4))))
+    //ComPtr<IDXGIFactory4> dxgiFactory4;
+    if(FAILED(CreateDXGIFactory2(dxgiFactoryFlags, IID_PPV_ARGS(&m_Factory4))))
     {
         RLOG(Fatal, "CreateDXGIFactory2 failed ");
         return ;
     }
     // ComPtr<IDXGIAdapter> Adapter;
     TRefCountPtr<IDXGIAdapter> MyAdapter;
-    for(int i = 0; DXGI_ERROR_NOT_FOUND != dxgiFactory4->EnumAdapters(i, MyAdapter.GetInitReference()); ++i)
+    for(int i = 0; DXGI_ERROR_NOT_FOUND != m_Factory4->EnumAdapters(i, MyAdapter.GetInitReference()); ++i)
     {
         DXGI_ADAPTER_DESC desc;
         MyAdapter->GetDesc(&desc);
@@ -82,8 +89,23 @@ void RGraphicInterface::InitRHI()
 
 void RGraphicInterface::DeInitRHI()
 {
+    CommandListManager->IdleGPU();
+
     CommandListManager->ShutDown();
     ContextManager->DestroyAllContexts();
+}
+
+void RGraphicInterface::InitilizeViewport(HWND WindowHandle, uint32_t Width, uint32_t Height)
+{
+    assert(!Viewport);
+    Viewport = std::make_unique<RGraphicViewport>();
+    Viewport->SetViewportSize(Width, Height);
+    Viewport->Initialize(m_Device.Get(), m_Factory4.Get(), CommandListManager->GetGraphicsQueue().GetCommandQueue(), WindowHandle);
+}
+
+void RGraphicInterface::Present()
+{
+    Viewport->Present();
 }
 
 TRefCountPtr<RRHIBuffer> RGraphicInterface::CreateBuffer(const void *Data, uint32_t Size, uint32_t Stride, std::string_view DebugName)

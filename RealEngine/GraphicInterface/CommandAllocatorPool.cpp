@@ -50,7 +50,7 @@ ID3D12CommandAllocator* RCommandAllocatorPool::RequestAllocator(uint64_t Complet
 		}
 		
 		std::wstringstream ss; 
-		ss << L"CommandAllocator " << m_AllocatorPool.size(); 
+		ss << L"REngine CommandAllocator " << m_AllocatorPool.size(); 
 		Ret->SetName(ss.str().c_str()); 
 
 		m_AllocatorPool.push_back(Ret);

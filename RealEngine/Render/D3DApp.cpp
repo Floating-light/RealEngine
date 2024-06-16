@@ -3,6 +3,7 @@
 #include "GraphicInterface.h"
 #include "CommandContext.h"
 #include "CommandListManager.h"
+#include "GraphicViewport.h"
 
 #include <iostream>
 #include <vector>
@@ -20,7 +21,7 @@ D3DApp::D3DApp()
     // , m_scissorRect((width - height)/2,0, static_cast<LONG>( height), static_cast<LONG>(height))
 
 {
-    m_backBufferFormat = DXGI_FORMAT_R8G8B8A8_UNORM;
+    m_backBufferFormat = DXGI_FORMAT_R10G10B10A2_UNORM; 
     m_depthStencilFormat = DXGI_FORMAT_D32_FLOAT;
     m_4xMsaaState = false;
     m_4xMassQuality = 4;
@@ -111,42 +112,8 @@ void D3DApp::Setup()
     
     std::cout << "GPU number : "<< m_device->GetNodeCount() << std::endl;
 
-    // CommandList record command 
-    // m_commandList->Close();
-
-    // ID3D12CommandList* ppCommandLists[] = { m_commandList.Get()};
-    // m_commandQueue->ExecuteCommandLists(_countof(ppCommandLists), ppCommandLists);
-
-    // the command in queue will be ok, that will be maintaine by Allocator.
-    // m_commandList->Reset(m_commandAllocator.Get(),nullptr);
-
-    // dangerous, the command has not be executed by gpu !!!
-    // should use fences to determine GPU execution progress!
-    // m_commandAllocator->Reset();
-
-    // Create seap chain 
-    CreateSwapChain();
-
-    // Create rtv descriptor heap
-    {
-        D3D12_DESCRIPTOR_HEAP_DESC rtvHeapDesc;
-        rtvHeapDesc.NumDescriptors = SwapChainBufferCount;
-        rtvHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_RTV;
-        rtvHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_NONE;
-        rtvHeapDesc.NodeMask = 0;
-        ThrowIfFailed(m_device->CreateDescriptorHeap(&rtvHeapDesc, IID_PPV_ARGS(&m_rtvHeap)));
-    }
+    GGraphicInterface->InitilizeViewport(m_hHwnd, GetWidth(), GetHeight());
     
-    // Create render target view (descriptor)
-    {
-        CD3DX12_CPU_DESCRIPTOR_HANDLE rtvHeapHandle(m_rtvHeap->GetCPUDescriptorHandleForHeapStart());
-        for(UINT i = 0; i < SwapChainBufferCount; i++)
-        {
-            m_swapChain->GetBuffer(i, IID_PPV_ARGS(&m_renderTargets[i]));
-            m_device->CreateRenderTargetView(m_renderTargets[i].Get(), nullptr, rtvHeapHandle);
-            rtvHeapHandle.Offset(1, m_rtvDescriptorSize);
-        }
-    }
     // Create Depth/Stencil view descriptor heap
     {
         D3D12_DESCRIPTOR_HEAP_DESC dsvHeapDesc;
@@ -224,6 +191,7 @@ void D3DApp::LoadAsset()
         ComPtr<ID3DBlob> error;
         ThrowIfFailed(D3D12SerializeRootSignature(&rootSignatureDesc,D3D_ROOT_SIGNATURE_VERSION_1,&signature, &error));
         ThrowIfFailed(m_device->CreateRootSignature(0, signature->GetBufferPointer(), signature->GetBufferSize(), IID_PPV_ARGS(&m_rootSignature)));
+        m_rootSignature->SetName(L"D3DApp_RootSig");
     }
 
     // Create pipeline state, which includes compiling and loading shaders
@@ -260,7 +228,7 @@ void D3DApp::LoadAsset()
         psoDesc.SampleMask = UINT_MAX;
         psoDesc.PrimitiveTopologyType = D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE;
         psoDesc.NumRenderTargets = 1;
-        psoDesc.RTVFormats[0] = DXGI_FORMAT_R8G8B8A8_UNORM;
+        psoDesc.RTVFormats[0] = m_backBufferFormat; 
         psoDesc.SampleDesc.Count = 1;
         ThrowIfFailed(m_device->CreateGraphicsPipelineState(&psoDesc, IID_PPV_ARGS(&m_pipelineState)));
     }
@@ -403,16 +371,20 @@ void D3DApp::OnUpdate(double DeltaTime)
 uint64_t D3DApp::PopulateCommandListNew() 
 {
     RCommandContext* Context = GGraphicInterface->BeginCommandContext("MainRender"); 
+    
+    // 临时做法，后面整个Present过程应该和场景渲染过程解耦
+    RGraphicViewport* Viewport = GGraphicInterface->GetViewport();  
+    
     ID3D12GraphicsCommandList* CommandList = Context->GetCommandList(); 
 
     CommandList->SetGraphicsRootSignature(m_rootSignature.Get());
     CommandList->RSSetViewports(1, &m_viewport);
     CommandList->RSSetScissorRects(1, &m_scissorRect);
 
-    auto PresentBufferTransition = CD3DX12_RESOURCE_BARRIER::Transition(m_renderTargets[m_currentBackBuffer].Get(), D3D12_RESOURCE_STATE_PRESENT, D3D12_RESOURCE_STATE_RENDER_TARGET); 
+    auto PresentBufferTransition = CD3DX12_RESOURCE_BARRIER::Transition(Viewport->GetCurrentRT(), D3D12_RESOURCE_STATE_PRESENT, D3D12_RESOURCE_STATE_RENDER_TARGET);
     CommandList->ResourceBarrier(1, &PresentBufferTransition);
 
-    CD3DX12_CPU_DESCRIPTOR_HANDLE rtvHandle(m_rtvHeap->GetCPUDescriptorHandleForHeapStart(), m_currentBackBuffer,m_rtvDescriptorSize);
+    D3D12_CPU_DESCRIPTOR_HANDLE rtvHandle = Viewport->GetCurrentRTViewHandle();  
     CommandList->OMSetRenderTargets(1,&rtvHandle,0,nullptr);
     
     const float clearColor[] = {0.0f, 0.9f,0.0f, 1.0f};
@@ -423,80 +395,22 @@ uint64_t D3DApp::PopulateCommandListNew()
     CommandList->IASetVertexBuffers(0, 1, &m_vertexBufferView);
     CommandList->DrawInstanced(6, 1, 0, 0);
 
-    auto RT_Present = CD3DX12_RESOURCE_BARRIER::Transition(m_renderTargets[m_currentBackBuffer].Get(), D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PRESENT);
+    auto RT_Present = CD3DX12_RESOURCE_BARRIER::Transition(Viewport->GetCurrentRT(), D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PRESENT); 
     CommandList->ResourceBarrier(1, &RT_Present);
     return Context->Finish(); 
 }
 
 void D3DApp::OnRender()
 {
-    //PopulateCommandList();
+    RCommandListManager* QueueMgr = GGraphicInterface->GetCommandListManager();
+    QueueMgr->WaitForFence(FrameAsyncFence);
+    FrameAsyncFence = QueueMgr->GetGraphicsQueue().IncrementFence();
 
-    //ID3D12CommandList* ppCommandLists[] = { m_commandList.Get()};
-    //m_commandQueue->ExecuteCommandLists(_countof(ppCommandLists), ppCommandLists);
-
-    //ThrowIfFailed(m_swapChain->Present(0, 0));
-
-    //WaitForPreviousFrame();
-
-    uint64_t FenceVal = PopulateCommandListNew(); 
-    ThrowIfFailed(m_swapChain->Present(0, 0));
-    GGraphicInterface->GetCommandListManager()->WaitForFence(FenceVal); 
-    m_currentBackBuffer = m_swapChain->GetCurrentBackBufferIndex(); 
-
+    PopulateCommandListNew();  
+    
+    GGraphicInterface->Present();
 }
 // https://www.braynzarsoft.net/viewtutorial/q16390-04-direct3d-12-drawing
-void D3DApp::PopulateCommandList()
-{
-    ThrowIfFailed(m_commandAllocator->Reset());
-
-    ThrowIfFailed(m_commandList->Reset(m_commandAllocator.Get(), m_pipelineState.Get()));
-
-    std::unique_ptr<UploadBuffer<ObjectConstants>> m_ObjectCB = nullptr;
-    m_ObjectCB = std::make_unique<UploadBuffer<ObjectConstants>>(m_device.Get(), 1, true);
-    UINT objCBByteSize = D3DUtil::CalcConstantBufferByteSize(sizeof(ObjectConstants));
-    D3D12_GPU_VIRTUAL_ADDRESS cbAddress = m_ObjectCB->Resource()->GetGPUVirtualAddress();
-
-    int ElementIndex = 0;
-
-    D3D12_CONSTANT_BUFFER_VIEW_DESC NumICb;
-    NumICb.BufferLocation = cbAddress + ElementIndex* objCBByteSize;
-    NumICb.SizeInBytes = objCBByteSize;
-
-    m_device->CreateConstantBufferView(&NumICb, m_cbvHeap->GetCPUDescriptorHandleForHeapStart());
-
-    m_commandList->SetGraphicsRootSignature(m_rootSignature.Get());
-
-    // RootParameterIndex: 设置的RootParameter的index.
-    // BaseDescriptor : heap中第一个要绑定的Desc的handle, 如果这个RootParamter desc table需要5个desc, 则这个地址及其后的四个将绑定到这一Paramter.
-    // m_commandList->SetGraphicsRootDescriptorTable(RootParameterIndex, BaseDescriptor);
-    m_commandList->RSSetViewports(1, &m_viewport);
-    m_commandList->RSSetScissorRects(1, &m_scissorRect);
-    auto resourceBarrier = CD3DX12_RESOURCE_BARRIER::Transition(m_renderTargets[m_currentBackBuffer].Get(), D3D12_RESOURCE_STATE_PRESENT, D3D12_RESOURCE_STATE_RENDER_TARGET);
-    m_commandList->ResourceBarrier(1, &resourceBarrier);
-
-    CD3DX12_CPU_DESCRIPTOR_HANDLE rtvHandle(m_rtvHeap->GetCPUDescriptorHandleForHeapStart(),m_currentBackBuffer, m_rtvDescriptorSize);
-    m_commandList->OMSetRenderTargets(1, &rtvHandle, FALSE, nullptr);
-
-    const float clearColor[] = {0.0f, 0.2f, 0.4f, 1.0f};
-    m_commandList->ClearRenderTargetView(rtvHandle, clearColor, 0, nullptr);
-
-    m_commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-    // StartSlot : the start input slot of vertex input , if have multiple view. or only the first .
-    m_commandList->IASetVertexBuffers(0,1,&m_vertexBufferView);
-    m_commandList->DrawInstanced(6, 1,0,0);
-    
-    // m_commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_LINESTRIP);
-    // m_commandList->IASetVertexBuffers(0,1,&m_lineVertexBufferView);
-    // m_commandList->IASetIndexBuffer(&m_lineIndexbufferView);
-    // // m_commandList->DrawInstanced(4, 1,0,0);
-    // m_commandList->DrawIndexedInstanced(5,1,0,0,0);
-
-    auto rt2PresentBarrier = CD3DX12_RESOURCE_BARRIER::Transition(m_renderTargets[m_currentBackBuffer].Get(), D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PRESENT);
-    m_commandList->ResourceBarrier(1, &rt2PresentBarrier);
-
-    ThrowIfFailed(m_commandList->Close());
-}
 
 void D3DApp::LogAdapters() 
 {
@@ -582,9 +496,6 @@ void D3DApp::WaitForPreviousFrame()
         m_fence->SetEventOnCompletion(CurrentFence, m_fenceEvent);
         WaitForSingleObject(m_fenceEvent, INFINITE);  // return untile gpu set m_fence to CurrentFence value. 
     }
-
-    m_currentBackBuffer = m_swapChain->GetCurrentBackBufferIndex();
-
 }
 
 void D3DApp::GetHardwareAdapter(IDXGIFactory1* pFactory, IDXGIAdapter1** ppAdapter, bool requestHighPerformanceAdapter )
@@ -635,41 +546,6 @@ void D3DApp::GetHardwareAdapter(IDXGIFactory1* pFactory, IDXGIAdapter1** ppAdapt
         }
     }
     *ppAdapter = adapter.Detach();
-}
-
-void D3DApp::CreateSwapChain()
-{
-    m_swapChain.Reset();
-
-    DXGI_SWAP_CHAIN_DESC desc;
-    desc.BufferDesc.Width = m_clientWidth;
-    desc.BufferDesc.Height = m_clientHeight;
-    desc.BufferDesc.RefreshRate.Numerator = 60;
-    desc.BufferDesc.RefreshRate.Denominator = 1;
-    desc.BufferDesc.Format = m_backBufferFormat;
-
-    desc.BufferDesc.ScanlineOrdering = DXGI_MODE_SCANLINE_ORDER_UNSPECIFIED;
-    desc.BufferDesc.Scaling = DXGI_MODE_SCALING_UNSPECIFIED;
-    desc.SampleDesc.Count = m_4xMsaaState ? 4: 1;
-    desc.SampleDesc.Quality = m_4xMsaaState ? m_4xMassQuality - 1 : 0;
-    desc.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
-    desc.BufferCount = SwapChainBufferCount;
-    desc.OutputWindow = m_hHwnd;
-
-    desc.Windowed = true;
-    desc.SwapEffect = DXGI_SWAP_EFFECT_FLIP_DISCARD;
-    desc.Flags = DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH;
-
-    ComPtr<IDXGISwapChain> SwapChainToCreate;
-    // need a command queue to refersh swapchain
-    ;
-    ThrowIfFailed(m_factory->CreateSwapChain(GGraphicInterface->GetCommandListManager()->GetCommandQueue(), &desc, &SwapChainToCreate));
-    //ThrowIfFailed(m_factory->CreateSwapChain(m_commandQueue.Get(), &desc, &SwapChainToCreate));
-    ThrowIfFailed(SwapChainToCreate.As(&m_swapChain));
-
-    ThrowIfFailed(m_factory->MakeWindowAssociation(m_hHwnd, DXGI_MWA_NO_ALT_ENTER));
-
-    m_currentBackBuffer = m_swapChain->GetCurrentBackBufferIndex();
 }
 
 std::wstring D3DApp::GetShaderPath() const 

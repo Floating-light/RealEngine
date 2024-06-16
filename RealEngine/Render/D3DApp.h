@@ -20,7 +20,6 @@ public:
     void LoadAsset();
     void OnUpdate(double DeltaTime);
     void OnRender();
-    void PopulateCommandList();
     uint64_t PopulateCommandListNew();
     void OnKeyDown(UINT8 key){};
     void OnKeyUp(UINT8 key){};
@@ -37,12 +36,15 @@ public:
     static const int SwapChainBufferCount = 2;
 protected:
     void GetHardwareAdapter(IDXGIFactory1* pFactory, IDXGIAdapter1** ppAdapter, bool requestHighPerformanceAdapter = false);
-    void CreateSwapChain();
     std::wstring GetShaderPath() const ;
 private:
     UINT m_clientWidth, m_clientHeight;
     std::wstring m_title;
-    ComPtr<IDXGISwapChain3> m_swapChain;
+    //ComPtr<IDXGISwapChain3> m_swapChain;
+    //ComPtr<ID3D12Resource> m_renderTargets[SwapChainBufferCount];
+    //ComPtr<ID3D12DescriptorHeap> m_rtvHeap;
+    //int m_currentBackBuffer;
+
 struct Vertex
 {
     DirectX::XMFLOAT3 position;
@@ -58,7 +60,6 @@ struct Vertex
     float m_aspectRatio;
     BOOL m_4xMsaaState;
     UINT8 m_4xMassQuality;
-    int m_currentBackBuffer;
     Microsoft::WRL::ComPtr<IDXGIFactory4> m_factory;
     ComPtr<ID3D12Device> m_device;
     // the container of CommandList for GPU to execute.
@@ -68,11 +69,9 @@ struct Vertex
     ComPtr<ID3D12GraphicsCommandList> m_commandList;
     ComPtr<ID3D12RootSignature> m_rootSignature;
     ComPtr<ID3D12PipelineState> m_pipelineState;
-    ComPtr<ID3D12DescriptorHeap> m_rtvHeap;
     ComPtr<ID3D12DescriptorHeap> m_dsvHeap;
     ComPtr<ID3D12DescriptorHeap> m_cbvHeap;
 
-    ComPtr<ID3D12Resource> m_renderTargets[SwapChainBufferCount];
     ComPtr<ID3D12Resource> m_depthStencilBuffer;
     ComPtr<ID3D12Resource> m_vertexBuffer;
     ComPtr<ID3D12Resource> m_LineBuffer;
@@ -90,6 +89,8 @@ struct Vertex
     UINT8* pLineDataBegin;
 
     HWND m_hHwnd;
+
+    uint64_t FrameAsyncFence = 0; 
 };
 
 // concept : 

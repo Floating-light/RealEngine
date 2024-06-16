@@ -27,3 +27,12 @@ void RRenderer::DoRender(RViewInfo& ViewInfo)
     TestApp->OnUpdate(0.1);
     TestApp->OnRender();
 }
+
+void RRenderer::Destroy()
+{
+    if (TestApp)
+    {
+        delete TestApp;
+        TestApp = nullptr;
+    }
+}

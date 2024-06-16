@@ -11,6 +11,7 @@ public:
     
     // Called from engine every frame to rendering scene
     void DoRender(RViewInfo& ViewInfo);
+    void Destroy();
 private:
     
 };

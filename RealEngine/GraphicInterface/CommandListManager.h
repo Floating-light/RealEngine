@@ -15,9 +15,10 @@ class RCommandQueue
 public:
 	bool IsReady() { return m_CommandQueue != nullptr; };
 
+	uint64_t IncrementFence();
 	bool IsFenceComplete(uint64_t FenceValue);
 	void WaitForFence(uint64_t FenceValue);
-
+	void WaitForIdle();
 	ID3D12CommandQueue* GetCommandQueue()const { return m_CommandQueue; }; 
 private:
 	uint64_t ExecuteCommandList(ID3D12CommandList* InList);
@@ -56,6 +57,13 @@ public:
 
 	void CreateNewCommandList(D3D12_COMMAND_LIST_TYPE InType, ID3D12GraphicsCommandList** List, ID3D12CommandAllocator** Allocator);
 	void WaitForFence(uint64_t FenceValue);
+
+	void IdleGPU()
+	{
+		m_GraphicsQueue.WaitForIdle();
+		m_ComputeQueue.WaitForIdle();
+		m_CopyQueue.WaitForIdle();
+	}
 private:
 	ID3D12Device* m_Device; 
 	RCommandQueue m_GraphicsQueue;
