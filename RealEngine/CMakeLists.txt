@@ -6,8 +6,6 @@ add_subdirectory(AssetImporter)
 
 add_subdirectory(GraphicInterface)
 
-add_subdirectory(RHID3D12)
-
 add_subdirectory(Application)
 
 add_subdirectory(Render)

@@ -16,6 +16,7 @@ static std::vector<std::shared_ptr<RPrimitiveObject>> Objects;
 
 void REngine::OnInit()
 {
+    // 创建Windows
     RApplication::Create();
     
     RRenderer::Get().Init(RApplication::Get().GetMainWindow());

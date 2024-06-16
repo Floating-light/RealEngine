@@ -9,5 +9,4 @@ if(NOT TARGET spdlog)
     add_subdirectory(spdlog)
 endif()
 
-add_subdirectory(RHID3D12ThirdParty)
 add_subdirectory(DirectXTex)
