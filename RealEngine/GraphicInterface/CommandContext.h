@@ -3,10 +3,14 @@
 #include <queue>
 
 #include "D3D12ThirdPart.h"
-#include "RefCounting.h"
-
-class RRHIBuffer;
+class RRHIResource;
 class RCommandContext;
+
+#define VALID_COMPUTE_QUEUE_RESOURCE_STATES \
+    ( D3D12_RESOURCE_STATE_UNORDERED_ACCESS \
+    | D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE \
+    | D3D12_RESOURCE_STATE_COPY_DEST \
+    | D3D12_RESOURCE_STATE_COPY_SOURCE )
 
 class RCommandContextManger
 {
@@ -53,13 +57,15 @@ public:
     // 暂时用着
     ID3D12GraphicsCommandList* GetCommandList() const { return m_CommandList; }  
 
-    RRHIBuffer* CreateBuffer(const void *Data, uint32_t Size, uint32_t Stride, std::string_view DebugName);
+    void TransitionResource(RRHIResource& Resource, D3D12_RESOURCE_STATES NewState, bool FlushImmediate);
+
+    //RRHIBuffer* CreateBuffer(const void *Data, uint32_t Size, uint32_t Stride, std::string_view DebugName);
 private:
     D3D12_HEAP_PROPERTIES GetUploadBufferHeapProps() const;
     D3D12_RESOURCE_DESC GetUploadBufferResourceDesc(uint32_t BufferSize) const;
-
+    void FlushResourceBarriers();
     // Resource
-    void TransitionResource(RRHIBuffer* Buffer, D3D12_RESOURCE_STATES NewState, bool FlushImmediate);
+    //void TransitionResource(RRHIBuffer* Buffer, D3D12_RESOURCE_STATES NewState, bool FlushImmediate);
 
 private:
     D3D12_COMMAND_LIST_TYPE m_Type;
@@ -67,5 +73,7 @@ private:
     ID3D12CommandAllocator* m_CurrentAllocator; 
     ID3D12Device* m_Device;
 
+    D3D12_RESOURCE_BARRIER m_ResourceBarrierBuffer[16];
+    uint8_t m_NumBarriersToFlush = 0;
     std::string m_ID;
 };

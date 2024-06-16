@@ -2,17 +2,15 @@
 
 #include <unordered_map>
 #include <functional>
-
-#include "GraphicViewport.h"
+#include "D3D12ThirdPart.h"
 #include "Module/ModuleManager.h"
-#include "RHIBuffer.h"
-#include "RHIResource.h"
-#include "RefCounting.h"
 class RCommandContext;
 class RCommandContextManger; 
 class RCommandListManager; 
 class RGraphicViewport;
 class RAdapter;
+class RRHIBuffer;
+class RRHIUploadBuffer;
 
 class RGraphicInterface
 {
@@ -26,12 +24,11 @@ public:
 	
 	Microsoft::WRL::ComPtr<ID3D12Device> GetDevice()const {return m_Device;}
 
-	virtual TRefCountPtr<RRHIBuffer> CreateBuffer(const void* Data, uint32_t Size, uint32_t Stride, std::string_view DebugName);
-
-
 	RCommandContext* BeginCommandContext(const std::string& ID); 
 	RCommandListManager* GetCommandListManager()const {return CommandListManager.get();}
 	RCommandContextManger* GetCommandContextManger()const { return ContextManager.get(); }
+
+	void InitializeBuffer(RRHIBuffer& DestBuffer, const RRHIUploadBuffer& SrcBuffer, size_t SrcOffset, size_t NumBytes = -1, size_t DestOffset = 0);
 private:
 	std::unique_ptr<RCommandContextManger> ContextManager;
 	std::unique_ptr<RCommandListManager> CommandListManager;

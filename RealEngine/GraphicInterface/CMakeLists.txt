@@ -15,6 +15,11 @@ target_sources(GraphicInterface
     CommandListManager.cpp
     CommandAllocatorPool.h
     CommandAllocatorPool.cpp
+    RHIResource.h
+    RHIBuffer.h
+    RHIBuffer.cpp
+    RHIUploadBuffer.h
+    RHIUploadBuffer.cpp
 )
 
 target_include_directories(GraphicInterface

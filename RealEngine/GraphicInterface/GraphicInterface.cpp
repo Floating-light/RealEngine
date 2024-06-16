@@ -3,6 +3,9 @@
 #include "CommandContext.h"
 #include "Adapter.h"
 #include "CommandListManager.h"
+#include "GraphicViewport.h"
+#include "RHIBuffer.h"
+#include "RHIUploadBuffer.h"
 
 RGraphicInterface* GGraphicInterface = nullptr;
 
@@ -108,16 +111,18 @@ void RGraphicInterface::Present()
     Viewport->Present();
 }
 
-TRefCountPtr<RRHIBuffer> RGraphicInterface::CreateBuffer(const void *Data, uint32_t Size, uint32_t Stride, std::string_view DebugName)
-{
-    // TODO:
-    //return mCommandContext->CreateBuffer(Data, Size, Stride,DebugName);
-    return nullptr;
-}
-
 RCommandContext* RGraphicInterface::BeginCommandContext(const std::string& ID) 
 {
     RCommandContext* NewContext = ContextManager->AllocateContext(D3D12_COMMAND_LIST_TYPE_DIRECT);   
     NewContext->SetID(ID);
     return NewContext; 
+}
+
+void RGraphicInterface::InitializeBuffer(RRHIBuffer& DestBuffer, const RRHIUploadBuffer& SrcBuffer, size_t SrcOffset, size_t NumBytes, size_t DestOffset)
+{
+    RCommandContext* NewContext = ContextManager->AllocateContext(D3D12_COMMAND_LIST_TYPE_DIRECT);
+    size_t MaxBytes = (std::min<size_t>)(DestBuffer.GetBufferSize() - DestOffset, SrcBuffer.GetBufferSize() - SrcOffset);
+    NumBytes = (std::min<size_t>)(MaxBytes, NumBytes);
+
+    NewContext->
 }

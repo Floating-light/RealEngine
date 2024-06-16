@@ -1,40 +1,36 @@
 #pragma once 
 #include <string_view>
 #include <cassert>
+#include "D3D12ThirdPart.h"
 
 class RRHIResource
 {
-protected:
-	RRHIResource(std::string_view Name) 
-        : mReferenceCount(0)
-        , mName{Name}{}
+    friend class RCommandContext; 
 public:
-    virtual ~RRHIResource()
+	RRHIResource() 
+        : m_Resource(nullptr)
+        , m_UsageState(D3D12_RESOURCE_STATE_COMMON)
+        , m_GpuVirtualAddress(D3D12_GPU_VIRTUAL_ADDRESS_NULL)
+    {}
+    RRHIResource(ID3D12Resource* InResource, D3D12_RESOURCE_STATES InState)
+        : m_Resource(InResource)
+        , m_UsageState(InState)
+        , m_GpuVirtualAddress(D3D12_GPU_VIRTUAL_ADDRESS_NULL)
+    {}
+    ~RRHIResource()
     {
-        assert(mReferenceCount == 0);
+        Destroy(); 
     }
-    inline size_t AddRef() 
+    void Destroy() 
     {
-        ++mReferenceCount;
-        assert(mReferenceCount > 0);
-        return mReferenceCount;
-    } 
-    inline size_t Release()
-    {
-        const size_t NewRefCount = --mReferenceCount;
-        assert(mReferenceCount >=0);
-        if(NewRefCount == 0)
-        {
-            delete this;
-        }
-        return NewRefCount;
+        m_Resource = nullptr;
+        m_GpuVirtualAddress = D3D12_GPU_VIRTUAL_ADDRESS_NULL;
     }
-    inline size_t GetRefCount() const 
-    {
-        return mReferenceCount;
-    }
-private:
-    size_t mReferenceCount;
-    std::string mName;
+    ID3D12Resource* GetResource() const { return m_Resource.Get(); }
+protected:
+    Microsoft::WRL::ComPtr<ID3D12Resource> m_Resource;
+    D3D12_RESOURCE_STATES m_UsageState;
+    D3D12_RESOURCE_STATES m_TransitioningState;
+    D3D12_GPU_VIRTUAL_ADDRESS m_GpuVirtualAddress;
 };
 

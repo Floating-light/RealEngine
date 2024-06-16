@@ -35,6 +35,6 @@ public:
     std::string mName;
 
     void IntializeBuffer();
-    TRefCountPtr<RRHIBuffer> mVertexBuffer;
-    TRefCountPtr<RRHIBuffer> mIndexBuffer;
+    //TRefCountPtr<RRHIBuffer> mVertexBuffer;
+    //TRefCountPtr<RRHIBuffer> mIndexBuffer;
 };

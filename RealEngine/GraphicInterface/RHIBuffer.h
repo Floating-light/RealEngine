@@ -1,39 +1,27 @@
 #pragma once 
 
 #include "RHIResource.h"
-
-#include "D3D12ThirdPart.h"
+class RRHIUploadBuffer;
 
 class RRHIBuffer : public RRHIResource
 {
 public:
-    RRHIBuffer()
-        : RRHIResource("")
-        , mResource(nullptr)
-        {}
-    RRHIBuffer(uint32_t ElementCount, uint32_t ElementSize, uint32_t BufferSize,D3D12_RESOURCE_STATES InState, std::string_view DebugName)
-        : RRHIResource(DebugName)
-        , mResource(nullptr)
-        , mElementCount(ElementCount)
-        , mElementSize(ElementSize)
-        , mBufferSize(BufferSize)
-        , mUsage(InState)
-    { }
-    ID3D12Resource* GetResource() const 
-    {
-        return mResource.Get();
-    }
-    
-private:
-    Microsoft::WRL::ComPtr<ID3D12Resource> mResource;
-    uint32_t mElementCount;
-    uint32_t mElementSize;
-    uint32_t mBufferSize;
-    D3D12_RESOURCE_STATES mUsage;
-    friend class RCommandContext;
-};
+    virtual ~RRHIBuffer() { Destroy(); };
+    void Create(const std::string& name, uint32_t NumElements, uint32_t ElementSize, const RRHIUploadBuffer& SrcData, uint32_t srcOffset = 0);
+    void* Map();
+    void Unmap(size_t begin = 0, size_t end = -1);
+    size_t GetBufferSize() { return m_BufferSize; }
+protected:
+    RRHIBuffer() {};
+    // 不同用途的Buffer需要不同的View
+    virtual void CreateViewsDerived() = 0;
+    size_t m_BufferSize;
 
-class RRHIUploadBuffer : public RRHIResource
-{
+    D3D12_RESOURCE_DESC CreateBufferDescribe();
 
+    D3D12_CPU_DESCRIPTOR_HANDLE m_UAV;
+    D3D12_CPU_DESCRIPTOR_HANDLE m_SRV;
+    uint32_t m_ElementCount;
+    uint32_t m_ElementSize;
+    D3D12_RESOURCE_FLAGS m_ResourceFlag;
 };
