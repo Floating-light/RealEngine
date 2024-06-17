@@ -48,3 +48,22 @@ D3D12_RESOURCE_DESC RRHIBuffer::CreateBufferDescribe()
 	desc.Width = (uint64_t)m_BufferSize;
 	return desc;
 }
+
+void RRHIBufferByteAddress::CreateViewsDerived()
+{
+	D3D12_SHADER_RESOURCE_VIEW_DESC SRVDesc = {};
+	SRVDesc.ViewDimension = D3D12_SRV_DIMENSION_BUFFER;
+	SRVDesc.Format = DXGI_FORMAT_R32_TYPELESS;
+	SRVDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
+	SRVDesc.Buffer.NumElements = (UINT)m_BufferSize / 4;
+	SRVDesc.Buffer.Flags = D3D12_BUFFER_SRV_FLAG_RAW; 
+
+	if (m_SRV.ptr == D3D12_GPU_VIRTUAL_ADDRESS_NULL)
+	{
+		m_SRV = AllocateDescriptor(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV); 
+	}
+
+	D3D12_UNORDERED_ACCESS_VIEW_DESC UAVDesc = {};
+
+
+}

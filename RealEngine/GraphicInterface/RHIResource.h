@@ -30,6 +30,8 @@ public:
 protected:
     Microsoft::WRL::ComPtr<ID3D12Resource> m_Resource;
     D3D12_RESOURCE_STATES m_UsageState;
+    // https://learn.microsoft.com/en-us/windows/win32/direct3d12/using-resource-barriers-to-synchronize-resource-states-in-direct3d-12#split-barriers
+    // https://learn.microsoft.com/en-us/windows/win32/direct3d12/using-resource-barriers-to-synchronize-resource-states-in-direct3d-12#example-of-split-barriers
     D3D12_RESOURCE_STATES m_TransitioningState;
     D3D12_GPU_VIRTUAL_ADDRESS m_GpuVirtualAddress;
 };

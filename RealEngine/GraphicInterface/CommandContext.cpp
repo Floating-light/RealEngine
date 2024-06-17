@@ -132,8 +132,7 @@ void RCommandContext::TransitionResource(RRHIResource& Resource, D3D12_RESOURCE_
         // 是否已经开始Transition ?
         if (NewState == Resource.m_TransitioningState)
         {
-            // TODO
-            // 仅关心目标状态，而不会同步前置状态（等待前置状态的所有操作都完成），仅在能够确保资源状态就是想要的目标状态下使用。
+            // 说明之前已经开始了一个BEGIN_ONLY的状态转换 OldState -> NewState
             BarrierDesc.Flags = D3D12_RESOURCE_BARRIER_FLAG_END_ONLY;
             Resource.m_TransitioningState = (D3D12_RESOURCE_STATES)-1; 
         }

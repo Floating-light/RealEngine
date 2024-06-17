@@ -18,10 +18,17 @@ protected:
     size_t m_BufferSize;
 
     D3D12_RESOURCE_DESC CreateBufferDescribe();
+    D3D12_CPU_DESCRIPTOR_HANDLE AllocateDescriptor(D3D12_DESCRIPTOR_HEAP_TYPE HeapType);  
 
     D3D12_CPU_DESCRIPTOR_HANDLE m_UAV;
     D3D12_CPU_DESCRIPTOR_HANDLE m_SRV;
     uint32_t m_ElementCount;
     uint32_t m_ElementSize;
     D3D12_RESOURCE_FLAGS m_ResourceFlag;
+};
+
+class RRHIBufferByteAddress : RRHIBuffer
+{
+public:
+    virtual void CreateViewsDerived() override;
 };
