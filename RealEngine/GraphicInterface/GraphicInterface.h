@@ -2,8 +2,13 @@
 
 #include <unordered_map>
 #include <functional>
+#include <array>
+
 #include "D3D12ThirdPart.h"
 #include "Module/ModuleManager.h"
+
+#include "DescriptorHeap.h"
+
 class RCommandContext;
 class RCommandContextManger; 
 class RCommandListManager; 
@@ -29,6 +34,9 @@ public:
 	RCommandContextManger* GetCommandContextManger()const { return ContextManager.get(); }
 
 	void InitializeBuffer(RRHIBuffer& DestBuffer, const RRHIUploadBuffer& SrcBuffer, size_t SrcOffset, size_t NumBytes = -1, size_t DestOffset = 0);
+
+	D3D12_CPU_DESCRIPTOR_HANDLE AllocateDescriptor(D3D12_DESCRIPTOR_HEAP_TYPE HeapType);
+
 private:
 	std::unique_ptr<RCommandContextManger> ContextManager;
 	std::unique_ptr<RCommandListManager> CommandListManager;
@@ -36,6 +44,7 @@ private:
 	std::shared_ptr<RAdapter> mAdapter;
 	Microsoft::WRL::ComPtr<ID3D12Device> m_Device = nullptr; 
 	Microsoft::WRL::ComPtr<IDXGIFactory4> m_Factory4 = nullptr;
+	std::vector<RDescriptorAllocator> m_DescriptorAllocator;  
 };
 
 class GraphicModuleBase : public IModuleInterface

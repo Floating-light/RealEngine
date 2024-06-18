@@ -88,6 +88,11 @@ void RGraphicInterface::InitRHI()
     ContextManager = std::make_unique<RCommandContextManger>();
     CommandListManager = std::make_unique<RCommandListManager>();
     CommandListManager->Create(m_Device.Get()); 
+
+    m_DescriptorAllocator.emplace_back(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV); 
+    m_DescriptorAllocator.emplace_back(D3D12_DESCRIPTOR_HEAP_TYPE_SAMPLER);
+    m_DescriptorAllocator.emplace_back(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
+    m_DescriptorAllocator.emplace_back(D3D12_DESCRIPTOR_HEAP_TYPE_DSV);
 }
 
 void RGraphicInterface::DeInitRHI()
@@ -124,5 +129,15 @@ void RGraphicInterface::InitializeBuffer(RRHIBuffer& DestBuffer, const RRHIUploa
     size_t MaxBytes = (std::min<size_t>)(DestBuffer.GetBufferSize() - DestOffset, SrcBuffer.GetBufferSize() - SrcOffset);
     NumBytes = (std::min<size_t>)(MaxBytes, NumBytes);
 
-    NewContext->
+    NewContext->TransitionResource(DestBuffer, D3D12_RESOURCE_STATE_COPY_DEST, true);
+    NewContext->GetCommandList()->CopyBufferRegion(DestBuffer.GetResource(), DestOffset, SrcBuffer.GetResource(), SrcOffset, NumBytes);
+    NewContext->TransitionResource(DestBuffer, D3D12_RESOURCE_STATE_GENERIC_READ, true);
+
+    // 必须同步GPU的Copy操作，以确保能够释放UploadBuffer
+    NewContext->Finish(true);
+}
+
+D3D12_CPU_DESCRIPTOR_HANDLE RGraphicInterface::AllocateDescriptor(D3D12_DESCRIPTOR_HEAP_TYPE HeapType)
+{
+    return m_DescriptorAllocator[HeapType].Allocate(1);
 }

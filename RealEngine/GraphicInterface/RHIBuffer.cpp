@@ -51,6 +51,7 @@ D3D12_RESOURCE_DESC RRHIBuffer::CreateBufferDescribe()
 
 void RRHIBufferByteAddress::CreateViewsDerived()
 {
+	Microsoft::WRL::ComPtr<ID3D12Device> LocalDevice= GGraphicInterface->GetDevice();
 	D3D12_SHADER_RESOURCE_VIEW_DESC SRVDesc = {};
 	SRVDesc.ViewDimension = D3D12_SRV_DIMENSION_BUFFER;
 	SRVDesc.Format = DXGI_FORMAT_R32_TYPELESS;
@@ -60,10 +61,20 @@ void RRHIBufferByteAddress::CreateViewsDerived()
 
 	if (m_SRV.ptr == D3D12_GPU_VIRTUAL_ADDRESS_NULL)
 	{
-		m_SRV = AllocateDescriptor(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV); 
+		m_SRV = GGraphicInterface->AllocateDescriptor(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV); 
 	}
+	LocalDevice->CreateShaderResourceView(m_Resource.Get(), &SRVDesc, m_SRV);
 
 	D3D12_UNORDERED_ACCESS_VIEW_DESC UAVDesc = {};
+	UAVDesc.ViewDimension = D3D12_UAV_DIMENSION_BUFFER;
+	UAVDesc.Format = DXGI_FORMAT_R32_TYPELESS;
+	UAVDesc.Buffer.NumElements = (UINT)m_BufferSize / 4;
+	UAVDesc.Buffer.Flags = D3D12_BUFFER_UAV_FLAG_RAW;
 
-
+	if (m_UAV.ptr == D3D12_GPU_VIRTUAL_ADDRESS_UNKNOWN)
+	{
+		m_UAV = GGraphicInterface->AllocateDescriptor(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+	}
+	// 第二个参数 原子操作计数
+	LocalDevice->CreateUnorderedAccessView(m_Resource.Get(), nullptr, &UAVDesc, m_UAV);
 }

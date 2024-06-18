@@ -20,6 +20,8 @@ target_sources(GraphicInterface
     RHIBuffer.cpp
     RHIUploadBuffer.h
     RHIUploadBuffer.cpp
+    DescriptorHeap.h
+    DescriptorHeap.cpp
 )
 
 target_include_directories(GraphicInterface
