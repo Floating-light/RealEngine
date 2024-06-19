@@ -1,4 +1,5 @@
 #include "RHIBuffer.h"
+#include "RHIUploadBuffer.h"
 #include "GraphicInterface.h"
 void RRHIBuffer::Create(const std::string& name, uint32_t NumElements, uint32_t ElementSize, const RRHIUploadBuffer& SrcData, uint32_t srcOffset)
 {
@@ -31,6 +32,18 @@ void RRHIBuffer::Create(const std::string& name, uint32_t NumElements, uint32_t 
 	CreateViewsDerived(); 
 }
 
+void RRHIBuffer::Create(const std::string& Name, uint32_t NumElements, uint32_t ElementSize, const void* InitalData) 
+{
+	// TODO:: Use Context Upload Memory
+	size_t LocalBufferSize = NumElements * ElementSize;
+	RRHIUploadBuffer UploadBuffer;
+	UploadBuffer.Create("TempUploadBuffer", LocalBufferSize);
+	UploadBuffer.Map();
+	memcpy(UploadBuffer.Map(), InitalData, LocalBufferSize);
+	UploadBuffer.Unmap();
+	Create(Name, NumElements, ElementSize, UploadBuffer);
+}
+
 D3D12_RESOURCE_DESC RRHIBuffer::CreateBufferDescribe()
 {
 	assert(m_BufferSize != 0);
@@ -59,7 +72,7 @@ void RRHIBufferByteAddress::CreateViewsDerived()
 	SRVDesc.Buffer.NumElements = (UINT)m_BufferSize / 4;
 	SRVDesc.Buffer.Flags = D3D12_BUFFER_SRV_FLAG_RAW; 
 
-	if (m_SRV.ptr == D3D12_GPU_VIRTUAL_ADDRESS_NULL)
+	if (m_SRV.ptr == D3D12_GPU_VIRTUAL_ADDRESS_UNKNOWN)
 	{
 		m_SRV = GGraphicInterface->AllocateDescriptor(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV); 
 	}

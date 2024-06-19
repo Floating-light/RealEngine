@@ -121,7 +121,7 @@ void RCommandContext::TransitionResource(RRHIResource& Resource, D3D12_RESOURCE_
     if (OldState != NewState)
     {
         assert(m_NumBarriersToFlush < 16);
-        D3D12_RESOURCE_BARRIER BarrierDesc = m_ResourceBarrierBuffer[m_NumBarriersToFlush++];
+        D3D12_RESOURCE_BARRIER& BarrierDesc = m_ResourceBarrierBuffer[m_NumBarriersToFlush++];
 
         BarrierDesc.Type = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
         BarrierDesc.Transition.pResource = Resource.GetResource();

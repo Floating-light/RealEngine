@@ -15,6 +15,7 @@ class D3DApp
 {
 public:
     D3DApp();
+    ~D3DApp();
     void InitializeViewport(void* hHwnd, unsigned int width, unsigned int height, const std::wstring& title);
     void Setup() ;
     void LoadAsset();
@@ -45,11 +46,11 @@ private:
     //ComPtr<ID3D12DescriptorHeap> m_rtvHeap;
     //int m_currentBackBuffer;
 
-struct Vertex
-{
-    DirectX::XMFLOAT3 position;
-    DirectX::XMFLOAT4 color;
-};
+    struct Vertex
+    {
+        DirectX::XMFLOAT3 position;
+        DirectX::XMFLOAT4 color;
+    };
     UINT m_rtvDescriptorSize;
     UINT m_dsvDescriptorSize;
     UINT m_cbvUavDescriptorSize;
@@ -73,7 +74,7 @@ struct Vertex
     ComPtr<ID3D12DescriptorHeap> m_cbvHeap;
 
     ComPtr<ID3D12Resource> m_depthStencilBuffer;
-    ComPtr<ID3D12Resource> m_vertexBuffer;
+    //ComPtr<ID3D12Resource> m_vertexBuffer;
     ComPtr<ID3D12Resource> m_LineBuffer;
     ComPtr<ID3D12Resource> m_lineIndicesRes;
 
@@ -91,6 +92,9 @@ struct Vertex
     HWND m_hHwnd;
 
     uint64_t FrameAsyncFence = 0; 
+private:
+    std::unique_ptr<class RRHIBufferByteAddress> m_NewVertexBuffer = nullptr; 
+    std::unique_ptr<class RRHIUploadBuffer> m_NewUploadVertexBuffer = nullptr;
 };
 
 // concept : 

@@ -27,6 +27,7 @@ public:
         m_GpuVirtualAddress = D3D12_GPU_VIRTUAL_ADDRESS_NULL;
     }
     ID3D12Resource* GetResource() const { return m_Resource.Get(); }
+    D3D12_GPU_VIRTUAL_ADDRESS GetGPUVirtualAddress() const { return m_GpuVirtualAddress; }
 protected:
     Microsoft::WRL::ComPtr<ID3D12Resource> m_Resource;
     D3D12_RESOURCE_STATES m_UsageState;
@@ -34,5 +35,5 @@ protected:
     // https://learn.microsoft.com/en-us/windows/win32/direct3d12/using-resource-barriers-to-synchronize-resource-states-in-direct3d-12#example-of-split-barriers
     D3D12_RESOURCE_STATES m_TransitioningState;
     D3D12_GPU_VIRTUAL_ADDRESS m_GpuVirtualAddress;
-};
+}; 
 

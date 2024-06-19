@@ -4,6 +4,8 @@
 #include "CommandContext.h"
 #include "CommandListManager.h"
 #include "GraphicViewport.h"
+#include "RHIUploadBuffer.h"
+#include "RHIBuffer.h"
 
 #include <iostream>
 #include <vector>
@@ -29,6 +31,10 @@ D3DApp::D3DApp()
     m_aspectRatio = 1.7f;
 
     // m_aspectRatio = 1;
+}
+D3DApp::~D3DApp()
+{
+
 }
 
 void D3DApp::InitializeViewport(void* hHwnd, unsigned int width, unsigned int height, const std::wstring& title)
@@ -231,6 +237,7 @@ void D3DApp::LoadAsset()
         psoDesc.RTVFormats[0] = m_backBufferFormat; 
         psoDesc.SampleDesc.Count = 1;
         ThrowIfFailed(m_device->CreateGraphicsPipelineState(&psoDesc, IID_PPV_ARGS(&m_pipelineState)));
+        m_pipelineState->SetName(L"D3DApp_PSO");
     }
 
     ThrowIfFailed(m_device->CreateCommandList(0, D3D12_COMMAND_LIST_TYPE_DIRECT, m_commandAllocator.Get(), m_pipelineState.Get(), IID_PPV_ARGS(&m_commandList) ));
@@ -260,26 +267,18 @@ void D3DApp::LoadAsset()
             { { -0.8f, 1.0f , 0.0f }, { 1.0f, 0.0f, 1.0f, 1.0f } }
         };
         const UINT vertexBufferSize = sizeof(triangleVertices);
+        m_NewUploadVertexBuffer = std::make_unique<RRHIUploadBuffer>(); 
+        m_NewUploadVertexBuffer->Create("D3DApp_vertices", vertexBufferSize);
+        memcpy(m_NewUploadVertexBuffer->Map(), triangleVertices, vertexBufferSize);
+        m_NewUploadVertexBuffer->Unmap();
+        
+        m_NewVertexBuffer = std::make_unique<RRHIBufferByteAddress>();
+        //m_NewVertexBuffer->Create("D3DApp_VDefaultBuffer", vertexBufferSize / sizeof(Vertex), sizeof(Vertex),*m_NewUploadVertexBuffer);
+        m_NewUploadVertexBuffer.reset();
+        //m_NewVertexBuffer->Destroy();
 
-        // static geometry : D3D12_HEAP_TYPE_DEFAULT
-        CD3DX12_HEAP_PROPERTIES heapPro(D3D12_HEAP_TYPE_UPLOAD);
-        auto resDesc = CD3DX12_RESOURCE_DESC::Buffer(vertexBufferSize);
-        ThrowIfFailed(m_device->CreateCommittedResource(&heapPro, 
-            D3D12_HEAP_FLAG_NONE,
-            &resDesc, 
-            D3D12_RESOURCE_STATE_GENERIC_READ, 
-            nullptr, 
-            IID_PPV_ARGS(&m_vertexBuffer)));
-
-        // UINT8 * pVertexDataBegin;
-
-        // Copy the triangle data to the vertex buffer
-        CD3DX12_RANGE readRange(0,0);
-        ThrowIfFailed(m_vertexBuffer->Map(0, &readRange, reinterpret_cast<void**>(&pVertexDataBegin)));
-        memcpy(pVertexDataBegin, triangleVertices, sizeof(triangleVertices));
-        // m_vertexBuffer->Unmap(0, nullptr);
-
-        m_vertexBufferView.BufferLocation = m_vertexBuffer->GetGPUVirtualAddress();
+        m_NewVertexBuffer->Create("D3DApp_InitalData", vertexBufferSize / sizeof(Vertex), sizeof(Vertex), triangleVertices);
+        m_vertexBufferView.BufferLocation = m_NewVertexBuffer->GetGPUVirtualAddress(); 
         m_vertexBufferView.StrideInBytes = sizeof(Vertex); // size per element in buffer 
         m_vertexBufferView.SizeInBytes = vertexBufferSize; // total size of buffer 
     }
