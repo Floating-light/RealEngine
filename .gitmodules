@@ -7,3 +7,6 @@
 [submodule "RealEngine/ThirdParty/DirectXTex"]
 	path = RealEngine/ThirdParty/DirectXTex
 	url = https://github.com/microsoft/DirectXTex.git
+[submodule "RealEngine/ThirdParty/DirectXMath"]
+	path = RealEngine/ThirdParty/DirectXMath
+	url = https://github.com/microsoft/DirectXMath.git
