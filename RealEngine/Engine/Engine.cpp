@@ -55,7 +55,8 @@ void REngine::OnInit()
     // Objects.push_back(Obj1);
     //std::wstring RaiDenPath = L"E:/Workspace/RealEngine/build/bin/Debug/resources/GenShin/Beelzebul.pmx";
     //std::shared_ptr<RPrimitiveObject> RaiDenShougunObj = RAssetImporter::ImportModel(RaiDenPath);
-    std::string RaiDenPath = "E:/Workspace/DirectX-Graphics-Samples/MiniEngine/TestProject/HuangQuan/星穹铁道—黄泉（轴修复）.pmx"; 
+    //std::string RaiDenPath = "E:/Workspace/DirectX-Graphics-Samples/MiniEngine/TestProject/HuangQuan/星穹铁道—黄泉（轴修复）.pmx"; 
+    std::string RaiDenPath = "E:/MyProject/DirectX-Graphics-Samples/MiniEngine/TestProject/HuangQuan/星穹铁道—黄泉（轴修复）.pmx"; 
     std::shared_ptr<RModelData> RaiDenShougunObj = RAssetImporter::ImportModelNew(RaiDenPath);
     //RaiDenShougunObj->IntializeBuffer();
     //Objects.push_back(RaiDenShougunObj);

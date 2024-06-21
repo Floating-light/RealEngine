@@ -87,14 +87,23 @@ std::shared_ptr<RPrimitiveObject> RAssetImporter::ImportModel(const std::wstring
     }
     return Primitive;
 }
+void PrintaiTransform(const aiMatrix4x4& Trans)
+{
+    aiVector3D scale;
+    aiVector3D rotation;
+    aiVector3D position;
+    Trans.Decompose(scale, rotation, position);
+    RLOG(Info, "scale: [{}, {}, {}]", scale.x, scale.y, scale.z);
+    RLOG(Info, "rotation: [{}, {}, {}]", rotation.x, rotation.y, rotation.z);
+    RLOG(Info, "position: [{}, {}, {}]", position.x, position.y, position.z); 
+}
 void ProcessaiNode(aiNode* InNode)
 {
-    RLOG(Info, "{}, MeshNum: {}", InNode->mName.C_Str(), InNode->mNumMeshes);
-
+    RLOG(Info, "NODE: {}, MeshNum: {}", InNode->mName.C_Str(), InNode->mNumMeshes);
+    PrintaiTransform(InNode->mTransformation);
     for (size_t i = 0; i < InNode->mNumMeshes; ++i)
     {
-        RLOG(Info, "{}, -> Mesh: {}", InNode->mName.C_Str(), InNode->mMeshes[i]);
-
+        RLOG(Info, "{}. -> Mesh: {}",i, InNode->mMeshes[i]);
     }
     for (size_t i = 0; i < InNode->mNumChildren; i++)
     {
