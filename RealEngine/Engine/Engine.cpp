@@ -6,7 +6,7 @@
 #include "PrimitiveInfo.h"
 #include "Vector4D.h"
 #include "AssetImporter.h"
-
+#include "ModelData.h"
 REngine* REngine::Get()
 {
     static REngine* Engine = new REngine();
@@ -25,38 +25,40 @@ void REngine::OnInit()
     RApplication::Get().RegisterGameViewport(GameViewportClient);
     
     //RApplication::Get().SetOnMainWindowClosed(std::bind(&REngine::Destoryed, this)); 
-    std::shared_ptr<RPrimitiveObject>  Obj1 = std::make_shared<RPrimitiveObject>();
-    Obj1->mVertexData = 
-    {
-        RVertex{Vector3D(-1.0f, -1.0f, -1.0f),  RColor::White},
-        RVertex{Vector3D(-1.0f, +1.0f, -1.0f), RColor::Black},
-        RVertex{Vector3D(+1.0f, +1.0f, -1.0f), RColor::Blue},
-        RVertex{Vector3D(+1.0f, -1.0f, -1.0f), RColor::Red},
-        RVertex{Vector3D(-1.0f, -1.0f, +1.0f), RColor::Green},
-        RVertex{Vector3D(-1.0f, +1.0f, +1.0f), RColor::Gray},
-        RVertex{Vector3D(+1.0f, +1.0f, +1.0f), RColor::Yellow},
-        RVertex{Vector3D(+1.0f, -1.0f, +1.0f), RColor::Green}
-    };
-    Obj1->mIndicesData = 
-    {
-        0, 1, 2,
-        0, 2, 3,
+    //std::shared_ptr<RPrimitiveObject>  Obj1 = std::make_shared<RPrimitiveObject>();
+    //Obj1->mVertexData = 
+    //{
+    //    RVertex{Vector3D(-1.0f, -1.0f, -1.0f),  RColor::White},
+    //    RVertex{Vector3D(-1.0f, +1.0f, -1.0f), RColor::Black},
+    //    RVertex{Vector3D(+1.0f, +1.0f, -1.0f), RColor::Blue},
+    //    RVertex{Vector3D(+1.0f, -1.0f, -1.0f), RColor::Red},
+    //    RVertex{Vector3D(-1.0f, -1.0f, +1.0f), RColor::Green},
+    //    RVertex{Vector3D(-1.0f, +1.0f, +1.0f), RColor::Gray},
+    //    RVertex{Vector3D(+1.0f, +1.0f, +1.0f), RColor::Yellow},
+    //    RVertex{Vector3D(+1.0f, -1.0f, +1.0f), RColor::Green}
+    //};
+    //Obj1->mIndicesData = 
+    //{
+    //    0, 1, 2,
+    //    0, 2, 3,
 
-        4, 5, 6, 
-        4, 6, 7,
+    //    4, 5, 6, 
+    //    4, 6, 7,
 
-        4, 5, 1, 
-        4, 1, 0,
-        
-        2, 3, 6, 
-        3, 6, 7
-    };
+    //    4, 5, 1, 
+    //    4, 1, 0,
+    //    
+    //    2, 3, 6, 
+    //    3, 6, 7
+    //};
 
     // Objects.push_back(Obj1);
-    std::wstring RaiDenPath = L"E:/Workspace/RealEngine/build/bin/Debug/resources/GenShin/Beelzebul.pmx";
-    std::shared_ptr<RPrimitiveObject> RaiDenShougunObj = RAssetImporter::ImportModel(RaiDenPath);
+    //std::wstring RaiDenPath = L"E:/Workspace/RealEngine/build/bin/Debug/resources/GenShin/Beelzebul.pmx";
+    //std::shared_ptr<RPrimitiveObject> RaiDenShougunObj = RAssetImporter::ImportModel(RaiDenPath);
+    std::string RaiDenPath = "E:/Workspace/DirectX-Graphics-Samples/MiniEngine/TestProject/HuangQuan/星穹铁道—黄泉（轴修复）.pmx"; 
+    std::shared_ptr<RModelData> RaiDenShougunObj = RAssetImporter::ImportModelNew(RaiDenPath);
     //RaiDenShougunObj->IntializeBuffer();
-    Objects.push_back(RaiDenShougunObj);
+    //Objects.push_back(RaiDenShougunObj);
 }
 
 void REngine::OnUpdate()

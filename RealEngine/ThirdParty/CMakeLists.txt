@@ -32,6 +32,7 @@ endif()
 
 add_subdirectory(DirectXTex)
 add_subdirectory(DirectXMath)
+
 # set_target_properties(DirectXTex PROPERTIES FOLDER "ThirdParty")
 # 获取当前CMakeLists文件所在的目录
 set(THIRDPART_DIR ${CMAKE_CURRENT_SOURCE_DIR})
