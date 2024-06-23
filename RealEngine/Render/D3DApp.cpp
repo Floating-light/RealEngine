@@ -366,7 +366,7 @@ void D3DApp::OnUpdate(double DeltaTime)
     // V[2].position.x = -1.0f * abs(sinf(Data));
     // V[2].position.y = -1.0f * abs(sinf(Data));
 }
-uint64_t D3DApp::PopulateCommandListNew() 
+uint64_t D3DApp::PopulateCommandListNew(const std::vector<std::shared_ptr<RPrimitiveObject>>& InPrims) 
 {
     RCommandContext* Context = GGraphicInterface->BeginCommandContext("MainRender"); 
     
@@ -398,13 +398,13 @@ uint64_t D3DApp::PopulateCommandListNew()
     return Context->Finish(); 
 }
 
-void D3DApp::OnRender()
+void D3DApp::OnRender(const RViewInfo& View)  
 {
     RCommandListManager* QueueMgr = GGraphicInterface->GetCommandListManager();
     QueueMgr->WaitForFence(FrameAsyncFence);
     FrameAsyncFence = QueueMgr->GetGraphicsQueue().IncrementFence();
 
-    PopulateCommandListNew();  
+    PopulateCommandListNew(View.GetPrimitives()); 
     
     GGraphicInterface->Present();
 }

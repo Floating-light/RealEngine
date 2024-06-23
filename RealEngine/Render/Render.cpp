@@ -25,7 +25,8 @@ void RRenderer::DoRender(RViewInfo& ViewInfo)
     std::vector<std::shared_ptr<RPrimitiveObject>> LocalPrimitives = ViewInfo.GetPrimitives();
 
     TestApp->OnUpdate(0.1);
-    TestApp->OnRender();
+    TestApp->OnRender(ViewInfo);
+
 }
 
 void RRenderer::Destroy()

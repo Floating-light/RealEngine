@@ -2,6 +2,8 @@
 #include "stdafx.h"
 #include <stdexcept>
 #include "Matrix4.h"
+#include "ViewInfo.h"
+
 using Microsoft::WRL::ComPtr;
 // D3D12 : manage the resource in gpu memory manually(residency)
 // D3D11 : manage by system
@@ -10,6 +12,8 @@ struct ObjectConstants
 {
     Matrix4 MVP;
 };
+class RViewInfo;
+class RPrimitiveObject;
 
 class D3DApp
 {
@@ -20,8 +24,8 @@ public:
     void Setup() ;
     void LoadAsset();
     void OnUpdate(double DeltaTime);
-    void OnRender();
-    uint64_t PopulateCommandListNew();
+    void OnRender(const RViewInfo& View);
+    uint64_t PopulateCommandListNew(const std::vector<std::shared_ptr<RPrimitiveObject>>& InPrims);
     void OnKeyDown(UINT8 key){};
     void OnKeyUp(UINT8 key){};
     // A GPU(adapter) connect to multiple monitor(display output )

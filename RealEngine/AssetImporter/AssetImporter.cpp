@@ -140,10 +140,65 @@ std::shared_ptr<RModelData> RAssetImporter::ImportModelNew(const std::string& In
 
     std::shared_ptr<RModelData> RetData(new RModelData());  
     ProcessaiNode(scene->mRootNode);
+    std::vector<uint8_t>& LocalGeometryData =RetData->GetGeometryData(); 
+    std::vector<RMeshData>& LocalMeshesData = RetData->GetMeshesData();
+    const uint32_t strides = sizeof(float) * (3 + 3 + 2);
+    
+    static_assert(std::is_same<ai_real, float>::value);
+    
     for (size_t i = 0; i < scene->mNumMeshes; ++i)
     {
-        aiMesh* Mesh = scene->mMeshes[i];
+        aiMesh* Mesh = scene->mMeshes[i];  
+        RMeshData& MeshData = LocalMeshesData.emplace_back();  
+        MeshData.vbOffset = LocalGeometryData.size(); 
+        MeshData.vbStride = strides; 
+
+        {
+            assert(Mesh->HasPositions());
+            assert(Mesh->HasNormals());
+            assert(Mesh->HasTextureCoords(0));
+
+            assert(Mesh->HasFaces()); 
+
+            //assert(Mesh->HasVertexColors(0));// No vertex color
+            assert(Mesh->mPrimitiveTypes == aiPrimitiveType::aiPrimitiveType_TRIANGLE);
+        }
+        std::vector<uint8_t> CurMeshGeo;  
+        CurMeshGeo.resize(strides*Mesh->mNumVertices);  
+        uint8_t* pPosition = CurMeshGeo.data();  
+        uint8_t* pNormal = pPosition + sizeof(float)*3; 
+        uint8_t* pUV0 = pNormal + sizeof(float)*3; 
+
+        for (size_t j = 0; j < Mesh->mNumVertices; ++j)
+        {
+            memcpy(pPosition, &(Mesh->mVertices[j]), sizeof(aiVector3D));
+            pPosition += strides;
+            memcpy(pNormal, &(Mesh->mNormals[j]), sizeof(aiVector3D));
+            pNormal += strides;
+            memcpy(pUV0, &(Mesh->mTextureCoords[0][j]), sizeof(ai_real)*2);
+            pUV0 += strides; 
+        }
+        LocalGeometryData.insert(LocalGeometryData.end(), CurMeshGeo.begin(), CurMeshGeo.end());
+        MeshData.vbSize = CurMeshGeo.size();
+
+        std::vector<uint8_t> CurIndexBuffer;
+        CurIndexBuffer.resize(Mesh->mNumFaces * 3 * sizeof(uint32_t));
+        MeshData.indexCount = Mesh->mNumFaces * 3;
+        MeshData.ibOffset = LocalGeometryData.size();
+        MeshData.ibSize = Mesh->mNumFaces * 3 * sizeof(uint32_t);
+
+        uint8_t* pIndexBuffer = CurIndexBuffer.data(); 
+        for (size_t j = 0; j < Mesh->mNumFaces; ++j)
+        {
+            const aiFace& Face = Mesh->mFaces[j]; 
+            assert(Face.mNumIndices == 3);
+            memcpy(pIndexBuffer, Face.mIndices, sizeof(uint32_t) * 3);
+            pIndexBuffer += sizeof(uint32_t) * 3; 
+        }
+        LocalGeometryData.insert(LocalGeometryData.end(), CurIndexBuffer.begin(), CurIndexBuffer.end()); 
+
         RLOG(Info, "{}, V: {}, F: {}, T: {}", Mesh->mName.C_Str(), Mesh->mNumVertices, Mesh->mNumFaces, Mesh->mPrimitiveTypes);
     }
+
     return RetData;
 }
