@@ -22,6 +22,10 @@ target_sources(GraphicInterface
     RHIUploadBuffer.cpp
     DescriptorHeap.h
     DescriptorHeap.cpp
+    PipelineState.h
+    PipelineState.cpp
+    RootSignature.h
+    RootSignature.cpp
 )
 
 target_include_directories(GraphicInterface
