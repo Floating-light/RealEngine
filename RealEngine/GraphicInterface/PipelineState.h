@@ -29,9 +29,13 @@ class RGraphicPSO : public RPSO
 public:
 	RGraphicPSO(const std::string& InName);
 
+	void SetShader(const std::string& VSShaderPath, const std::string& PSShaderPath);
 	void SetInputLayout(UINT NumElements, const D3D12_INPUT_ELEMENT_DESC* pInputElementDescs);
 	void Finalize();
 private:
+	Microsoft::WRL::ComPtr<ID3DBlob> VSShader;
+	Microsoft::WRL::ComPtr<ID3DBlob> PSShader;
+
 	D3D12_GRAPHICS_PIPELINE_STATE_DESC m_PSODesc;
 	std::shared_ptr<const D3D12_INPUT_ELEMENT_DESC> m_InputLayouts;
 };

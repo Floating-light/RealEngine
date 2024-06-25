@@ -180,7 +180,13 @@ void D3DApp::Setup()
 
     LoadAsset();
 }
-
+std::string NewGetShaderPath() 
+{
+    std::filesystem::path currentPath = std::filesystem::current_path();
+    std::wcout << "current path : " << currentPath.generic_wstring() << std::endl;
+    return currentPath.string() + "/../../../RealEngine/Render/";
+    // return  L"/sdf";
+}
 void D3DApp::LoadAsset()
 {
     // Create an empty root signature
@@ -208,7 +214,27 @@ void D3DApp::LoadAsset()
         NewSignature->Finalize("MyNewRootSignature", D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT);
 
         std::shared_ptr<RGraphicPSO> NewPSO = std::shared_ptr<RGraphicPSO>(new RGraphicPSO("MyNewPSO"));
-
+        D3D12_INPUT_ELEMENT_DESC Desces[] = 
+        {
+            {"POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D12_APPEND_ALIGNED_ELEMENT, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0},
+            {"NORMAL", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D12_APPEND_ALIGNED_ELEMENT, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0},
+            {"TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, D3D12_APPEND_ALIGNED_ELEMENT,D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA,0 }
+        };
+        NewPSO->SetInputLayout(3, Desces);
+        NewPSO->SetShader(NewGetShaderPath() + "BaseVS.hlsl", NewGetShaderPath() + "BasePS.hlsl");
+        NewPSO->SetRootSignature(NewSignature);
+        D3D12_BLEND_DESC alphaBlend;
+        alphaBlend.IndependentBlendEnable = false;
+        alphaBlend.AlphaToCoverageEnable = false;
+        alphaBlend.RenderTarget[0].BlendEnable = true;
+        alphaBlend.RenderTarget[0].SrcBlend = D3D12_BLEND_SRC_ALPHA;
+        alphaBlend.RenderTarget[0].DestBlend = D3D12_BLEND_INV_SRC_ALPHA;
+        alphaBlend.RenderTarget[0].BlendOp = D3D12_BLEND_OP_ADD; 
+        alphaBlend.RenderTarget[0].SrcBlendAlpha = D3D12_BLEND_ONE; 
+        alphaBlend.RenderTarget[0].DestBlendAlpha = D3D12_BLEND_INV_SRC_ALPHA; 
+        alphaBlend.RenderTarget[0].BlendOpAlpha = D3D12_BLEND_OP_ADD; 
+        alphaBlend.RenderTarget[0].RenderTargetWriteMask = D3D12_COLOR_WRITE_ENABLE_ALL; 
+        alphaBlend.RenderTarget[0].SrcBlend = D3D12_BLEND_ONE;
 
     }
 
