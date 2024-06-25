@@ -6,6 +6,8 @@
 #include "GraphicViewport.h"
 #include "RHIUploadBuffer.h"
 #include "RHIBuffer.h"
+#include "RootSignature.h"
+#include "PipelineState.h"
 
 #include <iostream>
 #include <vector>
@@ -198,6 +200,16 @@ void D3DApp::LoadAsset()
         ThrowIfFailed(D3D12SerializeRootSignature(&rootSignatureDesc,D3D_ROOT_SIGNATURE_VERSION_1,&signature, &error));
         ThrowIfFailed(m_device->CreateRootSignature(0, signature->GetBufferPointer(), signature->GetBufferSize(), IID_PPV_ARGS(&m_rootSignature)));
         m_rootSignature->SetName(L"D3DApp_RootSig");
+
+        std::shared_ptr< RRootSignature> NewSignature = std::shared_ptr<RRootSignature>(new RRootSignature()); 
+        NewSignature->AddAsConstantBuffer(0, D3D12_SHADER_VISIBILITY_VERTEX);
+        NewSignature->AddAsConstantBuffer(0, D3D12_SHADER_VISIBILITY_PIXEL);
+        NewSignature->AddAsConstantBuffer(1, D3D12_SHADER_VISIBILITY_ALL);
+        NewSignature->Finalize("MyNewRootSignature", D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT);
+
+        std::shared_ptr<RGraphicPSO> NewPSO = std::shared_ptr<RGraphicPSO>(new RGraphicPSO("MyNewPSO"));
+
+
     }
 
     // Create pipeline state, which includes compiling and loading shaders
