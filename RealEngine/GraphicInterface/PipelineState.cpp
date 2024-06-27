@@ -11,6 +11,41 @@ RGraphicPSO::RGraphicPSO(const std::string& InName)
 	m_PSODesc.SampleDesc.Count = 1;
 	m_PSODesc.InputLayout.NumElements = 0;
 }
+void RGraphicPSO::SetRenderTargetFormats(uint32_t NumRTVs, const DXGI_FORMAT* RTVFormats, DXGI_FORMAT DSVFormat, uint32_t MsaaCount, uint32_t MsaaQuality)
+{
+	for (size_t i = 0; i < NumRTVs; ++i)
+	{
+		m_PSODesc.RTVFormats[i] = RTVFormats[i];
+	}
+	for (size_t i = NumRTVs; i < m_PSODesc.NumRenderTargets; i++)
+	{
+		m_PSODesc.RTVFormats[i] = DXGI_FORMAT_UNKNOWN; 
+	}
+	m_PSODesc.NumRenderTargets = NumRTVs;
+	m_PSODesc.DSVFormat = DSVFormat;
+	m_PSODesc.SampleDesc.Count = MsaaCount;
+	m_PSODesc.SampleDesc.Quality = MsaaQuality;
+}
+void RGraphicPSO::SetSampleMask(uint32_t InMask)
+{
+	m_PSODesc.SampleMask = InMask; 
+}
+void RGraphicPSO::SetPrimitiveTopologyType(D3D12_PRIMITIVE_TOPOLOGY_TYPE InTopologyType)
+{
+	m_PSODesc.PrimitiveTopologyType = InTopologyType;
+}
+void RGraphicPSO::SetRasterizer(const D3D12_RASTERIZER_DESC& InRasterizer)
+{
+	m_PSODesc.RasterizerState = InRasterizer;
+}
+void RGraphicPSO::SetDepthStencil(const D3D12_DEPTH_STENCIL_DESC& InDepthStencil)
+{
+	m_PSODesc.DepthStencilState = InDepthStencil;
+}
+void RGraphicPSO::SetBlendState(const D3D12_BLEND_DESC& InBlendDesc)
+{
+	m_PSODesc.BlendState = InBlendDesc;
+}
 
 void RGraphicPSO::SetShader(const std::string& VSShaderPath, const std::string& PSShaderPath)
 {

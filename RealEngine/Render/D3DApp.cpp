@@ -236,6 +236,40 @@ void D3DApp::LoadAsset()
         alphaBlend.RenderTarget[0].RenderTargetWriteMask = D3D12_COLOR_WRITE_ENABLE_ALL; 
         alphaBlend.RenderTarget[0].SrcBlend = D3D12_BLEND_ONE;
 
+        NewPSO->SetBlendState(alphaBlend);
+
+        D3D12_RASTERIZER_DESC rasterizerDesc = {};
+        rasterizerDesc.FillMode = D3D12_FILL_MODE_SOLID;
+        rasterizerDesc.CullMode = D3D12_CULL_MODE_BACK;
+        rasterizerDesc.FrontCounterClockwise = TRUE;
+        rasterizerDesc.DepthBias = D3D12_DEFAULT_DEPTH_BIAS;
+        rasterizerDesc.DepthBiasClamp = D3D12_DEFAULT_DEPTH_BIAS_CLAMP;
+        rasterizerDesc.SlopeScaledDepthBias = D3D12_DEFAULT_SLOPE_SCALED_DEPTH_BIAS;
+        rasterizerDesc.DepthClipEnable = TRUE; 
+        rasterizerDesc.MultisampleEnable = FALSE; 
+        rasterizerDesc.AntialiasedLineEnable = FALSE;
+        rasterizerDesc.ForcedSampleCount = 0;
+        rasterizerDesc.ConservativeRaster = D3D12_CONSERVATIVE_RASTERIZATION_MODE_OFF; 
+
+        NewPSO->SetRasterizer(rasterizerDesc);
+
+        D3D12_DEPTH_STENCIL_DESC DepthState = {};
+        DepthState.DepthEnable = true;
+        DepthState.DepthWriteMask = D3D12_DEPTH_WRITE_MASK_ALL;
+        DepthState.DepthFunc = D3D12_COMPARISON_FUNC_GREATER_EQUAL;
+        DepthState.StencilEnable = false;
+        DepthState.StencilReadMask = D3D12_DEFAULT_STENCIL_READ_MASK;
+        DepthState.StencilWriteMask = D3D12_DEFAULT_STENCIL_WRITE_MASK;
+        DepthState.FrontFace.StencilFunc = D3D12_COMPARISON_FUNC_ALWAYS;
+        DepthState.FrontFace.StencilPassOp = D3D12_STENCIL_OP_KEEP;
+        DepthState.FrontFace.StencilFailOp= D3D12_STENCIL_OP_KEEP;
+        DepthState.FrontFace.StencilDepthFailOp = D3D12_STENCIL_OP_KEEP; 
+        DepthState.BackFace = DepthState.FrontFace;
+
+        NewPSO->SetDepthStencil(DepthState);
+        NewPSO->SetPrimitiveTopologyType(D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE);
+        NewPSO->SetSampleMask((std::numeric_limits<uint32_t>::max)()); 
+        NewPSO->SetRenderTargetFormats(1, &m_backBufferFormat,)
     }
 
     // Create pipeline state, which includes compiling and loading shaders
