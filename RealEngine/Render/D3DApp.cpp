@@ -213,17 +213,17 @@ void D3DApp::LoadAsset()
         NewSignature->AddAsConstantBuffer(1, D3D12_SHADER_VISIBILITY_ALL);
         NewSignature->Finalize("MyNewRootSignature", D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT);
 
-        std::shared_ptr<RGraphicPSO> NewPSO = std::shared_ptr<RGraphicPSO>(new RGraphicPSO("MyNewPSO"));
+        m_NewPSO = std::shared_ptr<RGraphicPSO>(new RGraphicPSO("MyNewPSO"));
         D3D12_INPUT_ELEMENT_DESC Desces[] = 
         {
             {"POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D12_APPEND_ALIGNED_ELEMENT, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0},
             {"NORMAL", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D12_APPEND_ALIGNED_ELEMENT, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0},
             {"TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, D3D12_APPEND_ALIGNED_ELEMENT,D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA,0 }
         };
-        NewPSO->SetInputLayout(3, Desces);
-        NewPSO->SetShader(NewGetShaderPath() + "BaseVS.hlsl", NewGetShaderPath() + "BasePS.hlsl");
-        NewPSO->SetRootSignature(NewSignature);
-        D3D12_BLEND_DESC alphaBlend;
+        m_NewPSO->SetInputLayout(3, Desces);
+        m_NewPSO->SetShader(NewGetShaderPath() + "BaseVS.hlsl", NewGetShaderPath() + "BasePS.hlsl");
+        m_NewPSO->SetRootSignature(NewSignature);
+        D3D12_BLEND_DESC alphaBlend = {};
         alphaBlend.IndependentBlendEnable = false;
         alphaBlend.AlphaToCoverageEnable = false;
         alphaBlend.RenderTarget[0].BlendEnable = true;
@@ -236,7 +236,7 @@ void D3DApp::LoadAsset()
         alphaBlend.RenderTarget[0].RenderTargetWriteMask = D3D12_COLOR_WRITE_ENABLE_ALL; 
         alphaBlend.RenderTarget[0].SrcBlend = D3D12_BLEND_ONE;
 
-        NewPSO->SetBlendState(alphaBlend);
+        m_NewPSO->SetBlendState(alphaBlend);
 
         D3D12_RASTERIZER_DESC rasterizerDesc = {};
         rasterizerDesc.FillMode = D3D12_FILL_MODE_SOLID;
@@ -251,10 +251,10 @@ void D3DApp::LoadAsset()
         rasterizerDesc.ForcedSampleCount = 0;
         rasterizerDesc.ConservativeRaster = D3D12_CONSERVATIVE_RASTERIZATION_MODE_OFF; 
 
-        NewPSO->SetRasterizer(rasterizerDesc);
+        m_NewPSO->SetRasterizer(rasterizerDesc);
 
         D3D12_DEPTH_STENCIL_DESC DepthState = {};
-        DepthState.DepthEnable = true;
+        DepthState.DepthEnable = false;
         DepthState.DepthWriteMask = D3D12_DEPTH_WRITE_MASK_ALL;
         DepthState.DepthFunc = D3D12_COMPARISON_FUNC_GREATER_EQUAL;
         DepthState.StencilEnable = false;
@@ -266,10 +266,11 @@ void D3DApp::LoadAsset()
         DepthState.FrontFace.StencilDepthFailOp = D3D12_STENCIL_OP_KEEP; 
         DepthState.BackFace = DepthState.FrontFace;
 
-        NewPSO->SetDepthStencil(DepthState);
-        NewPSO->SetPrimitiveTopologyType(D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE);
-        NewPSO->SetSampleMask((std::numeric_limits<uint32_t>::max)()); 
-        NewPSO->SetRenderTargetFormats(1, &m_backBufferFormat,)
+        m_NewPSO->SetDepthStencil(DepthState);
+        m_NewPSO->SetPrimitiveTopologyType(D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE);
+        m_NewPSO->SetSampleMask((std::numeric_limits<uint32_t>::max)());
+        m_NewPSO->SetRenderTargetFormats(1, &m_backBufferFormat, DXGI_FORMAT::DXGI_FORMAT_UNKNOWN);
+        m_NewPSO->Finalize(); 
     }
 
     // Create pipeline state, which includes compiling and loading shaders

@@ -99,6 +99,7 @@ private:
 private:
     std::unique_ptr<class RRHIBufferByteAddress> m_NewVertexBuffer = nullptr; 
     std::unique_ptr<class RRHIUploadBuffer> m_NewUploadVertexBuffer = nullptr;
+    std::shared_ptr<class RGraphicPSO> m_NewPSO;
 };
 
 // concept : 
