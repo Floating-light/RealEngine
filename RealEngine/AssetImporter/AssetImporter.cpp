@@ -199,6 +199,9 @@ std::shared_ptr<RModelData> RAssetImporter::ImportModelNew(const std::string& In
 
         RLOG(Info, "{}, V: {}, F: {}, T: {}", Mesh->mName.C_Str(), Mesh->mNumVertices, Mesh->mNumFaces, Mesh->mPrimitiveTypes);
     }
-
+    if (RetData)
+    {
+        RetData->PostLoad();
+    }
     return RetData;
 }

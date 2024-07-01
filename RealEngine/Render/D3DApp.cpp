@@ -8,6 +8,8 @@
 #include "RHIBuffer.h"
 #include "RootSignature.h"
 #include "PipelineState.h"
+#include "PrimitiveInfo.h"
+#include "ModelData.h"
 
 #include <iostream>
 #include <vector>
@@ -465,6 +467,25 @@ uint64_t D3DApp::PopulateCommandListNew(const std::vector<std::shared_ptr<RPrimi
     CommandList->SetPipelineState(m_pipelineState.Get());
     CommandList->IASetVertexBuffers(0, 1, &m_vertexBufferView);
     CommandList->DrawInstanced(6, 1, 0, 0);
+
+    CommandList->SetPipelineState(m_NewPSO->GetPipelineState());
+    for (size_t i = 0; i < InPrims.size(); ++i)
+    {
+        std::shared_ptr<RPrimitiveObject> obj = InPrims[i];
+        if (RModelData* data = obj->GetModelData())
+        {
+            const std::vector<RMeshData>&  Meshes = data->GetMeshesData();
+            for (const RMeshData& Mesh : Meshes)
+            {
+                D3D12_GPU_VIRTUAL_ADDRESS buffer_ptr = data->GetGeometryDataBuffer().GetGPUVirtualAddress();
+                D3D12_VERTEX_BUFFER_VIEW buffer_view = { buffer_ptr + Mesh.vbOffset, Mesh.vbSize , Mesh.vbStride };
+                CommandList->IASetVertexBuffers(0, 1, &buffer_view); 
+                D3D12_INDEX_BUFFER_VIEW indexBufferView = { buffer_ptr + Mesh.ibOffset, Mesh.ibSize, DXGI_FORMAT_R32_UINT }; 
+                CommandList->IASetIndexBuffer(&indexBufferView);
+                CommandList->DrawIndexedInstanced(Mesh.indexCount, 1, 0, 0, 0);
+            }
+        }
+    }
 
     auto RT_Present = CD3DX12_RESOURCE_BARRIER::Transition(Viewport->GetCurrentRT(), D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PRESENT); 
     CommandList->ResourceBarrier(1, &RT_Present);
