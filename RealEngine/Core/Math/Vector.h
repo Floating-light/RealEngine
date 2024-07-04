@@ -29,6 +29,7 @@ public:
     
     // subtract Bias from each component
     Vector operator-(float Bias) const;
+    Vector operator-() const;
 
     Vector operator*(const Vector& V ) const;
 
@@ -93,6 +94,10 @@ inline Vector Vector::operator-(const Vector& V) const
 inline Vector Vector::operator-(float Bias) const
 {
     return Vector(X - Bias, Y - Bias, Z - Bias);
+}
+inline Vector Vector::operator-() const
+{
+    return Vector(0 - X, 0 - Y, 0 - Z); 
 }
 
 inline Vector Vector::operator*(const Vector& V ) const

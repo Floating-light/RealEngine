@@ -1,3 +1,12 @@
+cbuffer MeshConstants : register(b0)
+{
+    float4x4 ModelMatrix;
+}
+
+cbuffer GlobalConstants : register(b1)
+{
+    float4x4 ViewProjMatrix;
+}
 
 struct VSInput
 {
