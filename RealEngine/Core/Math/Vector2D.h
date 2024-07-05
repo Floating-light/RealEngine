@@ -7,7 +7,6 @@
 #include "MathUtilityDefine.h"
 #include "Logging.h"
 
-#define FORCEINLINE inline
 #define CORE_API
 
 /**
@@ -43,7 +42,7 @@ public:
 public:
 
 	/** Default constructor (no initialization). */
-	FORCEINLINE Vector2D() { }
+	inline Vector2D() { }
 
 	/**
 	 * Constructor using initial values for each component.
@@ -51,14 +50,14 @@ public:
 	 * @param InX X coordinate.
 	 * @param InY Y coordinate.
 	 */
-	FORCEINLINE Vector2D(float InX, float InY);
+	inline Vector2D(float InX, float InY);
 	
 	/**
 	 * Constructor initializing both components to a single float value.
 	 *
 	 * @param InF Value to set both components to.
 	 */
-	explicit FORCEINLINE Vector2D(float InF);
+	explicit inline Vector2D(float InF);
 
 	/**
 	 * Constructs a vector from an FVector.
@@ -66,7 +65,7 @@ public:
 	 *
 	 * @param V Vector to copy from.
 	 */
-	explicit FORCEINLINE Vector2D(const Vector3D& V);
+	explicit inline Vector2D(const Vector3D& V);
 
 public:
 
@@ -76,7 +75,7 @@ public:
 	 * @param V The other vector to add to this.
 	 * @return The result of adding the vectors together.
 	 */
-	FORCEINLINE Vector2D operator+(const Vector2D& V) const;
+	inline Vector2D operator+(const Vector2D& V) const;
 
 	/**
 	 * Gets the result of subtracting a vector from this one.
@@ -84,7 +83,7 @@ public:
 	 * @param V The other vector to subtract from this.
 	 * @return The result of the subtraction.
 	 */
-	FORCEINLINE Vector2D operator-(const Vector2D& V) const;
+	inline Vector2D operator-(const Vector2D& V) const;
 
 	/**
 	 * Gets the result of scaling the vector (multiplying each component by a value).
@@ -92,7 +91,7 @@ public:
 	 * @param Scale How much to scale the vector by.
 	 * @return The result of scaling this vector.
 	 */
-	FORCEINLINE Vector2D operator*(float Scale) const;
+	inline Vector2D operator*(float Scale) const;
 
 	/**
 	 * Gets the result of dividing each component of the vector by a value.
@@ -108,7 +107,7 @@ public:
 	 * @param A Float to add to each component.
 	 * @return The result of adding A to each component.
 	 */
-	FORCEINLINE Vector2D operator+(float A) const;
+	inline Vector2D operator+(float A) const;
 
 	/**
 	 * Gets the result of subtracting A from each component of the vector.
@@ -116,7 +115,7 @@ public:
 	 * @param A Float to subtract from each component
 	 * @return The result of subtracting A from each component.
 	 */
-	FORCEINLINE Vector2D operator-(float A) const;
+	inline Vector2D operator-(float A) const;
 
 	/**
 	 * Gets the result of component-wise multiplication of this vector by another.
@@ -124,7 +123,7 @@ public:
 	 * @param V The other vector to multiply this by.
 	 * @return The result of the multiplication.
 	 */
-	FORCEINLINE Vector2D operator*(const Vector2D& V) const;
+	inline Vector2D operator*(const Vector2D& V) const;
 
 	/**
 	 * Gets the result of component-wise division of this vector by another.
@@ -140,7 +139,7 @@ public:
 	 * @param V The other vector.
 	 * @return The dot product.
 	 */
-	FORCEINLINE float operator|(const Vector2D& V) const;
+	inline float operator|(const Vector2D& V) const;
 
 	/**
 	 * Calculates cross product of this vector and another.
@@ -148,7 +147,7 @@ public:
 	 * @param V The other vector.
 	 * @return The cross product.
 	 */
-	FORCEINLINE float operator^(const Vector2D& V) const;
+	inline float operator^(const Vector2D& V) const;
 
 public:
 
@@ -205,7 +204,7 @@ public:
 	 *
 	 * @return A negated copy of the vector.
 	 */
-	FORCEINLINE Vector2D operator-() const;
+	inline Vector2D operator-() const;
 
 	/**
 	 * Adds another vector to this.
@@ -213,7 +212,7 @@ public:
 	 * @param V The other vector to add.
 	 * @return Copy of the vector after addition.
 	 */
-	FORCEINLINE Vector2D operator+=(const Vector2D& V);
+	inline Vector2D operator+=(const Vector2D& V);
 
 	/**
 	 * Subtracts another vector from this.
@@ -221,7 +220,7 @@ public:
 	 * @param V The other vector to subtract.
 	 * @return Copy of the vector after subtraction.
 	 */
-	FORCEINLINE Vector2D operator-=(const Vector2D& V);
+	inline Vector2D operator-=(const Vector2D& V);
 
 	/**
 	 * Scales this vector.
@@ -229,7 +228,7 @@ public:
 	 * @param Scale The scale to multiply vector by.
 	 * @return Copy of the vector after scaling.
 	 */
-	FORCEINLINE Vector2D operator*=(float Scale);
+	inline Vector2D operator*=(float Scale);
 
 	/**
 	 * Divides this vector.
@@ -296,7 +295,7 @@ public:
 	 * @param B The second vector.
 	 * @return The dot product.
 	 */
-	FORCEINLINE static float DotProduct(const Vector2D& A, const Vector2D& B);
+	inline static float DotProduct(const Vector2D& A, const Vector2D& B);
 
 	/**
 	 * Squared distance between two 2D points.
@@ -305,7 +304,7 @@ public:
 	 * @param V2 The second point.
 	 * @return The squared distance between two 2D points.
 	 */
-	FORCEINLINE static float DistSquared(const Vector2D& V1, const Vector2D& V2);
+	inline static float DistSquared(const Vector2D& V1, const Vector2D& V2);
 
 	/**
 	 * Distance between two 2D points.
@@ -314,7 +313,7 @@ public:
 	 * @param V2 The second point.
 	 * @return The distance between two 2D points.
 	 */
-	FORCEINLINE static float Distance(const Vector2D& V1, const Vector2D& V2);
+	inline static float Distance(const Vector2D& V1, const Vector2D& V2);
 
 	/**
 	 * Calculate the cross product of two vectors.
@@ -323,7 +322,7 @@ public:
 	 * @param B The second vector.
 	 * @return The cross product.
 	 */
-	FORCEINLINE static float CrossProduct(const Vector2D& A, const Vector2D& B);
+	inline static float CrossProduct(const Vector2D& A, const Vector2D& B);
 
 	/**
 	 * Returns a vector with the maximum component for each dimension from the pair of vectors.
@@ -332,7 +331,7 @@ public:
 	 * @param B The second vector.
 	 * @return The max vector.
 	 */
-	FORCEINLINE static Vector2D Max(const Vector2D& A, const Vector2D& B);
+	inline static Vector2D Max(const Vector2D& A, const Vector2D& B);
 
 	/**
 	 * Returns a vector with the minimum component for each dimension from the pair of vectors.
@@ -341,7 +340,7 @@ public:
 	 * @param B The second vector.
 	 * @return The min vector.
 	 */
-	FORCEINLINE static Vector2D Min(const Vector2D& A, const Vector2D& B);
+	inline static Vector2D Min(const Vector2D& A, const Vector2D& B);
 
 	/**
 	 * Checks for equality with error-tolerant comparison.
@@ -462,14 +461,14 @@ public:
 	*
 	* @param A copy of the vector with each component set to +1 or -1
 	*/
-	// FORCEINLINE Vector2D GetSignVector() const;
+	// inline Vector2D GetSignVector() const;
 
 	/**
 	* Get a copy of this vector with absolute value of each component.
 	*
 	* @return A copy of this vector with absolute value of each component.
 	*/
-	FORCEINLINE Vector2D GetAbs() const;
+	inline Vector2D GetAbs() const;
 
 	/**
 	 * Get a textual representation of the vector.
@@ -483,7 +482,7 @@ public:
 	 *
 	 * @return true if there are any non-finite values in this vector, false otherwise.
 	 */
-	// FORCEINLINE bool ContainsNaN() const
+	// inline bool ContainsNaN() const
 	// {
 	// 	return (!FMath::IsFinite(X) || 
 	// 			!FMath::IsFinite(Y));
@@ -505,7 +504,7 @@ public:
  * @param Vector the vector to create a hash value for
  * @return The hash value from the components
  */
-// FORCEINLINE uint32 GetTypeHash(const Vector2D& Vector)
+// inline uint32 GetTypeHash(const Vector2D& Vector)
 // {
 // 	// Note: this assumes there's no padding in Vector2D that could contain uncompared data.
 // 	return FCrc::MemCrc_DEPRECATED(&Vector,sizeof(Vector));
@@ -514,7 +513,7 @@ public:
 /* Vector2D inline functions
  *****************************************************************************/
 
-FORCEINLINE Vector2D operator*(float Scale, const Vector2D& V)
+inline Vector2D operator*(float Scale, const Vector2D& V)
 {
 	return V.operator*(Scale);
 }
@@ -522,178 +521,178 @@ FORCEINLINE Vector2D operator*(float Scale, const Vector2D& V)
 // template <> struct TIsPODType<Vector2D> { enum { Value = true }; };
 
 
-FORCEINLINE Vector2D::Vector2D(float InX,float InY)
+inline Vector2D::Vector2D(float InX,float InY)
 	:	X(InX), Y(InY)
 { }
 
-FORCEINLINE Vector2D::Vector2D(float InF)
+inline Vector2D::Vector2D(float InF)
 	:	X(InF), Y(InF)
 { }
 
-FORCEINLINE Vector2D Vector2D::operator+(const Vector2D& V) const
+inline Vector2D Vector2D::operator+(const Vector2D& V) const
 {
 	return Vector2D(X + V.X, Y + V.Y);
 }
 
 
-FORCEINLINE Vector2D Vector2D::operator-(const Vector2D& V) const
+inline Vector2D Vector2D::operator-(const Vector2D& V) const
 {
 	return Vector2D(X - V.X, Y - V.Y);
 }
 
 
-FORCEINLINE Vector2D Vector2D::operator*(float Scale) const
+inline Vector2D Vector2D::operator*(float Scale) const
 {
 	return Vector2D(X * Scale, Y * Scale);
 }
 
 
-FORCEINLINE Vector2D Vector2D::operator/(float Scale) const
+inline Vector2D Vector2D::operator/(float Scale) const
 {
 	const float RScale = 1.f/Scale;
 	return Vector2D(X * RScale, Y * RScale);
 }
 
 
-FORCEINLINE Vector2D Vector2D::operator+(float A) const
+inline Vector2D Vector2D::operator+(float A) const
 {
 	return Vector2D(X + A, Y + A);
 }
 
 
-FORCEINLINE Vector2D Vector2D::operator-(float A) const
+inline Vector2D Vector2D::operator-(float A) const
 {
 	return Vector2D(X - A, Y - A);
 }
 
 
-FORCEINLINE Vector2D Vector2D::operator*(const Vector2D& V) const
+inline Vector2D Vector2D::operator*(const Vector2D& V) const
 {
 	return Vector2D(X * V.X, Y * V.Y);
 }
 
 
-FORCEINLINE Vector2D Vector2D::operator/(const Vector2D& V) const
+inline Vector2D Vector2D::operator/(const Vector2D& V) const
 {
 	return Vector2D(X / V.X, Y / V.Y);
 }
 
 
-FORCEINLINE float Vector2D::operator|(const Vector2D& V) const
+inline float Vector2D::operator|(const Vector2D& V) const
 {
 	return X*V.X + Y*V.Y;
 }
 
 
-FORCEINLINE float Vector2D::operator^(const Vector2D& V) const
+inline float Vector2D::operator^(const Vector2D& V) const
 {
 	return X*V.Y - Y*V.X;
 }
 
 
-FORCEINLINE float Vector2D::DotProduct(const Vector2D& A, const Vector2D& B)
+inline float Vector2D::DotProduct(const Vector2D& A, const Vector2D& B)
 {
 	return A | B;
 }
 
 
-FORCEINLINE float Vector2D::DistSquared(const Vector2D &V1, const Vector2D &V2)
+inline float Vector2D::DistSquared(const Vector2D &V1, const Vector2D &V2)
 {
 	return RMath::Square(V2.X-V1.X) + RMath::Square(V2.Y-V1.Y);
 }
 
 
-FORCEINLINE float Vector2D::Distance(const Vector2D& V1, const Vector2D& V2)
+inline float Vector2D::Distance(const Vector2D& V1, const Vector2D& V2)
 {
 	return std::sqrtf(Vector2D::DistSquared(V1, V2));
 }
 
 
-FORCEINLINE float Vector2D::CrossProduct(const Vector2D& A, const Vector2D& B)
+inline float Vector2D::CrossProduct(const Vector2D& A, const Vector2D& B)
 {
 	return A ^ B;
 }
 
-FORCEINLINE Vector2D Vector2D::Max(const Vector2D& A, const Vector2D& B)
+inline Vector2D Vector2D::Max(const Vector2D& A, const Vector2D& B)
 {
 	return Vector2D(RMath::Max(A.X, B.X), RMath::Max(A.Y, B.Y));
 }
 
-FORCEINLINE Vector2D Vector2D::Min(const Vector2D& A, const Vector2D& B)
+inline Vector2D Vector2D::Min(const Vector2D& A, const Vector2D& B)
 {
 	return Vector2D(RMath::Min(A.X, B.X), RMath::Min(A.Y, B.Y));
 }
 
-FORCEINLINE bool Vector2D::operator==(const Vector2D& V) const
+inline bool Vector2D::operator==(const Vector2D& V) const
 {
 	return X==V.X && Y==V.Y;
 }
 
 
-FORCEINLINE bool Vector2D::operator!=(const Vector2D& V) const
+inline bool Vector2D::operator!=(const Vector2D& V) const
 {
 	return X!=V.X || Y!=V.Y;
 }
 
 
-FORCEINLINE bool Vector2D::operator<(const Vector2D& Other) const
+inline bool Vector2D::operator<(const Vector2D& Other) const
 {
 	return X < Other.X && Y < Other.Y;
 }
 
 
-FORCEINLINE bool Vector2D::operator>(const Vector2D& Other) const
+inline bool Vector2D::operator>(const Vector2D& Other) const
 {
 	return X > Other.X && Y > Other.Y;
 }
 
 
-FORCEINLINE bool Vector2D::operator<=(const Vector2D& Other) const
+inline bool Vector2D::operator<=(const Vector2D& Other) const
 {
 	return X <= Other.X && Y <= Other.Y;
 }
 
 
-FORCEINLINE bool Vector2D::operator>=(const Vector2D& Other) const
+inline bool Vector2D::operator>=(const Vector2D& Other) const
 {
 	return X >= Other.X && Y >= Other.Y;
 }
 
 
-FORCEINLINE bool Vector2D::Equals(const Vector2D& V, float Tolerance) const
+inline bool Vector2D::Equals(const Vector2D& V, float Tolerance) const
 {
 	return RMath::Abs(X-V.X) <= Tolerance && RMath::Abs(Y-V.Y) <= Tolerance;
 }
 
 
-FORCEINLINE Vector2D Vector2D::operator-() const
+inline Vector2D Vector2D::operator-() const
 {
 	return Vector2D(-X, -Y);
 }
 
 
-FORCEINLINE Vector2D Vector2D::operator+=(const Vector2D& V)
+inline Vector2D Vector2D::operator+=(const Vector2D& V)
 {
 	X += V.X; Y += V.Y;
 	return *this;
 }
 
 
-FORCEINLINE Vector2D Vector2D::operator-=(const Vector2D& V)
+inline Vector2D Vector2D::operator-=(const Vector2D& V)
 {
 	X -= V.X; Y -= V.Y;
 	return *this;
 }
 
 
-FORCEINLINE Vector2D Vector2D::operator*=(float Scale)
+inline Vector2D Vector2D::operator*=(float Scale)
 {
 	X *= Scale; Y *= Scale;
 	return *this;
 }
 
 
-FORCEINLINE Vector2D Vector2D::operator/=(float V)
+inline Vector2D Vector2D::operator/=(float V)
 {
 	const float RV = 1.f/V;
 	X *= RV; Y *= RV;
@@ -701,72 +700,72 @@ FORCEINLINE Vector2D Vector2D::operator/=(float V)
 }
 
 
-FORCEINLINE Vector2D Vector2D::operator*=(const Vector2D& V)
+inline Vector2D Vector2D::operator*=(const Vector2D& V)
 {
 	X *= V.X; Y *= V.Y;
 	return *this;
 }
 
 
-FORCEINLINE Vector2D Vector2D::operator/=(const Vector2D& V)
+inline Vector2D Vector2D::operator/=(const Vector2D& V)
 {
 	X /= V.X; Y /= V.Y;
 	return *this;
 }
 
 
-FORCEINLINE float& Vector2D::operator[](int Index)
+inline float& Vector2D::operator[](int Index)
 {
 	CHECK(Index>=0 && Index<2);
 	return ((Index == 0) ? X : Y);
 }
 
 
-FORCEINLINE float Vector2D::operator[](int Index) const
+inline float Vector2D::operator[](int Index) const
 {
 	CHECK(Index>=0 && Index<2);
 	return ((Index == 0) ? X : Y);
 }
 
 
-FORCEINLINE void Vector2D::Set(float InX, float InY)
+inline void Vector2D::Set(float InX, float InY)
 {
 	X = InX;
 	Y = InY;
 }
 
 
-FORCEINLINE float Vector2D::GetMax() const
+inline float Vector2D::GetMax() const
 {
 	return RMath::Max(X,Y);
 }
 
 
-FORCEINLINE float Vector2D::GetAbsMax() const
+inline float Vector2D::GetAbsMax() const
 {
 	return RMath::Max(RMath::Abs(X),RMath::Abs(Y));
 }
 
 
-FORCEINLINE float Vector2D::GetMin() const
+inline float Vector2D::GetMin() const
 {
 	return RMath::Min(X,Y);
 }
 
 
-FORCEINLINE float Vector2D::Size() const
+inline float Vector2D::Size() const
 {
 	return sqrtf(X*X + Y*Y);
 }
 
 
-FORCEINLINE float Vector2D::SizeSquared() const
+inline float Vector2D::SizeSquared() const
 {
 	return X*X + Y*Y;
 }
 
 
-// FORCEINLINE Vector2D Vector2D::GetRotated(const float AngleDeg) const
+// inline Vector2D Vector2D::GetRotated(const float AngleDeg) const
 // {
 // 	// Based on FVector::RotateAngleAxis with Axis(0,0,1)
 
@@ -781,7 +780,7 @@ FORCEINLINE float Vector2D::SizeSquared() const
 // }
 
 
-// FORCEINLINE Vector2D Vector2D::GetSafeNormal(float Tolerance) const
+// inline Vector2D Vector2D::GetSafeNormal(float Tolerance) const
 // {	
 // 	const float SquareSum = X*X + Y*Y;
 // 	if(SquareSum > Tolerance)
@@ -793,7 +792,7 @@ FORCEINLINE float Vector2D::SizeSquared() const
 // }
 
 
-// FORCEINLINE void Vector2D::Normalize(float Tolerance)
+// inline void Vector2D::Normalize(float Tolerance)
 // {
 // 	const float SquareSum = X*X + Y*Y;
 // 	if(SquareSum > Tolerance)
@@ -808,7 +807,7 @@ FORCEINLINE float Vector2D::SizeSquared() const
 // }
 
 
-FORCEINLINE void Vector2D::ToDirectionAndLength(Vector2D &OutDir, float &OutLength) const
+inline void Vector2D::ToDirectionAndLength(Vector2D &OutDir, float &OutLength) const
 {
 	OutLength = Size();
 	if (OutLength > SMALL_NUMBER)
@@ -823,42 +822,42 @@ FORCEINLINE void Vector2D::ToDirectionAndLength(Vector2D &OutDir, float &OutLeng
 }
 
 
-FORCEINLINE bool Vector2D::IsNearlyZero(float Tolerance) const
+inline bool Vector2D::IsNearlyZero(float Tolerance) const
 {
 	return	RMath::Abs(X)<=Tolerance
 		&&	RMath::Abs(Y)<=Tolerance;
 }
 
 
-FORCEINLINE bool Vector2D::IsZero() const
+inline bool Vector2D::IsZero() const
 {
 	return X==0.f && Y==0.f;
 }
 
 
-FORCEINLINE float& Vector2D::Component(int Index)
+inline float& Vector2D::Component(int Index)
 {
 	return (&X)[Index];
 }
 
 
-FORCEINLINE float Vector2D::Component(int Index) const
+inline float Vector2D::Component(int Index) const
 {
 	return (&X)[Index];
 }
 
-// FORCEINLINE Vector2D Vector2D::RoundToVector() const
+// inline Vector2D Vector2D::RoundToVector() const
 // {
 // 	return Vector2D(FMath::RoundToFloat(X), FMath::RoundToFloat(Y));
 // }
 
-// FORCEINLINE Vector2D Vector2D::ClampAxes(float MinAxisVal, float MaxAxisVal) const
+// inline Vector2D Vector2D::ClampAxes(float MinAxisVal, float MaxAxisVal) const
 // {
 // 	return Vector2D(FMath::Clamp(X, MinAxisVal, MaxAxisVal), FMath::Clamp(Y, MinAxisVal, MaxAxisVal));
 // }
 
 
-// FORCEINLINE Vector2D Vector2D::GetSignVector() const
+// inline Vector2D Vector2D::GetSignVector() const
 // {
 // 	return Vector2D
 // 		(
@@ -867,13 +866,13 @@ FORCEINLINE float Vector2D::Component(int Index) const
 // 		);
 // }
 
-FORCEINLINE Vector2D Vector2D::GetAbs() const
+inline Vector2D Vector2D::GetAbs() const
 {
 	return Vector2D(RMath::Abs(X), RMath::Abs(Y));
 }
 
 
-FORCEINLINE std::string Vector2D::ToString() const
+inline std::string Vector2D::ToString() const
 {
     std::ostringstream OS;
     OS << "X=" << X << " Y=" <<Y;
@@ -881,7 +880,7 @@ FORCEINLINE std::string Vector2D::ToString() const
 }
 
 
-// FORCEINLINE bool Vector2D::InitFromString(const FString& InSourceString)
+// inline bool Vector2D::InitFromString(const FString& InSourceString)
 // {
 // 	X = Y = 0;
 
@@ -894,12 +893,12 @@ FORCEINLINE std::string Vector2D::ToString() const
 /* FMath inline functions
  *****************************************************************************/
 
-// FORCEINLINE float FMath::GetRangePct(Vector2D const& Range, float Value)
+// inline float FMath::GetRangePct(Vector2D const& Range, float Value)
 // {
 // 	return GetRangePct(Range.X, Range.Y, Value);
 // }
 
-// FORCEINLINE float FMath::GetRangeValue(Vector2D const& Range, float Pct)
+// inline float FMath::GetRangeValue(Vector2D const& Range, float Pct)
 // {
 // 	return Lerp<float>(Range.X, Range.Y, Pct);
 // }

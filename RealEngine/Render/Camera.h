@@ -2,6 +2,7 @@
 
 #include "Core.h"
 #include "Matrix3.h"
+#include "Transform.h"
 
 class Camera
 {

@@ -82,8 +82,9 @@ void CalculViewTransform(const Vector& InLocation, const Rotator& InRotation, Ma
 
 	Vector GrazeDirection( CP*CY, CP*SY, SP );
 
-    LookFromMatrix ViewTrans(InLocation, GrazeDirection, Vector(0.0,1.0,0.0));
-    OutMat = ViewTrans;
+    //LookFromMatrix ViewTrans(InLocation, GrazeDirection, Vector(0.0,1.0,0.0));
+    //OutMat = ViewTrans;
+    OutMat = Matrix4::Identity;
 }
 
 void RGameViewportClient::GetViewTransform(Matrix4& OutMat) const

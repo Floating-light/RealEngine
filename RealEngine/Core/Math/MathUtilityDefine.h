@@ -14,3 +14,5 @@ enum EForceInit
 	ForceInit,
 	ForceInitToZero
 };
+
+enum EIdentityTag{ kIdentity };

@@ -8,15 +8,19 @@ void Camera::SetLookAt(Vector3D Forward, Vector3D Up)
 	m_Basis.SetX(Right);
 	m_Basis.SetY(Up);
 	m_Basis.SetZ(-Forward);
+
+	m_CameraToWorld.SetRatation(RQuat(m_Basis));
 }
 
 void Camera::SetLocation(const Vector3D Location)
 {
-	m_ViewMatrix.SetAxis(3, Location);
+	m_CameraToWorld.SetTranslation(Location);
 }
 
 void Camera::Update()
 {
+	m_ViewMatrix = (~m_CameraToWorld).ToMatrixNoScale(); 
+
 	m_ViewProjMatrix = m_ProjMatrix * m_ViewMatrix;
 }
 

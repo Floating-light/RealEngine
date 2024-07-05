@@ -14,29 +14,32 @@ public:
     Vector Scale;
  
     Transform()
-        : Rotation(Rotator::ZeroRotator)
+        : Rotation(kIdentity)
         , Translation(0.f)
         , Scale(Vector::OneVector)
         {}
     
     explicit Transform(const Vector& InTranslation)
-        : Rotation(Rotator::ZeroRotator)
+        : Rotation(kIdentity)
         , Translation(InTranslation)
         , Scale(Vector::OneVector)
         {}
     explicit Transform(const Rotator& InRotation)
-        : Rotation(InRotation)
+        : Rotation(InRotation.Quaternion()) 
         , Translation(Vector::ZeroVector)
         , Scale(Vector::OneVector)
         {}
-    explicit Transform(const Rotator& InRotation, const Vector& InTranslation, const Vector& InScale = Vector::OneVector)
+    explicit Transform(const RQuat& InRotation, const Vector& InTranslation, const Vector& InScale = Vector::OneVector)
         : Rotation(InRotation)
         , Translation(InTranslation)
         , Scale(InScale)
         {}
-
+    inline Transform operator~()const;
+    void SetRatation(const RQuat& Quaternion) { Rotation = Quaternion; }
+    void SetTranslation(const Vector& InVec) { Translation = InVec; }
     Vector TransformVectorNoScale(const Vector& V) const ;
     Matrix4 ToMatrixWithScale() const ;
+    Matrix4 ToMatrixNoScale() const;
 };
 
 inline Vector Transform::TransformVectorNoScale(const Vector& V) const 
@@ -91,52 +94,66 @@ inline Matrix4 Transform::ToMatrixWithScale() const
     
     Matrix4 OutMatrix;
 
-#if !(UE_BUILD_SHIPPING || UE_BUILD_TEST) && WITH_EDITORONLY_DATA
-		// Make sure Rotation is normalized when we turn it into a matrix.
-		check(IsRotationNormalized());
-#endif
-	OutMatrix.Mat[0][3] = Translation.X;
-	OutMatrix.Mat[1][3] = Translation.Y;
-	OutMatrix.Mat[2][3] = Translation.Z;
-
-	const float x2 = Rotation.X + Rotation.X;
-	const float y2 = Rotation.Y + Rotation.Y;
-	const float z2 = Rotation.Z + Rotation.Z;
-	{
-		const float xx2 = Rotation.X * x2;
-		const float yy2 = Rotation.Y * y2;
-		const float zz2 = Rotation.Z * z2;
-
-		OutMatrix.Mat[0][0] = (1.0f - (yy2 + zz2)) * Scale.X;
-		OutMatrix.Mat[1][1] = (1.0f - (xx2 + zz2)) * Scale.Y;
-		OutMatrix.Mat[2][2] = (1.0f - (xx2 + yy2)) * Scale.Z;
-	}
-	{
-		const float yz2 = Rotation.Y * z2;
-		const float wx2 = Rotation.W * x2;
-
-		OutMatrix.Mat[1][2] = (yz2 - wx2) * Scale.Z;
-		OutMatrix.Mat[2][1] = (yz2 + wx2) * Scale.Y;
-	}
-	{
-		const float xy2 = Rotation.X * y2;
-		const float wz2 = Rotation.W * z2;
-
-		OutMatrix.Mat[0][1] = (xy2 - wz2) * Scale.Y;
-		OutMatrix.Mat[1][0] = (xy2 + wz2) * Scale.X;
-	}
-	{
-		const float xz2 = Rotation.X * z2;
-		const float wy2 = Rotation.W * y2;
-
-		OutMatrix.Mat[0][2] = (xz2 + wy2) * Scale.Z;
-		OutMatrix.Mat[2][0] = (xz2 - wy2) * Scale.X;
-	}
-
-	OutMatrix.Mat[3][0] = 0.0f;
-	OutMatrix.Mat[3][1] = 0.0f;
-	OutMatrix.Mat[3][2] = 0.0f;
-	OutMatrix.Mat[3][3] = 1.0f;
+//#if !(UE_BUILD_SHIPPING || UE_BUILD_TEST) && WITH_EDITORONLY_DATA
+//		// Make sure Rotation is normalized when we turn it into a matrix.
+//		check(IsRotationNormalized());
+//#endif
+//	OutMatrix.Mat[0][3] = Translation.X;
+//	OutMatrix.Mat[1][3] = Translation.Y;
+//	OutMatrix.Mat[2][3] = Translation.Z;
+//
+//	const float x2 = Rotation.X + Rotation.X;
+//	const float y2 = Rotation.Y + Rotation.Y;
+//	const float z2 = Rotation.Z + Rotation.Z;
+//	{
+//		const float xx2 = Rotation.X * x2;
+//		const float yy2 = Rotation.Y * y2;
+//		const float zz2 = Rotation.Z * z2;
+//
+//		OutMatrix.Mat[0][0] = (1.0f - (yy2 + zz2)) * Scale.X;
+//		OutMatrix.Mat[1][1] = (1.0f - (xx2 + zz2)) * Scale.Y;
+//		OutMatrix.Mat[2][2] = (1.0f - (xx2 + yy2)) * Scale.Z;
+//	}
+//	{
+//		const float yz2 = Rotation.Y * z2;
+//		const float wx2 = Rotation.W * x2;
+//
+//		OutMatrix.Mat[1][2] = (yz2 - wx2) * Scale.Z;
+//		OutMatrix.Mat[2][1] = (yz2 + wx2) * Scale.Y;
+//	}
+//	{
+//		const float xy2 = Rotation.X * y2;
+//		const float wz2 = Rotation.W * z2;
+//
+//		OutMatrix.Mat[0][1] = (xy2 - wz2) * Scale.Y;
+//		OutMatrix.Mat[1][0] = (xy2 + wz2) * Scale.X;
+//	}
+//	{
+//		const float xz2 = Rotation.X * z2;
+//		const float wy2 = Rotation.W * y2;
+//
+//		OutMatrix.Mat[0][2] = (xz2 + wy2) * Scale.Z;
+//		OutMatrix.Mat[2][0] = (xz2 - wy2) * Scale.X;
+//	}
+//
+//	OutMatrix.Mat[3][0] = 0.0f;
+//	OutMatrix.Mat[3][1] = 0.0f;
+//	OutMatrix.Mat[3][2] = 0.0f;
+//	OutMatrix.Mat[3][3] = 1.0f;
 
 	return OutMatrix;
 }
+
+inline Transform Transform::operator~() const
+{
+    RQuat invertedQuat = ~Rotation;
+    return Transform(invertedQuat, invertedQuat * -Translation);
+}
+
+inline Matrix4 Transform::ToMatrixNoScale() const
+{
+    Matrix4 RetVal(DirectX::XMMatrixRotationQuaternion(Rotation)); 
+    RetVal.SetAxis(3, RVector4D(Translation, 1.f));
+    return RetVal;
+}
+

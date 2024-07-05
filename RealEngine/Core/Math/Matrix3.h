@@ -11,7 +11,7 @@ public:
     inline Matrix3() {}
     //inline Matrix3(Vector x, Vector y, Vector z) { m_mat[0] = x; m_mat[1] = y; m_mat[2] = z; }
     //inline Matrix3(const Matrix3& m) { m_mat[0] = m.m_mat[0]; m_mat[1] = m.m_mat[1]; m_mat[2] = m.m_mat[2]; }
-    //inline Matrix3(Quaternion q) { *this = Matrix3(XMMatrixRotationQuaternion(q)); }
+    inline Matrix3(RQuat q) { *this = Matrix3(DirectX::XMMatrixRotationQuaternion(q)); } 
     inline explicit Matrix3(const DirectX::XMMATRIX& m) { m_mat[0] = Vector(m.r[0]); m_mat[1] = Vector(m.r[1]); m_mat[2] = Vector(m.r[2]); }
     //inline explicit Matrix3(EIdentityTag) { m_mat[0] = Vector(kXUnitVector); m_mat[1] = Vector(kYUnitVector); m_mat[2] = Vector(kZUnitVector); }
     //inline explicit Matrix3(EZeroTag) { m_mat[0] = m_mat[1] = m_mat[2] = Vector(kZero); }

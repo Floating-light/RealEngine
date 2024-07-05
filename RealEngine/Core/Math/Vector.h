@@ -20,6 +20,8 @@ public:
 
     inline explicit Vector(DirectX::FXMVECTOR vec); 
     inline operator DirectX::XMVECTOR() const { return DirectX::XMVectorSet(X, Y, Z, Z); }
+    inline  DirectX::XMVECTOR GetWithWZero() const { return DirectX::XMVectorSet(X, Y, Z, 0); }; 
+    inline  DirectX::XMVECTOR GetWithWOne() const { return DirectX::XMVectorSet(X, Y, Z, 1); }; 
 
     // Component-wise addition 
     Vector operator+(const Vector& V) const;
@@ -57,7 +59,7 @@ public:
 };
 using Vector3D = Vector;
 
-inline explicit Vector::Vector(DirectX::FXMVECTOR vec)
+inline Vector::Vector(DirectX::FXMVECTOR vec)
 {
     X = DirectX::XMVectorGetX(vec);
     Y = DirectX::XMVectorGetY(vec);

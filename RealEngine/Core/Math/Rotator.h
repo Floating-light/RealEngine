@@ -8,7 +8,7 @@ struct Rotator
 public:
     float Pitch;
     float Yaw;
-    float Roll ;
+    float Roll;
 
     static const Rotator ZeroRotator;
     

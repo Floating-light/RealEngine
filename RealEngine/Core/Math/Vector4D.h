@@ -76,6 +76,8 @@ public:
 
 	// Unary operators.
 
+	inline operator DirectX::XMVECTOR() const { return DirectX::XMVectorSet(X, Y, Z, W); }
+
 	/**
 	 * Gets a negated copy of the vector.
 	 *
