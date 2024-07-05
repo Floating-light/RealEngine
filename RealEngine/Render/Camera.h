@@ -4,17 +4,19 @@
 #include "Matrix3.h"
 #include "Transform.h"
 
-class Camera
+class RCamera
 {
 public:
-	Camera() :m_ViewMatrix(Matrix4::Identity)
+	RCamera() :m_ViewMatrix(Matrix4::Identity)
 	{
 		SetPrespectiveMatrix(PI / 4.f, 9.0f/16.0f, 1.0f, 1000.0f);
 	}
+	void SetTransform(const Vector& Location, const Rotator& Rotation);
 	void SetLookAt(Vector3D Forward, Vector3D Up);
 	void SetLocation(const Vector3D Location);
 	void Update();
 	void SetPrespectiveMatrix(float verticalFovRadians, float aspectHeightOverWidth, float nearZClip, float farZClip); 
+	Matrix4 GetViewProjectionMatrix() const { return m_ViewProjMatrix;  }; 
 private:
 	void SetProjMatrix(const Matrix4& InProj);
 	void UpdatePrjectMatrix();
@@ -34,7 +36,7 @@ private:
 	bool m_InfiniteZ = false;
 };
 
-inline void Camera::SetProjMatrix(const Matrix4& InProj)
+inline void RCamera::SetProjMatrix(const Matrix4& InProj)
 {
 	m_ProjMatrix = InProj;
 }

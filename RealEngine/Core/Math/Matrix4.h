@@ -24,6 +24,7 @@ struct Matrix4
     Matrix4 operator*(const Matrix4& M) const;
     void operator*=(const Matrix4& M);
     inline operator DirectX::XMMATRIX()const { return m_mat; }
+    std::string ToString()const;
 private:
     DirectX::XMMATRIX m_mat;  
 };
@@ -72,3 +73,13 @@ inline void Matrix4::operator*=(const Matrix4& M)
 {
     *this = DirectX::XMMatrixMultiply(M, m_mat);
 };
+
+inline std::string Matrix4::ToString()const
+{
+    return std::format("[{},\n{},\n{},\n{}]",  
+        RVector4D(m_mat.r[0]).ToString(),  
+        RVector4D(m_mat.r[1]).ToString(), 
+        RVector4D(m_mat.r[2]).ToString(), 
+        RVector4D(m_mat.r[3]).ToString()
+        );
+}

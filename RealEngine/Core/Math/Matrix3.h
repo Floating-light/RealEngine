@@ -9,7 +9,7 @@ __declspec(align(16)) class Matrix3
 {
 public:
     inline Matrix3() {}
-    //inline Matrix3(Vector x, Vector y, Vector z) { m_mat[0] = x; m_mat[1] = y; m_mat[2] = z; }
+    inline Matrix3(Vector x, Vector y, Vector z) { m_mat[0] = x; m_mat[1] = y; m_mat[2] = z; }
     //inline Matrix3(const Matrix3& m) { m_mat[0] = m.m_mat[0]; m_mat[1] = m.m_mat[1]; m_mat[2] = m.m_mat[2]; }
     inline Matrix3(RQuat q) { *this = Matrix3(DirectX::XMMatrixRotationQuaternion(q)); } 
     inline explicit Matrix3(const DirectX::XMMATRIX& m) { m_mat[0] = Vector(m.r[0]); m_mat[1] = Vector(m.r[1]); m_mat[2] = Vector(m.r[2]); }
@@ -36,8 +36,8 @@ public:
     inline operator DirectX::XMMATRIX() const { return DirectX::XMMATRIX(m_mat[0], m_mat[1], m_mat[2], DirectX::XMVectorZero()); } 
 
     //inline Matrix3 operator* (Scalar scl) const { return Matrix3(scl * GetX(), scl * GetY(), scl * GetZ()); }
-    //inline Vector operator* (Vector vec) const { return Vector(XMVectorTransformNormal(vec, *this)); }
-    //inline Matrix3 operator* (const Matrix3& mat) const { return Matrix3(*this * mat.GetX(), *this * mat.GetY(), *this * mat.GetZ()); }
+    inline Vector operator* (Vector vec) const { return Vector(DirectX::XMVector3TransformNormal(vec, *this)); } 
+    inline Matrix3 operator* (const Matrix3& mat) const { return Matrix3(*this * mat.GetX(), *this * mat.GetY(), *this * mat.GetZ()); }
 
 private:
     Vector m_mat[3]; 

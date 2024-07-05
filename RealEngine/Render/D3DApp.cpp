@@ -441,8 +441,14 @@ void D3DApp::OnUpdate(double DeltaTime)
     // V[2].position.x = -1.0f * abs(sinf(Data));
     // V[2].position.y = -1.0f * abs(sinf(Data));
 }
-uint64_t D3DApp::PopulateCommandListNew(const std::vector<std::shared_ptr<RPrimitiveObject>>& InPrims) 
+uint64_t D3DApp::PopulateCommandListNew(const RViewInfo& View)
 {
+    const std::vector<std::shared_ptr<RPrimitiveObject>>& InPrims = View.GetPrimitives();
+
+    ObjectConstants GlobalConstants;
+    GlobalConstants.ViewProjMatrix = View.GetViewProjectionMatrix();
+    RLOG(LogLevel::Info, "----->> \n{}", GlobalConstants.ViewProjMatrix.ToString());
+
     RCommandContext* Context = GGraphicInterface->BeginCommandContext("MainRender"); 
     
     // 临时做法，后面整个Present过程应该和场景渲染过程解耦
@@ -498,7 +504,7 @@ void D3DApp::OnRender(const RViewInfo& View)
     QueueMgr->WaitForFence(FrameAsyncFence);
     FrameAsyncFence = QueueMgr->GetGraphicsQueue().IncrementFence();
 
-    PopulateCommandListNew(View.GetPrimitives()); 
+    PopulateCommandListNew(View); 
     
     GGraphicInterface->Present();
 }

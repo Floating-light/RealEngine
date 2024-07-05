@@ -1,7 +1,9 @@
 #include "GameViewportClient.h"
 #include "ViewInfo.h"
+#include "Camera.h"
 
-RGameViewportClient::RGameViewportClient()
+RGameViewportClient::RGameViewportClient() : 
+    m_Camera(std::shared_ptr<RCamera>(new RCamera())) 
 {
     
 }
@@ -55,15 +57,18 @@ Reply RGameViewportClient::OnMouseMove( const RGeometry& MyGeometry, const RPoin
     return Reply::Unhandled();
 }
 
-void RGameViewportClient::SetUpView(struct RViewInfo& InOutViewInfo)
+void RGameViewportClient::Update()
 {
-    GetViewTransform(InOutViewInfo.ViewMat);
-    InOutViewInfo.ProjectionMat.SetIdentity();
-
-    InOutViewInfo.ViewProjectionMat = InOutViewInfo.ViewMat*InOutViewInfo.ProjectionMat;
+    m_Camera->SetTransform(Location, Rotation);
+    m_Camera->Update();
 }
 
-void RGameViewportClient::GetViewPoint(Vector& OutLocation, Rotator& OutRotation) const 
+void RGameViewportClient::SetUpView(struct RViewInfo& InOutViewInfo)
+{
+    InOutViewInfo.SetViewProjectionMatrix(m_Camera->GetViewProjectionMatrix());
+}
+
+void RGameViewportClient::GetViewPoint(Vector& OutLocation, Rotator& OutRotation) const
 {
     OutLocation = Location;
     OutRotation = Rotation;

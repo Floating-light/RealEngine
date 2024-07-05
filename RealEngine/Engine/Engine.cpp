@@ -69,6 +69,7 @@ void REngine::OnUpdate()
     RApplication::Get().ProcessInput();
 
     // update scene 
+    GameViewportClient->Update();
 
     // Render 
     RViewInfo ViewInfo;

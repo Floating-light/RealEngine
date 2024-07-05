@@ -56,6 +56,8 @@ public:
 
 	explicit RVector4D();
 
+	explicit RVector4D(DirectX::XMVECTOR InVec);
+
 public:
 
 	/**
@@ -380,6 +382,15 @@ public:
 /* RVector4D inline functions
  *****************************************************************************/
 
+inline RVector4D::RVector4D(DirectX::XMVECTOR InVec)
+	: X(DirectX::XMVectorGetX(InVec))
+	, Y(DirectX::XMVectorGetY(InVec))
+	, Z(DirectX::XMVectorGetZ(InVec))
+	, W(DirectX::XMVectorGetW(InVec))
+{
+}
+
+
 inline RVector4D::RVector4D(const Vector3D& InVector,float InW)
 	: X(InVector.X)
 	, Y(InVector.Y)
@@ -534,9 +545,7 @@ inline bool RVector4D::Equals(const RVector4D& V, float Tolerance) const
 
 inline std::string RVector4D::ToString() const
 {
-    std::ostringstream os;
-    os << "X=" << X << " Y=" << Y << " Z=" << Z << " W=" << W;
-	return os.str();
+	return std::format("[{}, {}, {}, {}]", X, Y, Z, W);
 }
 
 

@@ -8,9 +8,9 @@ using Microsoft::WRL::ComPtr;
 // D3D12 : manage the resource in gpu memory manually(residency)
 // D3D11 : manage by system
 
-struct ObjectConstants
+__declspec(align(256)) struct ObjectConstants
 {
-    Matrix4 MVP;
+    Matrix4 ViewProjMatrix;
 };
 class RViewInfo;
 class RPrimitiveObject;
@@ -25,7 +25,7 @@ public:
     void LoadAsset();
     void OnUpdate(double DeltaTime);
     void OnRender(const RViewInfo& View);
-    uint64_t PopulateCommandListNew(const std::vector<std::shared_ptr<RPrimitiveObject>>& InPrims);
+    uint64_t PopulateCommandListNew(const RViewInfo& View);
     void OnKeyDown(UINT8 key){};
     void OnKeyUp(UINT8 key){};
     // A GPU(adapter) connect to multiple monitor(display output )

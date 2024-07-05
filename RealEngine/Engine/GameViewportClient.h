@@ -2,6 +2,9 @@
 #include "Core.h"
 
 #include "Input/ApplicationViewport.h"
+
+class RCamera;
+
 class RGameViewportClient : public IAppViewport
 {
 public:
@@ -14,10 +17,12 @@ public:
     virtual Reply OnMouseMove( const RGeometry& MyGeometry, const RPointerEvent& MouseEvent );
     // ~ IAppViewport
 
+    void Update();
     void GetViewPoint(Vector& OutLocation, Rotator& OutRotation) const;
     void GetViewTransform(Matrix4& OutMat) const;
     void SetUpView(struct RViewInfo& InOutViewInfo);
 private:
     Vector Location;
     Rotator Rotation;
+    std::shared_ptr<RCamera> m_Camera;
 };

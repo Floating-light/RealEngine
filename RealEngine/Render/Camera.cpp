@@ -1,6 +1,14 @@
 #include "Camera.h"
 
-void Camera::SetLookAt(Vector3D Forward, Vector3D Up)
+void RCamera::SetTransform(const Vector& Location, const Rotator& Rotation)
+{
+	Matrix3 rot = Matrix3::MakeYRotation(Rotation.Yaw) * Matrix3::MakeXRotation(Rotation.Pitch);
+
+	SetLookAt(-rot.GetZ(), rot.GetY());
+	SetLocation(Location);
+}
+
+void RCamera::SetLookAt(Vector3D Forward, Vector3D Up)
 {
 	Forward = RMath::Normalize(Forward);
 	Vector Right = RMath::Normalize(Vector3D::CrossProduct(Forward, Up));
@@ -12,19 +20,19 @@ void Camera::SetLookAt(Vector3D Forward, Vector3D Up)
 	m_CameraToWorld.SetRatation(RQuat(m_Basis));
 }
 
-void Camera::SetLocation(const Vector3D Location)
+void RCamera::SetLocation(const Vector3D Location)
 {
 	m_CameraToWorld.SetTranslation(Location);
 }
 
-void Camera::Update()
+void RCamera::Update()
 {
 	m_ViewMatrix = (~m_CameraToWorld).ToMatrixNoScale(); 
 
 	m_ViewProjMatrix = m_ProjMatrix * m_ViewMatrix;
 }
 
-void Camera::SetPrespectiveMatrix(float verticalFovRadians, float aspectHeightOverWidth, float nearZClip, float farZClip)
+void RCamera::SetPrespectiveMatrix(float verticalFovRadians, float aspectHeightOverWidth, float nearZClip, float farZClip)
 {
 	m_VerticalFOV = verticalFovRadians;
 	m_AspectRatio = aspectHeightOverWidth;
@@ -34,7 +42,7 @@ void Camera::SetPrespectiveMatrix(float verticalFovRadians, float aspectHeightOv
 	UpdatePrjectMatrix();
 }
 
-void Camera::UpdatePrjectMatrix()
+void RCamera::UpdatePrjectMatrix()
 {
 	const float Y = 1.0f / std::tanf(m_VerticalFOV * 0.5f);
 	const float X = Y * m_AspectRatio;
