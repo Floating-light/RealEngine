@@ -1,6 +1,6 @@
 #pragma once 
 #include <cmath>
-
+#include <DirectXMath.h>
 struct Vector
 {
 public:
@@ -17,6 +17,9 @@ public:
     // A X B
     static Vector CrossProduct(const Vector& A, const Vector& B);
     static float DotProduct(const Vector& A, const Vector& B);
+
+    inline explicit Vector(DirectX::FXMVECTOR vec); 
+    inline operator DirectX::XMVECTOR() const { return DirectX::XMVectorSet(X, Y, Z, Z); }
 
     // Component-wise addition 
     Vector operator+(const Vector& V) const;
@@ -53,6 +56,13 @@ public:
 
 };
 using Vector3D = Vector;
+
+inline explicit Vector::Vector(DirectX::FXMVECTOR vec)
+{
+    X = DirectX::XMVectorGetX(vec);
+    Y = DirectX::XMVectorGetY(vec);
+    Z = DirectX::XMVectorGetZ(vec);
+}
 
 inline Vector::Vector():X(0.f), Y(0.f), Z(0.f){}
 

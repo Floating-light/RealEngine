@@ -1,12 +1,12 @@
 #pragma once
 
 #include "Core.h"
-
+#include "Matrix3.h"
 
 class Camera
 {
 public:
-	Camera() :ViewMatrix(Matrix4::Identity) 
+	Camera() :m_ViewMatrix(Matrix4::Identity)
 	{
 		SetPrespectiveMatrix(PI / 4.f, 9.0f/16.0f, 1.0f, 1000.0f);
 	}
@@ -18,6 +18,9 @@ private:
 	void SetProjMatrix(const Matrix4& InProj);
 	void UpdatePrjectMatrix();
 private:
+	// View 空间
+	Matrix3 m_Basis;
+	Transform m_CameraToWorld; 
 	Matrix4 m_ViewMatrix;
 	Matrix4 m_ProjMatrix;
 	Matrix4 m_ViewProjMatrix;

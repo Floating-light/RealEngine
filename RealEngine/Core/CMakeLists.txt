@@ -22,6 +22,7 @@ target_sources(Core
     Math/Vector.h
     Math/Vector2D.h
     Math/Math.cpp
+    Math/Matrix3.h
 ) 
 
 target_include_directories(Core
@@ -50,5 +51,6 @@ set_target_properties(Core PROPERTIES LINKER_LANGUAGE CXX)
 target_link_libraries(Core 
   PUBLIC
     Logging
+    DirectXMath
 )
 

@@ -53,6 +53,7 @@ public:
 	 * @param EForceInit Force init enum: if equal to ForceInitToZero then W is 0, otherwise W = 1 (creating an identity transform)
 	 */
 	explicit inline RQuat(EForceInit);
+	inline explicit RQuat(const DirectX::XMMATRIX& matrix);
 
 	/**
 	 * Constructor.
@@ -681,6 +682,14 @@ inline RQuat::RQuat(EForceInit ZeroOrNot)
 	:	X(0), Y(0), Z(0), W(ZeroOrNot == ForceInitToZero ? 0.0f : 1.0f)
 { }
 
+inline explicit RQuat::RQuat(const DirectX::XMMATRIX& matrix) 
+{
+	DirectX::XMVECTOR vec = DirectX::XMQuaternionRotationMatrix(matrix); 
+	X = DirectX::XMVectorGetX(vec);
+	Y = DirectX::XMVectorGetY(vec);
+	Z = DirectX::XMVectorGetZ(vec);
+	W = DirectX::XMVectorGetW(vec);
+}
 
 inline RQuat::RQuat(float InX, float InY, float InZ, float InW)
 	: X(InX)

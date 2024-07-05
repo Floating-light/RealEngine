@@ -19,7 +19,7 @@ struct Matrix4
     void SetIdentity();
 
     void SetAxis(uint8_t i,const Vector3D& Axis);
-
+    Vector3D GetAxis(uint8_t i)const;
     Matrix4 operator*(const Matrix4& M) const;
     void operator*=(const Matrix4& M);
 
@@ -57,6 +57,10 @@ inline void Matrix4::SetAxis(uint8_t i,const Vector3D& Axis)
     Mat[i][0] = Axis.X;
     Mat[i][1] = Axis.Y;
     Mat[i][2] = Axis.Z;
+}
+inline Vector3D Matrix4::GetAxis(uint8_t i)const
+{
+    return Vector3D(Mat[i][0], Mat[i][1], Mat[i][2]);
 }
 
 inline Matrix4 Matrix4::operator*(const Matrix4& M) const 
