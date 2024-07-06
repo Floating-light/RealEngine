@@ -26,6 +26,8 @@ target_sources(GraphicInterface
     PipelineState.cpp
     RootSignature.h
     RootSignature.cpp
+    LinearAllocator.h
+    LinearAllocator.cpp
 )
 
 target_include_directories(GraphicInterface

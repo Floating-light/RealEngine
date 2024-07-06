@@ -25,7 +25,7 @@ public:
     {
         return A >= B ? A : B;
     }
-        template <class T> 
+    template <class T> 
     static T Min(const T A, const T B )
     {
         return A <= B ? A : B;
@@ -121,5 +121,12 @@ public:
 	static constexpr inline float FloatSelect( float Comparand, float ValueGEZero, float ValueLTZero )
 	{
 		return Comparand >= 0.f ? ValueGEZero : ValueLTZero;
+	}
+	
+	// 如果16位对齐，AlignMask应该是15，0xFF
+	template <typename T> static T AlignUpWithMask(T Value, size_t AlignMask) 
+	{
+		// 与~AlignMask按位&会使低位为0，达到对齐地效果
+		return (T)(((size_t)Value + AlignMask) & (~AlignMask)); 
 	}
 };

@@ -3,11 +3,13 @@
 #include <cassert>
 #include <codecvt>
 #include "Logging.h"
+#include "MathUtilityDefine.h"
 #include "Vector.h"
 #include "Rotator.h"
 #include "Transform.h"
 #include "Matrix4.h"
 #include "Vector2D.h"
+#include "MathUtility.h"
 
 extern std::wstring ExecutableDir;
 
