@@ -57,7 +57,10 @@ public:
 
 	void CreateNewCommandList(D3D12_COMMAND_LIST_TYPE InType, ID3D12GraphicsCommandList** List, ID3D12CommandAllocator** Allocator);
 	void WaitForFence(uint64_t FenceValue);
-
+	bool IsFenceComplete(uint64_t FenceValue)
+	{
+		return GetQueue(D3D12_COMMAND_LIST_TYPE(FenceValue >> 56)).IsFenceComplete(FenceValue);
+	}
 	void IdleGPU()
 	{
 		m_GraphicsQueue.WaitForIdle();
