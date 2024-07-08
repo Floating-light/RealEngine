@@ -66,6 +66,9 @@ public:
 	void FreeLargePages(uint64_t FenceID, const std::vector<std::shared_ptr<RLinearAllocationPage>>& Pages); 
 
 private:
+	static constexpr uint32_t DefaultGpuLllocatorPageSize = 0x10000; 
+	static constexpr uint32_t DefaultCpuAllocatorPageSize = 0x200000; 
+
 	ELinearAllocatorType m_AllocationType;
 	std::vector<std::shared_ptr<RLinearAllocationPage>> m_PagePool;
 	std::queue<std::pair<uint64_t, std::shared_ptr<RLinearAllocationPage>>> m_RetiredPages;
