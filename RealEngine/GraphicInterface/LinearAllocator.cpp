@@ -28,7 +28,6 @@ std::shared_ptr<RLinearAllocationPage> RLinearAllocatorPageManager::RequestPage(
 	else
 	{
 		RetPage = CreateNewPage(); 
-		m_PagePool.emplace_back(RetPage);
 	}
 
 	return RetPage;
@@ -82,5 +81,42 @@ std::shared_ptr<RLinearAllocationPage> RLinearAllocatorPageManager::CreateNewPag
 
 void RLinearAllocatorPageManager::DiscardPages(uint64_t FenceID, const std::vector<std::shared_ptr<RLinearAllocationPage>>& Pages)
 {
+	std::lock_guard<std::mutex> lockGuard(m_Mutex);
+	for (auto it = Pages.begin(); it != Pages.end(); ++it)
+	{
+		m_RetiredPages.push(std::make_pair(FenceID, *it));
+	}
+}
 
+void RLinearAllocatorPageManager::FreeLargePages(uint64_t FenceID, const std::vector<std::shared_ptr<RLinearAllocationPage>>& Pages)
+{
+	std::lock_guard<std::mutex> LocalGuard(m_Mutex);
+	RCommandListManager* Mgr = GGraphicInterface->GetCommandListManager();
+
+	while (!m_DeletionQueue.empty() && Mgr->IsFenceComplete(m_DeletionQueue.front().first) )
+	{
+		m_DeletionQueue.pop();
+	}
+
+	for (auto it = Pages.begin(); it != Pages.end(); ++it)
+	{
+		(*it)->Unmap();
+		m_DeletionQueue.push(std::make_pair(FenceID, *it)); 
+	}
+}
+
+void RLinearAllocatorPageManager::Destroy()
+{
+	while (!m_RetiredPages.empty())
+	{
+		m_RetiredPages.pop();
+	}
+	while (!m_DeletionQueue.empty())
+	{
+		m_DeletionQueue.pop();
+	}
+	while (!m_RetiredPages.empty()) 
+	{
+		m_AvailablePages.pop();
+	}
 }

@@ -6,9 +6,10 @@
 
 #include "RHIResource.h"
 
+
 struct RDynamicAlloc
 {
-
+	
 };
 // 表示一大块GPU内存
 class RLinearAllocationPage : public RRHIResource
@@ -64,15 +65,42 @@ public:
 	std::shared_ptr<RLinearAllocationPage> CreateNewPage(size_t PageSize = 0);
 	void DiscardPages(uint64_t FenceID, const std::vector<std::shared_ptr<RLinearAllocationPage>>& Pages);
 	void FreeLargePages(uint64_t FenceID, const std::vector<std::shared_ptr<RLinearAllocationPage>>& Pages); 
+	void Destroy();
 
+	static constexpr uint32_t DefaultGpuLllocatorPageSize = 0x10000; // 64 K
+	static constexpr uint32_t DefaultCpuAllocatorPageSize = 0x200000; // 2MB
 private:
-	static constexpr uint32_t DefaultGpuLllocatorPageSize = 0x10000; 
-	static constexpr uint32_t DefaultCpuAllocatorPageSize = 0x200000; 
 
 	ELinearAllocatorType m_AllocationType;
-	std::vector<std::shared_ptr<RLinearAllocationPage>> m_PagePool;
 	std::queue<std::pair<uint64_t, std::shared_ptr<RLinearAllocationPage>>> m_RetiredPages;
 	std::queue<std::pair<uint64_t, std::shared_ptr<RLinearAllocationPage>>> m_DeletionQueue;
 	std::queue<std::shared_ptr<RLinearAllocationPage>> m_AvailablePages;
 	std::mutex m_Mutex;
+};
+
+class RLinearAllocator
+{
+public:
+	static const 
+	RLinearAllocator(ELinearAllocatorType Type) 
+		: m_AllocationType(Type) 
+		, m_PageSize(0)
+		, m_CurOffset(~(size_t)0)
+		, m_CurPages(nullptr)
+	{
+		assert(Type > ELinearAllocatorType::kInvalidAllocator && Type < ELinearAllocatorType::kNumAllocatorTypes);
+		m_PageSize = (m_AllocationType == ELinearAllocatorType::kGpuExclusive) 
+			? RLinearAllocatorPageManager::DefaultGpuLllocatorPageSize 
+			: RLinearAllocatorPageManager::DefaultCpuAllocatorPageSize;
+	};
+
+	RDynamicAlloc Allocate(size_t SizeInBytes, size_t Alignment = DEFAULT)
+
+private:
+	ELinearAllocatorType m_AllocationType;
+	size_t m_PageSize;
+	size_t m_CurOffset;
+	std::shared_ptr<RLinearAllocationPage> m_CurPages;
+	std::vector<std::shared_ptr<RLinearAllocationPage>> m_RetiredPages;
+	std::vector<std::shared_ptr<RLinearAllocationPage>> m_LargePageList;
 };
