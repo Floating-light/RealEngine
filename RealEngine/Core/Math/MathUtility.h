@@ -124,9 +124,16 @@ public:
 	}
 	
 	// 如果16位对齐，AlignMask应该是15，0xFF
-	template <typename T> static T AlignUpWithMask(T Value, size_t AlignMask) 
+	template <typename T> 
+	static inline T AlignUpWithMask(T Value, size_t AlignMask) 
 	{
 		// 与~AlignMask按位&会使低位为0，达到对齐地效果
 		return (T)(((size_t)Value + AlignMask) & (~AlignMask)); 
+	}
+
+	template <typename T>
+	static inline T AlignUp(T Value, size_t Alignment)
+	{
+		return AlignUpWithMask(Value, Alignment - 1);
 	}
 };

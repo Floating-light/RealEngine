@@ -81,7 +81,7 @@ private:
 class RLinearAllocator
 {
 public:
-	static const 
+	static constexpr uint32_t DEFAULT_ALIGN = 256; 
 	RLinearAllocator(ELinearAllocatorType Type) 
 		: m_AllocationType(Type) 
 		, m_PageSize(0)
@@ -94,9 +94,10 @@ public:
 			: RLinearAllocatorPageManager::DefaultCpuAllocatorPageSize;
 	};
 
-	RDynamicAlloc Allocate(size_t SizeInBytes, size_t Alignment = DEFAULT)
-
+	RDynamicAlloc Allocate(size_t SizeInBytes, size_t Alignment = DEFAULT_ALIGN);
+	void CleanupUsedPages(uint64_t FenceID);
 private:
+	RDynamicAlloc AllocateLargePage(size_t SizeInBytes);
 	ELinearAllocatorType m_AllocationType;
 	size_t m_PageSize;
 	size_t m_CurOffset;

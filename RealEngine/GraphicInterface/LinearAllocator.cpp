@@ -120,3 +120,21 @@ void RLinearAllocatorPageManager::Destroy()
 		m_AvailablePages.pop();
 	}
 }
+
+RDynamicAlloc RLinearAllocator::Allocate(size_t SizeInBytes, size_t Alignment)
+{
+	const size_t AlignmentMask = Alignment - 1;
+
+	// Alignment是2的幂时，它的二进制表示只有一位是1，16 = 10000
+	// Alignment - 1，则Alignment除了1的那一位，其它所有的低位都变成1
+	assert((AlignmentMask & Alignment) == 0);
+
+	const size_t AlignedSize = RMath::AlignUpWithMask(SizeInBytes, AlignmentMask);
+	if (AlignedSize > m_PageSize)
+	{
+		return AllocateLargePage(AlignedSize);
+	}
+
+
+	return RDynamicAlloc();
+}
