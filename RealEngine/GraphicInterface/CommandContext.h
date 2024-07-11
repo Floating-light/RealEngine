@@ -3,6 +3,8 @@
 #include <queue>
 
 #include "D3D12ThirdPart.h"
+#include "LinearAllocator.h"
+
 class RRHIResource;
 class RCommandContext;
 
@@ -36,7 +38,9 @@ private:
         m_Type(InType), 
         m_CommandList(nullptr),
         m_CurrentAllocator(nullptr),
-        m_Device(nullptr)
+        m_Device(nullptr),
+        m_CpuLinearAllocator(ELinearAllocatorType::kCpuWritable),
+        m_GpuLinearAllocator(ELinearAllocatorType::kGpuExclusive)
     {};
     void Reset();
 public:
@@ -60,6 +64,7 @@ public:
     void TransitionResource(RRHIResource& Resource, D3D12_RESOURCE_STATES NewState, bool FlushImmediate);
 
     //RRHIBuffer* CreateBuffer(const void *Data, uint32_t Size, uint32_t Stride, std::string_view DebugName);
+    void SetDynamicConstantBufferView(uint32_t RootIndex, size_t BufferSize, const void* BufferData);
 private:
     D3D12_HEAP_PROPERTIES GetUploadBufferHeapProps() const;
     D3D12_RESOURCE_DESC GetUploadBufferResourceDesc(uint32_t BufferSize) const;
@@ -76,4 +81,7 @@ private:
     D3D12_RESOURCE_BARRIER m_ResourceBarrierBuffer[16];
     uint8_t m_NumBarriersToFlush = 0;
     std::string m_ID;
+
+    RLinearAllocator m_CpuLinearAllocator;
+    RLinearAllocator m_GpuLinearAllocator;
 };

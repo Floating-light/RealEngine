@@ -135,6 +135,51 @@ RDynamicAlloc RLinearAllocator::Allocate(size_t SizeInBytes, size_t Alignment)
 		return AllocateLargePage(AlignedSize);
 	}
 
+	m_CurOffset = RMath::AlignUp(m_CurOffset, Alignment);
+	if (m_CurOffset + AlignedSize > m_PageSize)
+	{
+		m_RetiredPages.push_back(m_CurPages);
+		m_CurPages = nullptr;
+	}
+	if (m_CurPages == nullptr)
+	{
+		RLinearAllocatorPageManager* Mgr = GGraphicInterface->GetLinearAllocatorPageMananger(m_AllocationType);
+		m_CurPages = Mgr->RequestPage();
+		m_CurOffset = 0;
+	}
 
-	return RDynamicAlloc();
+	RDynamicAlloc retVal(*m_CurPages, m_CurOffset, AlignedSize);
+	retVal.DataPtr = (uint8_t*)m_CurPages->GetMapedCpuVirtualAddress() + m_CurOffset;
+	retVal.GpuAddress = m_CurPages->GetGPUVirtualAddress() + m_CurOffset;
+
+	return retVal;
+}
+
+RDynamicAlloc RLinearAllocator::AllocateLargePage(size_t SizeInBytes)
+{
+	RLinearAllocatorPageManager* Mgr = GGraphicInterface->GetLinearAllocatorPageMananger(m_AllocationType);
+	std::shared_ptr<RLinearAllocationPage> LargePage = Mgr->CreateNewPage(SizeInBytes);
+	m_LargePageList.push_back(LargePage);
+
+	RDynamicAlloc retVal(*LargePage, 0, SizeInBytes);
+	retVal.DataPtr = (uint8_t*)LargePage->GetMapedCpuVirtualAddress();
+	retVal.GpuAddress = LargePage->GetGPUVirtualAddress();
+
+	return retVal;
+}
+
+void RLinearAllocator::CleanupUsedPages(uint64_t FenceID)
+{
+	if (m_CurPages != nullptr)
+	{
+		m_RetiredPages.push_back(m_CurPages);
+		m_CurPages = nullptr;
+		m_CurOffset = 0;
+	}
+	RLinearAllocatorPageManager* Mgr = GGraphicInterface->GetLinearAllocatorPageMananger(m_AllocationType); 
+	Mgr->DiscardPages(FenceID, m_RetiredPages);
+	m_RetiredPages.clear();
+
+	Mgr->FreeLargePages(FenceID, m_LargePageList); 
+	m_LargePageList.clear();
 }

@@ -93,6 +93,9 @@ void RGraphicInterface::InitRHI()
     m_DescriptorAllocator.emplace_back(D3D12_DESCRIPTOR_HEAP_TYPE_SAMPLER);
     m_DescriptorAllocator.emplace_back(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
     m_DescriptorAllocator.emplace_back(D3D12_DESCRIPTOR_HEAP_TYPE_DSV);
+
+    m_LinearAllocatorManager[ELinearAllocatorType::kGpuExclusive].reset(new RLinearAllocatorPageManager(kGpuExclusive)); 
+    m_LinearAllocatorManager[ELinearAllocatorType::kCpuWritable].reset(new RLinearAllocatorPageManager(kCpuWritable));
 }
 
 void RGraphicInterface::DeInitRHI()

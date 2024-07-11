@@ -136,4 +136,10 @@ public:
 	{
 		return AlignUpWithMask(Value, Alignment - 1);
 	}
+
+	template <typename T>
+	static inline T IsAligned(T Value, size_t Alignment)
+	{
+		return ((size_t)Value & (Alignment - 1 )) == 0;
+	}
 };

@@ -460,6 +460,7 @@ uint64_t D3DApp::PopulateCommandListNew(const RViewInfo& View)
     CommandList->RSSetViewports(1, &m_viewport);
     CommandList->RSSetScissorRects(1, &m_scissorRect);
 
+
     auto PresentBufferTransition = CD3DX12_RESOURCE_BARRIER::Transition(Viewport->GetCurrentRT(), D3D12_RESOURCE_STATE_PRESENT, D3D12_RESOURCE_STATE_RENDER_TARGET);
     CommandList->ResourceBarrier(1, &PresentBufferTransition);
 

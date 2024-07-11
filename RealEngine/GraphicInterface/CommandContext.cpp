@@ -206,3 +206,11 @@ D3D12_RESOURCE_DESC RCommandContext::GetUploadBufferResourceDesc(uint32_t Buffer
 //    }
 //}
 
+void RCommandContext::SetDynamicConstantBufferView(uint32_t RootIndex, size_t BufferSize, const void* BufferData)
+{
+    assert(BufferData != nullptr && RMath::IsAligned(BufferSize, 16));
+
+    RDynamicAlloc cb = m_CpuLinearAllocator.Allocate(BufferSize);
+    memcpy(cb.DataPtr, BufferData, BufferSize);
+    m_CommandList->SetGraphicsRootConstantBufferView(RootIndex, cb.GpuAddress);
+}

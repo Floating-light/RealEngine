@@ -9,7 +9,20 @@
 
 struct RDynamicAlloc
 {
-	
+public:
+	RDynamicAlloc(RRHIResource& InResource, size_t InOffset, size_t InSize)
+		: Resource(InResource)
+		, Offset(InOffset)
+		, Size(InSize) 
+		, DataPtr(nullptr)
+		, GpuAddress(D3D12_GPU_VIRTUAL_ADDRESS_NULL)
+	{};
+
+	RRHIResource& Resource;
+	size_t Offset;
+	size_t Size;
+	void* DataPtr ;
+	D3D12_GPU_VIRTUAL_ADDRESS GpuAddress ;
 };
 // 表示一大块GPU内存
 class RLinearAllocationPage : public RRHIResource
@@ -45,6 +58,7 @@ public:
 			m_CpuVirtualAddress = nullptr;
 		}
 	}
+	void* GetMapedCpuVirtualAddress() { return m_CpuVirtualAddress; }
 private:
 	void* m_CpuVirtualAddress = nullptr;
 };
@@ -98,6 +112,7 @@ public:
 	void CleanupUsedPages(uint64_t FenceID);
 private:
 	RDynamicAlloc AllocateLargePage(size_t SizeInBytes);
+
 	ELinearAllocatorType m_AllocationType;
 	size_t m_PageSize;
 	size_t m_CurOffset;
