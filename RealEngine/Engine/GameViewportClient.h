@@ -22,7 +22,8 @@ public:
     void GetViewTransform(Matrix4& OutMat) const;
     void SetUpView(struct RViewInfo& InOutViewInfo);
 private:
-    Vector Location;
+    Vector Location = Vector::ZeroVector;
+    Vector DeltaLocation = Vector::ZeroVector;
     Rotator Rotation;
     std::shared_ptr<RCamera> m_Camera;
 };

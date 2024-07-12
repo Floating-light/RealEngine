@@ -2,6 +2,11 @@
 #include "RootSignature.h"
 #include "GraphicInterface.h"
 
+ID3D12RootSignature* RPSO::GetRootSignature() const
+{
+	return m_RootSignature->GetRootSignature();
+}
+
 RGraphicPSO::RGraphicPSO(const std::string& InName) 
 	: RPSO(InName)
 {

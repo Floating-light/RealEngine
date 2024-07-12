@@ -17,6 +17,7 @@ public:
 	{
 		m_RootSignature = InSignature;
 	}
+	ID3D12RootSignature* GetRootSignature() const;
 	ID3D12PipelineState* GetPipelineState()const { return m_PSO.Get(); }
 protected:
 	std::string m_Name;

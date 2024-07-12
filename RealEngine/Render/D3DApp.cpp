@@ -193,16 +193,17 @@ void D3DApp::LoadAsset()
 {
     // Create an empty root signature
     {
-        CD3DX12_ROOT_PARAMETER slotRootParameter[1];
+        CD3DX12_ROOT_PARAMETER slotRootParameter[1] = {};
 
-        CD3DX12_DESCRIPTOR_RANGE cbvTable;
-        cbvTable.Init(D3D12_DESCRIPTOR_RANGE_TYPE_CBV, 1, 0); // b0
+        //CD3DX12_DESCRIPTOR_RANGE cbvTable;
+        //cbvTable.Init(D3D12_DESCRIPTOR_RANGE_TYPE_CBV, 1, 0); // b0
 
-        slotRootParameter[0].InitAsDescriptorTable(1, &cbvTable);
+        //slotRootParameter[0].InitAsDescriptorTable(1, &cbvTable);
+        slotRootParameter[0].InitAsConstantBufferView(0,0, D3D12_SHADER_VISIBILITY_ALL);
 
         CD3DX12_ROOT_SIGNATURE_DESC rootSignatureDesc;
-        rootSignatureDesc.Init(0,nullptr, 0,nullptr, D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT);
-        // rootSignatureDesc.Init(1, slotRootParameter);
+        //rootSignatureDesc.Init(1,nullptr, 0,nullptr, D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT);
+         rootSignatureDesc.Init(1, slotRootParameter,0,nullptr, D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT); 
         ComPtr<ID3DBlob> signature;
         ComPtr<ID3DBlob> error;
         ThrowIfFailed(D3D12SerializeRootSignature(&rootSignatureDesc,D3D_ROOT_SIGNATURE_VERSION_1,&signature, &error));
@@ -279,16 +280,35 @@ void D3DApp::LoadAsset()
     {
         ComPtr<ID3DBlob> vertexShader;
         ComPtr<ID3DBlob> pixelShader;
+        ComPtr<ID3DBlob> errorMsg = nullptr;
 #if defined(DEBUG)
         UINT compileFlags = D3DCOMPILE_DEBUG | D3DCOMPILE_SKIP_OPTIMIZATION;
 #else
         UINT compileFlags = 0;
 #endif
         std::wstring shaderPath = GetShaderPath() + L"MainShader.hlsl";
-        ThrowIfFailed(D3DCompileFromFile(shaderPath.c_str(), /*Defines*/nullptr, /*Inlcude*/nullptr,
-        "VSMain","vs_5_0", compileFlags,0,&vertexShader, /*Error*/nullptr ));
-        ThrowIfFailed(D3DCompileFromFile(shaderPath.c_str(), nullptr, nullptr, 
-        "PSMain", "ps_5_0",compileFlags, 0, &pixelShader, nullptr ));
+        if (FAILED(D3DCompileFromFile(shaderPath.c_str(), /*Defines*/nullptr, /*Inlcude*/nullptr,
+            "VSMain", "vs_5_0", compileFlags, 0, &vertexShader, /*Error*/&errorMsg)))
+        {
+            std::string errMsg((char* )errorMsg->GetBufferPointer());
+            ThrowIfFailed(0);
+        }
+        if (errorMsg)
+        {
+            std::string errMsg((char*)errorMsg->GetBufferPointer());
+        }
+
+        if (FAILED(D3DCompileFromFile(shaderPath.c_str(), nullptr, nullptr,
+            "PSMain", "ps_5_0", compileFlags, 0, &pixelShader, &errorMsg)))
+        {
+            std::string errMsg((char*)errorMsg->GetBufferPointer());
+            ThrowIfFailed(0); 
+        }
+
+        if (errorMsg)
+        {
+            std::string errMsg2((char*)errorMsg->GetBufferPointer());
+        }
 
         D3D12_INPUT_ELEMENT_DESC inputElementDescs[] = 
         {
@@ -333,13 +353,13 @@ void D3DApp::LoadAsset()
         // };
         Vertex triangleVertices[] = 
         {
-            { { -1.0f, -1.0f , 0.0f }, { 0.0f, 0.0f, 1.0f, 1.0f } },
-            { { -1.0f, 1.0f , 0.0f }, { 1.0f, 0.0f, 0.0f, 1.0f } },
-            { { 1.0f, -1.0f , 0.0f }, { 0.0f, 1.0f, 0.0f, 1.0f } },
+            { { -1.0f, -1.0f , -1.5f }, { 0.0f, 0.0f, 1.0f, 1.0f } },
+            { { -1.0f, 1.0f , -1.5f }, { 1.0f, 0.0f, 0.0f, 1.0f } },
+            { { 1.0f, -1.0f , -1.5f }, { 0.0f, 1.0f, 0.0f, 1.0f } },
 
-            { { 1.0f, 1.0f , 0.0f }, { 0.0f, 0.0f, 1.0f, 1.0f } },
-            { { 1.0f, -0.8f , 0.0f }, { 0.0f, 1.0f, 0.0f, 1.0f } },
-            { { -0.8f, 1.0f , 0.0f }, { 1.0f, 0.0f, 1.0f, 1.0f } }
+            { { 1.0f, 1.0f , -1.5f }, { 0.0f, 0.0f, 1.0f, 1.0f } },
+            { { 1.0f, -0.8f , -1.5f }, { 0.0f, 1.0f, 0.0f, 1.0f } },
+            { { -0.8f, 1.0f , -1.5f }, { 1.0f, 0.0f, 1.0f, 1.0f } }
         };
         const UINT vertexBufferSize = sizeof(triangleVertices);
         m_NewUploadVertexBuffer = std::make_unique<RRHIUploadBuffer>(); 
@@ -447,6 +467,7 @@ uint64_t D3DApp::PopulateCommandListNew(const RViewInfo& View)
 
     ObjectConstants GlobalConstants;
     GlobalConstants.ViewProjMatrix = View.GetViewProjectionMatrix();
+    //GlobalConstants.ViewProjMatrix.SetIdentity();
     RLOG(LogLevel::Info, "----->> \n{}", GlobalConstants.ViewProjMatrix.ToString());
 
     RCommandContext* Context = GGraphicInterface->BeginCommandContext("MainRender"); 
@@ -472,10 +493,14 @@ uint64_t D3DApp::PopulateCommandListNew(const RViewInfo& View)
     CommandList->IASetPrimitiveTopology(D3D10_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
     CommandList->SetPipelineState(m_pipelineState.Get());
+    Context->SetDynamicConstantBufferView(0, sizeof(ObjectConstants), &GlobalConstants);
+
     CommandList->IASetVertexBuffers(0, 1, &m_vertexBufferView);
     CommandList->DrawInstanced(6, 1, 0, 0);
 
+    CommandList->SetGraphicsRootSignature(m_NewPSO->GetRootSignature());
     CommandList->SetPipelineState(m_NewPSO->GetPipelineState());
+    Context->SetDynamicConstantBufferView(1, sizeof(ObjectConstants), &GlobalConstants);
     for (size_t i = 0; i < InPrims.size(); ++i)
     {
         std::shared_ptr<RPrimitiveObject> obj = InPrims[i];

@@ -4,10 +4,22 @@ struct PSInput
     float4 color : COLOR;
 };
 
-PSInput VSMain(float4 position : POSITION, float4 color : COLOR)
+cbuffer GlobalConstants : register(b0)
+{
+    float4x4 ViewProjMatrix;
+}
+
+PSInput VSMain(float3 position : POSITION, float4 color : COLOR)
 {
     PSInput result;
-    result.position = position;
+    float4x4 localvp = { { 1.0f, 0.0f, 0.0f, 0.0f },
+                       { 0.0f, 1.0f, 0.0f, 0.0f },
+                       { 0.0f, 0.0f, 1.0f, 0.0f },
+                       { 0.0f, 0.0f, 0.0f, 1.0f },
+                };
+    result.position = mul(ViewProjMatrix, float4(position, 1.0f));
+    //result.position = mul(localvp, float4(position, 1.0f));
+    //result.position = float4(position, 1.0f);
     result.color = color;
 
     return result;
