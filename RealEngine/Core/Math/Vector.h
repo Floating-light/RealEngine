@@ -18,11 +18,14 @@ public:
     static Vector CrossProduct(const Vector& A, const Vector& B);
     static float DotProduct(const Vector& A, const Vector& B);
 
+    static Vector ComponentWiseMin(const Vector& A, const Vector& B);
+    static Vector ComponentWiseMax(const Vector& A, const Vector& B);
+
     inline explicit Vector(DirectX::FXMVECTOR vec); 
     inline operator DirectX::XMVECTOR() const { return DirectX::XMVectorSet(X, Y, Z, Z); }
     inline  DirectX::XMVECTOR GetWithWZero() const { return DirectX::XMVectorSet(X, Y, Z, 0); }; 
     inline  DirectX::XMVECTOR GetWithWOne() const { return DirectX::XMVectorSet(X, Y, Z, 1); }; 
-
+    
     // Component-wise addition 
     Vector operator+(const Vector& V) const;
 
@@ -167,4 +170,15 @@ inline float Vector::LengthSquared() const
 inline Vector operator*(float Scale, const Vector& V)
 {
 	return V.operator*(Scale);
+}
+
+inline Vector Vector::ComponentWiseMin(const Vector& A, const Vector& B)
+{
+    return Vector((std::min)(A.X, B.X), (std::min)(A.Y, B.Y), (std::min)(A.Z, B.Z));
+}
+
+inline Vector Vector::ComponentWiseMax(const Vector& A, const Vector& B)
+{
+    return Vector((std::max)(A.X, B.X), (std::max)(A.Y, B.Y), (std::max)(A.Z, B.Z));
+
 }

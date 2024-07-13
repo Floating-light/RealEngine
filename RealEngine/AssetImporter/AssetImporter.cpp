@@ -145,7 +145,9 @@ std::shared_ptr<RModelData> RAssetImporter::ImportModelNew(const std::string& In
     const uint32_t strides = sizeof(float) * (3 + 3 + 2);
     
     static_assert(std::is_same<ai_real, float>::value);
-    
+    Vector MaxVet((std::numeric_limits<float>::lowest)());
+    Vector Minvet((std::numeric_limits<float>::max)()); 
+
     for (size_t i = 0; i < scene->mNumMeshes; ++i)
     {
         aiMesh* Mesh = scene->mMeshes[i];  
@@ -171,6 +173,11 @@ std::shared_ptr<RModelData> RAssetImporter::ImportModelNew(const std::string& In
 
         for (size_t j = 0; j < Mesh->mNumVertices; ++j)
         {
+            const aiVector3D& CurVert = Mesh->mVertices[j];
+            const Vector MyVersion(CurVert.x, CurVert.y, CurVert.z);
+            MaxVet = Vector::ComponentWiseMax(MaxVet, MyVersion);
+            Minvet = Vector::ComponentWiseMin(MaxVet, MyVersion);
+
             memcpy(pPosition, &(Mesh->mVertices[j]), sizeof(aiVector3D));
             pPosition += strides;
             memcpy(pNormal, &(Mesh->mNormals[j]), sizeof(aiVector3D));

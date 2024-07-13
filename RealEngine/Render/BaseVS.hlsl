@@ -25,6 +25,7 @@ VSOutput VSMain(VSInput input)
 {
     VSOutput output;
     output.position = mul(ViewProjMatrix, float4(input.position, 1.0f));
+    //output.position = float4(input.position, 1.0f);
     
     output.normal = input.normal;
     output.uv0 = input.uv0;

@@ -65,6 +65,8 @@ void RCommandContext::Initialize()
 uint64_t RCommandContext::Finish(bool WaitForCompletion) 
 {
     // TODO:
+    FlushResourceBarriers();
+
     RCommandListManager* CMDManager = GGraphicInterface->GetCommandListManager();
     RCommandQueue& Queue = CMDManager->GetQueue(m_Type);
     
@@ -73,8 +75,10 @@ uint64_t RCommandContext::Finish(bool WaitForCompletion)
     Queue.DiscardAllocator(CompleteFence, m_CurrentAllocator);
     m_CurrentAllocator = nullptr;
 
-    //if (WaitForCompletion)
-        //CMDManager.WaitForFence();
+    m_CpuLinearAllocator.CleanupUsedPages(CompleteFence);
+    m_GpuLinearAllocator.CleanupUsedPages(CompleteFence);
+    if (WaitForCompletion)
+        CMDManager->WaitForFence(CompleteFence);
     GGraphicInterface->GetCommandContextManger()->FreeContext(this);
     return CompleteFence; 
 }

@@ -500,7 +500,9 @@ uint64_t D3DApp::PopulateCommandListNew(const RViewInfo& View)
 
     CommandList->SetGraphicsRootSignature(m_NewPSO->GetRootSignature());
     CommandList->SetPipelineState(m_NewPSO->GetPipelineState());
-    Context->SetDynamicConstantBufferView(1, sizeof(ObjectConstants), &GlobalConstants);
+    Context->SetDynamicConstantBufferView(0, sizeof(ObjectConstants), &GlobalConstants);
+    //Context->SetDynamicConstantBufferView(1, sizeof(ObjectConstants), &GlobalConstants);
+    Context->SetDynamicConstantBufferView(2, sizeof(ObjectConstants), &GlobalConstants);
     for (size_t i = 0; i < InPrims.size(); ++i)
     {
         std::shared_ptr<RPrimitiveObject> obj = InPrims[i];
