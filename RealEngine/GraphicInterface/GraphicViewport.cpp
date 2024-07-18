@@ -9,9 +9,10 @@ RGraphicViewport::RGraphicViewport()
 void RGraphicViewport::Initialize(ID3D12Device* InDevice, IDXGIFactory4* Factory, ID3D12CommandQueue* CommandQueue, HWND WindowHandle) 
 {
 	assert(InDevice && Factory); 
+
 	DXGI_SWAP_CHAIN_DESC1 swapChainDesc = {}; 
-	swapChainDesc.Width = m_DisplayWidth; 
-	swapChainDesc.Height = m_DisplayHeight;
+	swapChainDesc.Width = m_ViewportSize.Width;
+	swapChainDesc.Height = m_ViewportSize.Height;
 	swapChainDesc.Format = m_SwapChaineFormat;
 	swapChainDesc.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
 	swapChainDesc.BufferCount = m_SwapChainBufferCount;
@@ -66,6 +67,16 @@ void RGraphicViewport::Present()
 
 void RGraphicViewport::SetViewportSize(uint32_t InWidth, uint32_t InHeight) 
 {
-	m_DisplayWidth = InWidth;
-	m_DisplayHeight = InHeight; 
+	m_ViewportSize.TopLeftX = 0;
+	m_ViewportSize.TopLeftY = 0;
+	m_ViewportSize.Width = InWidth;
+	m_ViewportSize.Height = InHeight;
+	m_ViewportSize.MinDepth = D3D12_MIN_DEPTH;
+	m_ViewportSize.MaxDepth = D3D12_MAX_DEPTH;
+
+	m_Scissor.left = 0;
+	m_Scissor.top = 0;
+
+	m_Scissor.right = InWidth;
+	m_Scissor.bottom = InHeight;
 }

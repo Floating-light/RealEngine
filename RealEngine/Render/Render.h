@@ -13,5 +13,5 @@ public:
     void DoRender(RViewInfo& ViewInfo);
     void Destroy();
 private:
-    
+    std::shared_ptr<RGraphicPSO> m_DefaultPSO;
 };

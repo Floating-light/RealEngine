@@ -14,15 +14,17 @@ public:
 	void Present();
 
 	void SetViewportSize(uint32_t InWidth, uint32_t InHeight);
-
+	DXGI_FORMAT GetSwapChainFormat() const { return m_SwapChaineFormat; }
 	ID3D12Resource* GetCurrentRT()const { return m_DisplayPlane[m_CurrentBuffer].Get(); }
 	D3D12_CPU_DESCRIPTOR_HANDLE GetCurrentRTViewHandle()const 
 	{ return D3D12_CPU_DESCRIPTOR_HANDLE{ m_rtViewHeap->GetCPUDescriptorHandleForHeapStart().ptr + m_CurrentBuffer * m_rtHandleSize }; } 
-
+	D3D12_VIEWPORT GetViewportSize()const { return m_ViewportSize; };
+	D3D12_RECT GetScissor()const { return m_Scissor; }
 private:
 	ComPtr<IDXGISwapChain1> m_SwapChain = nullptr;  
-	uint32_t m_DisplayWidth = 1920;
-	uint32_t m_DisplayHeight = 1080;
+	D3D12_VIEWPORT m_ViewportSize;
+	D3D12_RECT m_Scissor;
+
 	DXGI_FORMAT m_SwapChaineFormat = DXGI_FORMAT_R10G10B10A2_UNORM; 
 	static constexpr const uint8_t m_SwapChainBufferCount = 3; 
 	ComPtr<ID3D12DescriptorHeap> m_rtViewHeap;
