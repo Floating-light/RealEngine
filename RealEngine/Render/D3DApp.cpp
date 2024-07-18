@@ -46,7 +46,7 @@ void D3DApp::InitializeViewport(void* hHwnd, unsigned int width, unsigned int he
     m_clientWidth = width;
     m_clientHeight = height;
     m_title = title;
-    m_viewport = CD3DX12_VIEWPORT(static_cast<float>(width - height)/2,0.0f,static_cast<float>(height), static_cast<float>(height));
+    m_viewport = CD3DX12_VIEWPORT(0.0f,0.0f,static_cast<float>(width), static_cast<float>(height));
     m_aspectRatio = static_cast<float>(width ) / static_cast<float>(height);
     m_scissorRect = CD3DX12_RECT(0,0, static_cast<LONG>(width), static_cast<LONG>(height));
     m_hHwnd = HWND(hHwnd);
