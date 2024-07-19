@@ -5,35 +5,36 @@
 RGameViewportClient::RGameViewportClient() : 
     m_Camera(std::shared_ptr<RCamera>(new RCamera())) 
 {
-    
+    Location = Vector(0, 16.8, 13.38);
 }
 
 Reply RGameViewportClient::OnKeyDown( const RGeometry& MyGeometry, const RKeyEvent& InKeyEvent )
 {
     RLOG(Info, "{} : {}", __FUNCTION__, InKeyEvent.GetKey().ToString());
+    static constexpr float Intensity = 0.06;
     if(InKeyEvent.GetKey() == RKey::W)
     {
-        DeltaLocation.Z -= 0.01;
+        DeltaLocation.Z -= Intensity;
     }
     else if(InKeyEvent.GetKey() == RKey::S)
     {
-        DeltaLocation.Z +=0.01;
+        DeltaLocation.Z += Intensity;
     }
     else if(InKeyEvent.GetKey() == RKey::A)
     {
-        DeltaLocation.X -= 0.01;
+        DeltaLocation.X -= Intensity;
     }
     else if(InKeyEvent.GetKey() ==RKey::D)
     {
-        DeltaLocation.X +=  0.01;
+        DeltaLocation.X += Intensity;
     }
     else if (InKeyEvent.GetKey() == RKey::E)
     {
-        DeltaLocation.Y -= 0.01;
+        DeltaLocation.Y -= Intensity;
     }
     else if (InKeyEvent.GetKey() == RKey::Q)
     {
-        DeltaLocation.Y += 0.01;
+        DeltaLocation.Y += Intensity;
     }
     else
     {
@@ -69,6 +70,8 @@ void RGameViewportClient::Update()
     Location += rot * DeltaLocation;
     m_Camera->SetTransform(Location, Rotation);
     m_Camera->Update();
+    RLOG(Info, "{} Camera location: {}", __FUNCTION__, Location.ToString()); 
+
     DeltaLocation = Vector::ZeroVector;
 }
 

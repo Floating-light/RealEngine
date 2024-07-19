@@ -7,14 +7,19 @@
 
 #include "RootSignature.h"
 #include "PipelineState.h"
+#include "CommandListManager.h"
 #include "GraphicViewport.h"
 #include "CommandContext.h"
 #include "PrimitiveInfo.h"
 #include "ModelData.h"
 
-#include "D3DApp.h"
 // for test purpose
 #include "GenericPlatform/GenericWindow.h"
+
+__declspec(align(256)) struct ObjectConstants
+{
+    Matrix4 ViewProjMatrix;
+};
 
 static std::string NewGetShaderPath()
 {
@@ -27,13 +32,8 @@ RRenderer& RRenderer::Get()
     static RRenderer Renderer;
     return Renderer;
 }
-static D3DApp* TestApp = nullptr;
 void RRenderer::Init(std::shared_ptr<RGenericWindow> Window)
 {
-    TestApp = new D3DApp();
-    TestApp->InitializeViewport(Window->GetWindowHandle(),1280, 720,L"Test");
-    TestApp->Setup();
-
     GGraphicInterface->InitilizeViewport(HWND(Window->GetWindowHandle()), 1280, 720); 
     RGraphicViewport* Viewprot = GGraphicInterface->GetViewport();
 
@@ -43,16 +43,16 @@ void RRenderer::Init(std::shared_ptr<RGenericWindow> Window)
     NewSignature->AddAsConstantBuffer(1, D3D12_SHADER_VISIBILITY_ALL);
     NewSignature->Finalize("MyNewRootSignature", D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT);
 
-    m_NewPSO = std::shared_ptr<RGraphicPSO>(new RGraphicPSO("MyNewPSO"));
+    m_DefaultPSO = std::shared_ptr<RGraphicPSO>(new RGraphicPSO("MyNewPSO"));
     D3D12_INPUT_ELEMENT_DESC Desces[] =
     {
         {"POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D12_APPEND_ALIGNED_ELEMENT, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0},
         {"NORMAL", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D12_APPEND_ALIGNED_ELEMENT, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0},
         {"TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, D3D12_APPEND_ALIGNED_ELEMENT,D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA,0 }
     };
-    m_NewPSO->SetInputLayout(3, Desces);
-    m_NewPSO->SetShader(NewGetShaderPath() + "BaseVS.hlsl", NewGetShaderPath() + "BasePS.hlsl");
-    m_NewPSO->SetRootSignature(NewSignature);
+    m_DefaultPSO->SetInputLayout(3, Desces);
+    m_DefaultPSO->SetShader(NewGetShaderPath() + "BaseVS.hlsl", NewGetShaderPath() + "BasePS.hlsl");
+    m_DefaultPSO->SetRootSignature(NewSignature);
     D3D12_BLEND_DESC alphaBlend = {};
     alphaBlend.IndependentBlendEnable = false;
     alphaBlend.AlphaToCoverageEnable = false;
@@ -66,7 +66,7 @@ void RRenderer::Init(std::shared_ptr<RGenericWindow> Window)
     alphaBlend.RenderTarget[0].RenderTargetWriteMask = D3D12_COLOR_WRITE_ENABLE_ALL;
     alphaBlend.RenderTarget[0].SrcBlend = D3D12_BLEND_ONE;
 
-    m_NewPSO->SetBlendState(alphaBlend);
+    m_DefaultPSO->SetBlendState(alphaBlend);
 
     D3D12_RASTERIZER_DESC rasterizerDesc = {};
     rasterizerDesc.FillMode = D3D12_FILL_MODE_SOLID;
@@ -81,7 +81,7 @@ void RRenderer::Init(std::shared_ptr<RGenericWindow> Window)
     rasterizerDesc.ForcedSampleCount = 0;
     rasterizerDesc.ConservativeRaster = D3D12_CONSERVATIVE_RASTERIZATION_MODE_OFF;
 
-    m_NewPSO->SetRasterizer(rasterizerDesc);
+    m_DefaultPSO->SetRasterizer(rasterizerDesc);
 
     D3D12_DEPTH_STENCIL_DESC DepthState = {};
     DepthState.DepthEnable = false;
@@ -96,19 +96,22 @@ void RRenderer::Init(std::shared_ptr<RGenericWindow> Window)
     DepthState.FrontFace.StencilDepthFailOp = D3D12_STENCIL_OP_KEEP;
     DepthState.BackFace = DepthState.FrontFace;
 
-    m_NewPSO->SetDepthStencil(DepthState);
-    m_NewPSO->SetPrimitiveTopologyType(D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE);
-    m_NewPSO->SetSampleMask((std::numeric_limits<uint32_t>::max)());
+    m_DefaultPSO->SetDepthStencil(DepthState);
+    m_DefaultPSO->SetPrimitiveTopologyType(D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE);
+    m_DefaultPSO->SetSampleMask((std::numeric_limits<uint32_t>::max)());
     DXGI_FORMAT RtFormat = Viewprot->GetSwapChainFormat();  
-    m_NewPSO->SetRenderTargetFormats(1, &RtFormat, DXGI_FORMAT::DXGI_FORMAT_UNKNOWN); 
-    m_NewPSO->Finalize(); 
+    m_DefaultPSO->SetRenderTargetFormats(1, &RtFormat, DXGI_FORMAT::DXGI_FORMAT_UNKNOWN); 
+    m_DefaultPSO->Finalize(); 
 }
 
 void RRenderer::DoRender(RViewInfo& ViewInfo)
 {
+    //TestApp->OnUpdate(0.1);
+    //TestApp->OnRender(ViewInfo);
 
-    TestApp->OnUpdate(0.1);
-    TestApp->OnRender(ViewInfo);
+    RCommandListManager* QueueMgr = GGraphicInterface->GetCommandListManager();
+    QueueMgr->WaitForFence(m_FrameAsyncFence);
+    m_FrameAsyncFence = QueueMgr->GetGraphicsQueue().IncrementFence();
 
     const std::vector<std::shared_ptr<RPrimitiveObject>>& InPrims = ViewInfo.GetPrimitives();
 
@@ -141,11 +144,8 @@ void RRenderer::DoRender(RViewInfo& ViewInfo)
     CommandList->ClearRenderTargetView(rtvHandle, clearColor, 0, nullptr);
     CommandList->IASetPrimitiveTopology(D3D10_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
-    Context->SetDynamicConstantBufferView(0, sizeof(ObjectConstants), &GlobalConstants);
-
-
-    CommandList->SetGraphicsRootSignature(m_NewPSO->GetRootSignature());
-    CommandList->SetPipelineState(m_NewPSO->GetPipelineState());
+    CommandList->SetGraphicsRootSignature(m_DefaultPSO->GetRootSignature());
+    CommandList->SetPipelineState(m_DefaultPSO->GetPipelineState());
     Context->SetDynamicConstantBufferView(0, sizeof(ObjectConstants), &GlobalConstants);
     //Context->SetDynamicConstantBufferView(1, sizeof(ObjectConstants), &GlobalConstants);
     Context->SetDynamicConstantBufferView(2, sizeof(ObjectConstants), &GlobalConstants);
@@ -171,13 +171,9 @@ void RRenderer::DoRender(RViewInfo& ViewInfo)
     CommandList->ResourceBarrier(1, &RT_Present);
     Context->Finish();
 
+    GGraphicInterface->Present(); 
 }
 
 void RRenderer::Destroy()
 {
-    if (TestApp)
-    {
-        delete TestApp;
-        TestApp = nullptr;
-    }
 }

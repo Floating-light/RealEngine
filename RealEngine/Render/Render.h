@@ -2,6 +2,8 @@
 
 #include "ViewInfo.h"
 
+class RGraphicPSO;
+
 class RRenderer
 {
 public:
@@ -14,4 +16,5 @@ public:
     void Destroy();
 private:
     std::shared_ptr<RGraphicPSO> m_DefaultPSO;
+    uint64_t m_FrameAsyncFence;
 };

@@ -1,5 +1,6 @@
 #pragma once 
 #include <cmath>
+#include <format>
 #include <DirectXMath.h>
 struct Vector
 {
@@ -25,7 +26,7 @@ public:
     inline operator DirectX::XMVECTOR() const { return DirectX::XMVectorSet(X, Y, Z, Z); }
     inline  DirectX::XMVECTOR GetWithWZero() const { return DirectX::XMVectorSet(X, Y, Z, 0); }; 
     inline  DirectX::XMVECTOR GetWithWOne() const { return DirectX::XMVectorSet(X, Y, Z, 1); }; 
-    
+    std::string ToString()const;
     // Component-wise addition 
     Vector operator+(const Vector& V) const;
 
@@ -181,4 +182,9 @@ inline Vector Vector::ComponentWiseMax(const Vector& A, const Vector& B)
 {
     return Vector((std::max)(A.X, B.X), (std::max)(A.Y, B.Y), (std::max)(A.Z, B.Z));
 
+}
+
+inline std::string Vector::ToString() const
+{
+    return std::format("[{},{},{}]", X, Y, Z);
 }
