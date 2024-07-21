@@ -42,9 +42,12 @@ void RRenderer::Init(std::shared_ptr<RGenericWindow> Window)
     m_SceneDepthBuffer.Create("SceneDepthBuffer", 1280, 720, DSV_FORMAT);
 
     std::shared_ptr< RRootSignature> NewSignature = std::shared_ptr<RRootSignature>(new RRootSignature());
-    NewSignature->AddAsConstantBuffer(0, D3D12_SHADER_VISIBILITY_VERTEX);
-    NewSignature->AddAsConstantBuffer(0, D3D12_SHADER_VISIBILITY_PIXEL);
-    NewSignature->AddAsConstantBuffer(1, D3D12_SHADER_VISIBILITY_ALL);
+    NewSignature->Reset(4); 
+    NewSignature->SetParamAsConstantBuffer(0, 0, D3D12_SHADER_VISIBILITY_VERTEX);
+    NewSignature->SetParamAsConstantBuffer(1, 0, D3D12_SHADER_VISIBILITY_PIXEL);
+    NewSignature->SetParamAsConstantBuffer(2, 1, D3D12_SHADER_VISIBILITY_ALL);
+    NewSignature->SetParamAsDescriptorRange(3, D3D12_DESCRIPTOR_RANGE_TYPE_SRV,0,10, D3D12_SHADER_VISIBILITY_PIXEL); // 先给材质占10个位置
+
     NewSignature->Finalize("MyNewRootSignature", D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT);
 
     m_DefaultPSO = std::shared_ptr<RGraphicPSO>(new RGraphicPSO("MyNewPSO"));
@@ -101,21 +104,17 @@ void RRenderer::Init(std::shared_ptr<RGenericWindow> Window)
     DepthState.FrontFace.StencilDepthFailOp = D3D12_STENCIL_OP_KEEP;
     DepthState.BackFace = DepthState.FrontFace;
     
-
-
     m_DefaultPSO->SetDepthStencil(DepthState);
     m_DefaultPSO->SetPrimitiveTopologyType(D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE);
     m_DefaultPSO->SetSampleMask((std::numeric_limits<uint32_t>::max)());
     DXGI_FORMAT RtFormat = Viewprot->GetSwapChainFormat();  
     m_DefaultPSO->SetRenderTargetFormats(1, &RtFormat, m_SceneDepthBuffer.GetFormat()); 
     m_DefaultPSO->Finalize(); 
+
 }
 
 void RRenderer::DoRender(RViewInfo& ViewInfo)
 {
-    //TestApp->OnUpdate(0.1);
-    //TestApp->OnRender(ViewInfo);
-
     RCommandListManager* QueueMgr = GGraphicInterface->GetCommandListManager();
     QueueMgr->WaitForFence(m_FrameAsyncFence);
     m_FrameAsyncFence = QueueMgr->GetGraphicsQueue().IncrementFence();
@@ -156,6 +155,8 @@ void RRenderer::DoRender(RViewInfo& ViewInfo)
 
     CommandList->SetGraphicsRootSignature(m_DefaultPSO->GetRootSignature());
     CommandList->SetPipelineState(m_DefaultPSO->GetPipelineState());
+
+    // RootIndex 指的是构建RootSignature时，第几个D3D12_ROOT_PARAMETER
     Context->SetDynamicConstantBufferView(0, sizeof(ObjectConstants), &GlobalConstants);
     //Context->SetDynamicConstantBufferView(1, sizeof(ObjectConstants), &GlobalConstants);
     Context->SetDynamicConstantBufferView(2, sizeof(ObjectConstants), &GlobalConstants);

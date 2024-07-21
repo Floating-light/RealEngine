@@ -204,7 +204,7 @@ std::shared_ptr<RModelData> RAssetImporter::ImportModelNew(const std::string& In
         }
         LocalGeometryData.insert(LocalGeometryData.end(), CurIndexBuffer.begin(), CurIndexBuffer.end()); 
 
-        RLOG(Info, "{}, V: {}, F: {}, T: {}", Mesh->mName.C_Str(), Mesh->mNumVertices, Mesh->mNumFaces, Mesh->mPrimitiveTypes);
+        RLOG(Info, "{}, V: {}, F: {}, T: {}, Mat: {}", Mesh->mName.C_Str(), Mesh->mNumVertices, Mesh->mNumFaces, Mesh->mPrimitiveTypes, Mesh->mMaterialIndex);
     }
     if (RetData)
     {

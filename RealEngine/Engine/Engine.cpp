@@ -1,5 +1,7 @@
 #include "Engine.h"
 
+#include <filesystem>
+
 #include "Application.h"
 #include "Render.h"
 #include "GameViewportClient.h"
@@ -19,44 +21,21 @@ void REngine::OnInit()
     // 创建Windows
     RApplication::Create();
     
+    // 初始化渲染器
     RRenderer::Get().Init(RApplication::Get().GetMainWindow());
 
+    // 向App注册ViewportClinet，以便ViewportClinet可以响应AppUI相关事件
     GameViewportClient = std::shared_ptr<RGameViewportClient>(new RGameViewportClient());
     RApplication::Get().RegisterGameViewport(GameViewportClient);
     
-    //RApplication::Get().SetOnMainWindowClosed(std::bind(&REngine::Destoryed, this)); 
-    //std::shared_ptr<RPrimitiveObject>  Obj1 = std::make_shared<RPrimitiveObject>();
-    //Obj1->mVertexData = 
-    //{
-    //    RVertex{Vector3D(-1.0f, -1.0f, -1.0f),  RColor::White},
-    //    RVertex{Vector3D(-1.0f, +1.0f, -1.0f), RColor::Black},
-    //    RVertex{Vector3D(+1.0f, +1.0f, -1.0f), RColor::Blue},
-    //    RVertex{Vector3D(+1.0f, -1.0f, -1.0f), RColor::Red},
-    //    RVertex{Vector3D(-1.0f, -1.0f, +1.0f), RColor::Green},
-    //    RVertex{Vector3D(-1.0f, +1.0f, +1.0f), RColor::Gray},
-    //    RVertex{Vector3D(+1.0f, +1.0f, +1.0f), RColor::Yellow},
-    //    RVertex{Vector3D(+1.0f, -1.0f, +1.0f), RColor::Green}
-    //};
-    //Obj1->mIndicesData = 
-    //{
-    //    0, 1, 2,
-    //    0, 2, 3,
+    // 加载渲染场景
+    // E:\Workspace\RealEngine\build\bin\Debug\
+    // E:\Workspace\RealEngine\build\RealEngine\Launch\
 
-    //    4, 5, 6, 
-    //    4, 6, 7,
+    std::filesystem::path FilePath = std::filesystem::absolute("../../resources/HuangQuan/星穹铁道—黄泉（轴修复）.pmx");
+    RCHECK(std::filesystem::exists(FilePath));
 
-    //    4, 5, 1, 
-    //    4, 1, 0,
-    //    
-    //    2, 3, 6, 
-    //    3, 6, 7
-    //};
-
-    // Objects.push_back(Obj1);
-    //std::wstring RaiDenPath = L"E:/Workspace/RealEngine/build/bin/Debug/resources/GenShin/Beelzebul.pmx";
-    //std::string RaiDenPath = "E:/MyProject/DirectX-Graphics-Samples/MiniEngine/TestProject/HuangQuan/星穹铁道—黄泉（轴修复）.pmx"; 
-    std::string RaiDenPath = "E:/Workspace/DirectX-Graphics-Samples/MiniEngine/TestProject/HuangQuan/星穹铁道—黄泉（轴修复）.pmx"; 
-    std::shared_ptr<RModelData> ModelData = RAssetImporter::ImportModelNew(RaiDenPath);
+    std::shared_ptr<RModelData> ModelData = RAssetImporter::ImportModelNew(FilePath.string());
     
     std::shared_ptr<RPrimitiveObject> Obj(new RPrimitiveObject());
     Obj->SetModelData(ModelData, "Model1");
@@ -66,18 +45,19 @@ void REngine::OnInit()
 
 void REngine::OnUpdate()
 {
+    // App 更新，处理UI输入
     RApplication::Get().ProcessInput();
 
     // update scene 
     GameViewportClient->Update();
 
-    // Render 
+    // init scene view infor
     RViewInfo ViewInfo;
     ViewInfo.SetRenderWindow(RApplication::Get().GetMainWindow());
     ViewInfo.SetPrimitives(Objects);
     GameViewportClient->SetUpView(ViewInfo);
     
-    // ViewInfo contain the primitive information to rendering .
+    // render scene
     RRenderer::Get().DoRender(ViewInfo);
 }
 
