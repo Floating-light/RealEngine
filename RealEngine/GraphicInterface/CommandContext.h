@@ -4,7 +4,7 @@
 
 #include "D3D12ThirdPart.h"
 #include "LinearAllocator.h"
-
+#include "DepthBuffer.h"
 class RRHIResource;
 class RCommandContext;
 
@@ -53,6 +53,8 @@ public:
 
     void SetID(const std::string& ID) { m_ID = ID; }; 
 
+    void ClearDepth(RDepthBuffer& InDepthBuffer);
+
     uint64_t Flush(bool WaitForCompletion = false);
     uint64_t Finish(bool WaitForCompletion = false);
 
@@ -65,6 +67,8 @@ public:
 
     //RRHIBuffer* CreateBuffer(const void *Data, uint32_t Size, uint32_t Stride, std::string_view DebugName);
     void SetDynamicConstantBufferView(uint32_t RootIndex, size_t BufferSize, const void* BufferData);
+    void SetRenderTarget(D3D12_CPU_DESCRIPTOR_HANDLE RTV, D3D12_CPU_DESCRIPTOR_HANDLE DSV) { SetRenderTargets(1, &RTV, DSV); };
+    void SetRenderTargets(uint8_t NumRTVs, D3D12_CPU_DESCRIPTOR_HANDLE RTVs[], D3D12_CPU_DESCRIPTOR_HANDLE DSV);
 private:
     D3D12_HEAP_PROPERTIES GetUploadBufferHeapProps() const;
     D3D12_RESOURCE_DESC GetUploadBufferResourceDesc(uint32_t BufferSize) const;

@@ -28,7 +28,7 @@ void RHIExit()
     delete GGraphicInterface;
 
     Microsoft::WRL::ComPtr<IDXGIDebug1> debug1 = nullptr;
-    ASSERT(DXGIGetDebugInterface1(0, IID_PPV_ARGS(&debug1))); 
+    ASSERTDX(DXGIGetDebugInterface1(0, IID_PPV_ARGS(&debug1))); 
     auto hr = debug1->ReportLiveObjects(DXGI_DEBUG_ALL, DXGI_DEBUG_RLO_ALL); 
     if (FAILED(hr)) {
         // 处理错误

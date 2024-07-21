@@ -36,7 +36,7 @@ void RGraphicViewport::Initialize(ID3D12Device* InDevice, IDXGIFactory4* Factory
 	DXGI_SWAP_CHAIN_FULLSCREEN_DESC fsSwapChaineDesc = {};
 	fsSwapChaineDesc.Windowed = true;
 
-	ASSERT(Factory->CreateSwapChainForHwnd(CommandQueue, WindowHandle, &swapChainDesc, &fsSwapChaineDesc, nullptr, &m_SwapChain)); 
+	ASSERTDX(Factory->CreateSwapChainForHwnd(CommandQueue, WindowHandle, &swapChainDesc, &fsSwapChaineDesc, nullptr, &m_SwapChain)); 
 
 	//ASSERT(Factory->MakeWindowAssociation(WindowHandle, DXGI_MWA_NO_ALT_ENTER)); 
 
@@ -47,14 +47,14 @@ void RGraphicViewport::Initialize(ID3D12Device* InDevice, IDXGIFactory4* Factory
 	descHeapDesc.NodeMask = 1;
 	descHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_NONE; 
 
-	ASSERT(InDevice->CreateDescriptorHeap(&descHeapDesc, IID_PPV_ARGS(&m_rtViewHeap)));  
+	ASSERTDX(InDevice->CreateDescriptorHeap(&descHeapDesc, IID_PPV_ARGS(&m_rtViewHeap)));  
 	D3D12_CPU_DESCRIPTOR_HANDLE viewHandleBegin = m_rtViewHeap->GetCPUDescriptorHandleForHeapStart();
 	m_rtHandleSize = InDevice->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
 	// Create RT view 
 	for (uint32_t i = 0; i < m_SwapChainBufferCount; i++)
 	{
 		// 每次调用这个方法获得到Resoruce，都会使其引用计数+1，当获取方不再使用时，应该及时调用Release释放。  
-		ASSERT(m_SwapChain->GetBuffer(i, IID_PPV_ARGS(&m_DisplayPlane[i])));
+		ASSERTDX(m_SwapChain->GetBuffer(i, IID_PPV_ARGS(&m_DisplayPlane[i])));
 		InDevice->CreateRenderTargetView(m_DisplayPlane[i].Get(), nullptr, D3D12_CPU_DESCRIPTOR_HANDLE(viewHandleBegin.ptr + i * m_rtHandleSize));
 	}
 }

@@ -72,7 +72,7 @@ std::shared_ptr<RLinearAllocationPage> RLinearAllocatorPageManager::CreateNewPag
 		DefaultUsage = D3D12_RESOURCE_STATE_GENERIC_READ;
 	}
 	ID3D12Resource* NewBuffer={};
-	ASSERT(LocalDevice->CreateCommittedResource(&HeapProps,D3D12_HEAP_FLAG_NONE,&ResourceDesc, DefaultUsage, nullptr, IID_PPV_ARGS(&NewBuffer)));
+	ASSERTDX(LocalDevice->CreateCommittedResource(&HeapProps,D3D12_HEAP_FLAG_NONE,&ResourceDesc, DefaultUsage, nullptr, IID_PPV_ARGS(&NewBuffer)));
 	NewBuffer->SetName(L"LinearAllocator Page");
 
 	RetVal = std::shared_ptr<RLinearAllocationPage>(new RLinearAllocationPage(NewBuffer, DefaultUsage));

@@ -17,7 +17,9 @@ inline std::ostream& operator<<(std::ostream& out, const std::wstring& str)
 }
 
 extern void __declspec(dllexport) InitLogger(const std::wstring& logFilePath );
-#define CHECK(Param) void(0);
+
+
+
 enum LogLevel : uint8_t
 {
     Debug,
@@ -66,4 +68,12 @@ static void RLOG(LogLevel level,fmt::format_string<TArgs...> fmt, TArgs&&... arg
         break;
     }
 }
+
+#define RCHECK(condition)                                                      \
+    do {                                                                      \
+        if (!(condition)) {                                                   \
+			RLOG(Fatal, "Check failed: {} at {}:{}", #condition, __FILE__, __LINE__); \
+            __debugbreak();                                                   \
+        }                                                                     \
+    } while (0)
 

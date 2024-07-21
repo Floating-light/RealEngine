@@ -29,6 +29,7 @@ public:
 	RGraphicViewport* GetViewport()const { return Viewport.get(); } 
 	
 	Microsoft::WRL::ComPtr<ID3D12Device> GetDevice()const {return m_Device;}
+	ID3D12Device* GetDeviceRaw()const {return m_Device.Get();} 
 
 	RCommandContext* BeginCommandContext(const std::string& ID); 
 	RCommandListManager* GetCommandListManager()const {return CommandListManager.get();}

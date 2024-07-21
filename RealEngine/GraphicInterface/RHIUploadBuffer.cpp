@@ -27,7 +27,7 @@ void RRHIUploadBuffer::Create(const std::string& name, size_t BufferSize)
 	desc.Layout = D3D12_TEXTURE_LAYOUT_ROW_MAJOR;
 	desc.Flags = D3D12_RESOURCE_FLAG_NONE;
 
-	ASSERT(Device->CreateCommittedResource(&Heap,D3D12_HEAP_FLAG_NONE,&desc,D3D12_RESOURCE_STATE_GENERIC_READ,nullptr, IID_PPV_ARGS(&m_Resource))); 
+	ASSERTDX(Device->CreateCommittedResource(&Heap,D3D12_HEAP_FLAG_NONE,&desc,D3D12_RESOURCE_STATE_GENERIC_READ,nullptr, IID_PPV_ARGS(&m_Resource))); 
 
 	m_GpuVirtualAddress = m_Resource->GetGPUVirtualAddress();
 	m_Resource->SetName(RUtility::StringToWideString(name).c_str());

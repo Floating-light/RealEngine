@@ -21,7 +21,7 @@ void RRHIBuffer::Create(const std::string& name, uint32_t NumElements, uint32_t 
 	HeapProps.VisibleNodeMask = 1;
 
 	Microsoft::WRL::ComPtr<ID3D12Device> Device = GGraphicInterface->GetDevice();
-	ASSERT(Device->CreateCommittedResource(&HeapProps, D3D12_HEAP_FLAG_NONE, &desc, m_UsageState, nullptr, IID_PPV_ARGS(&m_Resource))); 
+	ASSERTDX(Device->CreateCommittedResource(&HeapProps, D3D12_HEAP_FLAG_NONE, &desc, m_UsageState, nullptr, IID_PPV_ARGS(&m_Resource))); 
 
 	m_GpuVirtualAddress = m_Resource->GetGPUVirtualAddress();
 

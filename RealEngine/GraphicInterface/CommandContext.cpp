@@ -62,7 +62,13 @@ void RCommandContext::Initialize()
     CMDManager->CreateNewCommandList(m_Type, &m_CommandList, &m_CurrentAllocator);
 }
 
-uint64_t RCommandContext::Finish(bool WaitForCompletion) 
+void RCommandContext::ClearDepth(RDepthBuffer& InDepthBuffer)
+{
+    FlushResourceBarriers();
+    m_CommandList->ClearDepthStencilView(InDepthBuffer.GetDSV(), D3D12_CLEAR_FLAG_DEPTH, InDepthBuffer.GetClearDepth(), InDepthBuffer.GetClearStencil(), 0, nullptr);
+}
+
+uint64_t RCommandContext::Finish(bool WaitForCompletion)
 {
     // TODO:
     FlushResourceBarriers();
@@ -149,7 +155,7 @@ void RCommandContext::TransitionResource(RRHIResource& Resource, D3D12_RESOURCE_
     else
     {
         // TODO;
-        assert(0);
+        //assert(0);
     }
     if (FlushImmediate || m_NumBarriersToFlush == 16)
     {
@@ -217,4 +223,9 @@ void RCommandContext::SetDynamicConstantBufferView(uint32_t RootIndex, size_t Bu
     RDynamicAlloc cb = m_CpuLinearAllocator.Allocate(BufferSize);
     memcpy(cb.DataPtr, BufferData, BufferSize);
     m_CommandList->SetGraphicsRootConstantBufferView(RootIndex, cb.GpuAddress);
+}
+
+void RCommandContext::SetRenderTargets(uint8_t NumRTVs, D3D12_CPU_DESCRIPTOR_HANDLE RTVs[], D3D12_CPU_DESCRIPTOR_HANDLE DSV)
+{
+    m_CommandList->OMSetRenderTargets(NumRTVs, RTVs, FALSE, &DSV);
 }

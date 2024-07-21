@@ -716,14 +716,14 @@ inline Vector2D Vector2D::operator/=(const Vector2D& V)
 
 inline float& Vector2D::operator[](int Index)
 {
-	CHECK(Index>=0 && Index<2);
+	RCHECK(Index>=0 && Index<2);
 	return ((Index == 0) ? X : Y);
 }
 
 
 inline float Vector2D::operator[](int Index) const
 {
-	CHECK(Index>=0 && Index<2);
+	RCHECK(Index>=0 && Index<2);
 	return ((Index == 0) ? X : Y);
 }
 

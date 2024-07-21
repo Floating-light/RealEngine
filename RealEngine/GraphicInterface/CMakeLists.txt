@@ -1,34 +1,42 @@
 add_library(GraphicInterface "")
 
-target_sources(GraphicInterface 
+file(GLOB_RECURSE SOURCES_CPP "*.cpp" )
+file(GLOB_RECURSE SOURCES_H "*.h" )
+target_sources(GraphicInterface
+  PUBLIC
+    ${SOURCES_H}
   PRIVATE
-    D3D12ThirdPart.h
-    GraphicInterface.h
-    GraphicInterface.cpp
-    GraphicViewport.h
-    GraphicViewport.cpp
-    CommandContext.h
-    CommandContext.cpp
-    Adapter.h
-    Adapter.cpp
-    CommandListManager.h
-    CommandListManager.cpp
-    CommandAllocatorPool.h
-    CommandAllocatorPool.cpp
-    RHIResource.h
-    RHIBuffer.h
-    RHIBuffer.cpp
-    RHIUploadBuffer.h
-    RHIUploadBuffer.cpp
-    DescriptorHeap.h
-    DescriptorHeap.cpp
-    PipelineState.h
-    PipelineState.cpp
-    RootSignature.h
-    RootSignature.cpp
-    LinearAllocator.h
-    LinearAllocator.cpp
+    ${SOURCES_CPP}
 )
+# target_sources(GraphicInterface 
+#   PRIVATE
+#     D3D12ThirdPart.h
+#     GraphicInterface.h
+#     GraphicInterface.cpp
+#     GraphicViewport.h
+#     GraphicViewport.cpp
+#     CommandContext.h
+#     CommandContext.cpp
+#     Adapter.h
+#     Adapter.cpp
+#     CommandListManager.h
+#     CommandListManager.cpp
+#     CommandAllocatorPool.h
+#     CommandAllocatorPool.cpp
+#     RHIResource.h
+#     RHIBuffer.h
+#     RHIBuffer.cpp
+#     RHIUploadBuffer.h
+#     RHIUploadBuffer.cpp
+#     DescriptorHeap.h
+#     DescriptorHeap.cpp
+#     PipelineState.h
+#     PipelineState.cpp
+#     RootSignature.h
+#     RootSignature.cpp
+#     LinearAllocator.h
+#     LinearAllocator.cpp
+# )
 
 target_include_directories(GraphicInterface
   PUBLIC

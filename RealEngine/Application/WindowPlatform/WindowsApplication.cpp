@@ -282,7 +282,7 @@ int WindowsApplication::ProcessMessage(HWND hWnd, UINT message, WPARAM wParam, L
                 MouseButtonType = (HIWORD(wParam) & XBUTTON1) ? EMouseButton::Thumb01 : EMouseButton::Thumb02;
                 break;
             default:
-                CHECK(0);
+                RCHECK(0);
             }
             if(bMouseUp)
             {

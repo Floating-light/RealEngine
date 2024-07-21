@@ -16,6 +16,8 @@
 // for test purpose
 #include "GenericPlatform/GenericWindow.h"
 
+static constexpr DXGI_FORMAT DSV_FORMAT = DXGI_FORMAT_D32_FLOAT;
+
 __declspec(align(256)) struct ObjectConstants
 {
     Matrix4 ViewProjMatrix;
@@ -36,6 +38,8 @@ void RRenderer::Init(std::shared_ptr<RGenericWindow> Window)
 {
     GGraphicInterface->InitilizeViewport(HWND(Window->GetWindowHandle()), 1280, 720); 
     RGraphicViewport* Viewprot = GGraphicInterface->GetViewport();
+    
+    m_SceneDepthBuffer.Create("SceneDepthBuffer", 1280, 720, DSV_FORMAT);
 
     std::shared_ptr< RRootSignature> NewSignature = std::shared_ptr<RRootSignature>(new RRootSignature());
     NewSignature->AddAsConstantBuffer(0, D3D12_SHADER_VISIBILITY_VERTEX);
@@ -84,9 +88,10 @@ void RRenderer::Init(std::shared_ptr<RGenericWindow> Window)
     m_DefaultPSO->SetRasterizer(rasterizerDesc);
 
     D3D12_DEPTH_STENCIL_DESC DepthState = {};
-    DepthState.DepthEnable = false;
+    DepthState.DepthEnable = true;
     DepthState.DepthWriteMask = D3D12_DEPTH_WRITE_MASK_ALL;
-    DepthState.DepthFunc = D3D12_COMPARISON_FUNC_GREATER_EQUAL;
+    //DepthState.DepthFunc = D3D12_COMPARISON_FUNC_GREATER_EQUAL;
+    DepthState.DepthFunc = D3D12_COMPARISON_FUNC_LESS; 
     DepthState.StencilEnable = false;
     DepthState.StencilReadMask = D3D12_DEFAULT_STENCIL_READ_MASK;
     DepthState.StencilWriteMask = D3D12_DEFAULT_STENCIL_WRITE_MASK;
@@ -95,12 +100,14 @@ void RRenderer::Init(std::shared_ptr<RGenericWindow> Window)
     DepthState.FrontFace.StencilFailOp = D3D12_STENCIL_OP_KEEP;
     DepthState.FrontFace.StencilDepthFailOp = D3D12_STENCIL_OP_KEEP;
     DepthState.BackFace = DepthState.FrontFace;
+    
+
 
     m_DefaultPSO->SetDepthStencil(DepthState);
     m_DefaultPSO->SetPrimitiveTopologyType(D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE);
     m_DefaultPSO->SetSampleMask((std::numeric_limits<uint32_t>::max)());
     DXGI_FORMAT RtFormat = Viewprot->GetSwapChainFormat();  
-    m_DefaultPSO->SetRenderTargetFormats(1, &RtFormat, DXGI_FORMAT::DXGI_FORMAT_UNKNOWN); 
+    m_DefaultPSO->SetRenderTargetFormats(1, &RtFormat, m_SceneDepthBuffer.GetFormat()); 
     m_DefaultPSO->Finalize(); 
 }
 
@@ -121,6 +128,8 @@ void RRenderer::DoRender(RViewInfo& ViewInfo)
     RLOG(LogLevel::Info, "----->> \n{}", GlobalConstants.ViewProjMatrix.ToString());
 
     RCommandContext* Context = GGraphicInterface->BeginCommandContext("MainRender");
+    Context->TransitionResource(m_SceneDepthBuffer, D3D12_RESOURCE_STATE_DEPTH_WRITE, true);
+    Context->ClearDepth(m_SceneDepthBuffer);
 
     // 临时做法，后面整个Present过程应该和场景渲染过程解耦
     RGraphicViewport* Viewport = GGraphicInterface->GetViewport();
@@ -138,7 +147,8 @@ void RRenderer::DoRender(RViewInfo& ViewInfo)
     CommandList->ResourceBarrier(1, &PresentBufferTransition);
 
     D3D12_CPU_DESCRIPTOR_HANDLE rtvHandle = Viewport->GetCurrentRTViewHandle();
-    CommandList->OMSetRenderTargets(1, &rtvHandle, 0, nullptr);
+    //CommandList->OMSetRenderTargets(1, &rtvHandle, 0, nullptr);
+    Context->SetRenderTarget(rtvHandle, m_SceneDepthBuffer.GetDSV());
 
     const float clearColor[] = { 0.0f, 0.9f,0.0f, 1.0f };
     CommandList->ClearRenderTargetView(rtvHandle, clearColor, 0, nullptr);
