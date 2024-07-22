@@ -29,6 +29,25 @@ static std::string NewGetShaderPath()
     return currentPath.string() + "/../../../RealEngine/Render/";
 }
 
+struct LocalRGBA
+{
+    uint8_t R, G, B, A;
+};
+std::vector<LocalRGBA> CreateProceduralTex(int32_t Width, int32_t Height)
+{
+    std::vector<LocalRGBA> RetVal(Width * Height);
+    uint64_t checkSize = 80;
+    for (size_t y = 0; y < Height; ++y)
+    {
+        for (size_t x = 0; x < Width; ++x)
+        {
+            bool isWhite = ((x / checkSize) % 2 == ((y / checkSize) % 2));
+            uint8_t color = isWhite ? 255 : 0;
+            RetVal[y * Width + Height] = {color, color, color, 255};
+        }
+    }
+    return RetVal;
+}
 RRenderer& RRenderer::Get()
 {
     static RRenderer Renderer;
@@ -40,13 +59,15 @@ void RRenderer::Init(std::shared_ptr<RGenericWindow> Window)
     RGraphicViewport* Viewprot = GGraphicInterface->GetViewport();
     
     m_SceneDepthBuffer.Create("SceneDepthBuffer", 1280, 720, DSV_FORMAT);
+    std::vector<LocalRGBA> ColorData = CreateProceduralTex(1280, 720);
+    m_DefaultTexture.Create2D("DefaultTexture", 1280 * sizeof(LocalRGBA), 1280, 720, DXGI_FORMAT_R8G8B8A8_UNORM, ColorData.data()); 
 
     std::shared_ptr< RRootSignature> NewSignature = std::shared_ptr<RRootSignature>(new RRootSignature());
     NewSignature->Reset(4); 
     NewSignature->SetParamAsConstantBuffer(0, 0, D3D12_SHADER_VISIBILITY_VERTEX);
     NewSignature->SetParamAsConstantBuffer(1, 0, D3D12_SHADER_VISIBILITY_PIXEL);
     NewSignature->SetParamAsConstantBuffer(2, 1, D3D12_SHADER_VISIBILITY_ALL);
-    NewSignature->SetParamAsDescriptorRange(3, D3D12_DESCRIPTOR_RANGE_TYPE_SRV,0,10, D3D12_SHADER_VISIBILITY_PIXEL); // 先给材质占10个位置
+    NewSignature->SetParamAsBufferSRV(3, 0,D3D12_SHADER_VISIBILITY_PIXEL); // 先给材质占10个位置
 
     NewSignature->Finalize("MyNewRootSignature", D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT);
 
@@ -160,6 +181,8 @@ void RRenderer::DoRender(RViewInfo& ViewInfo)
     Context->SetDynamicConstantBufferView(0, sizeof(ObjectConstants), &GlobalConstants);
     //Context->SetDynamicConstantBufferView(1, sizeof(ObjectConstants), &GlobalConstants);
     Context->SetDynamicConstantBufferView(2, sizeof(ObjectConstants), &GlobalConstants);
+    CommandList->SetComputeRootShaderResourceView(3, m_DefaultTexture.GetGPUVirtualAddress());
+
     for (size_t i = 0; i < InPrims.size(); ++i)
     {
         std::shared_ptr<RPrimitiveObject> obj = InPrims[i];

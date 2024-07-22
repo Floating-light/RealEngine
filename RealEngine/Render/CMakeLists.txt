@@ -20,10 +20,10 @@ target_sources(Renderer
     ${SOURCES_H}
   PRIVATE
     ${SOURCES_CPP}
-    ${SHADERS}
+    # ${SHADERS}
 )
 
-source_group("Shaders" FILES ${SHADERS})
+# source_group("Shaders" FILES ${SHADERS})
 
 target_include_directories(Renderer
   PUBLIC

@@ -23,6 +23,7 @@ public:
 		m_RootParam.ParameterType = (D3D12_ROOT_PARAMETER_TYPE)0xFFFFFFFF;
 	}
 
+	void InitAsBufferSRV(uint32_t Register, D3D12_SHADER_VISIBILITY Visibility = D3D12_SHADER_VISIBILITY_ALL , uint32_t Space= 0 );
 	void InitAsConstantBuffer(uint32_t Register, D3D12_SHADER_VISIBILITY Visibility = D3D12_SHADER_VISIBILITY_ALL, uint32_t Space = 0);
 	void InitAsDescriptorRange(D3D12_DESCRIPTOR_RANGE_TYPE Type, uint32_t Register, uint32_t Count, D3D12_SHADER_VISIBILITY Visiblity= D3D12_SHADER_VISIBILITY_ALL, uint32_t Space = 0);
 
@@ -41,6 +42,7 @@ public:
 
 	void Reset(uint32_t Num) { m_Params.resize(Num); }
 
+	void SetParamAsBufferSRV(uint32_t ParamIndex, uint32_t Register, D3D12_SHADER_VISIBILITY Visibility , uint32_t Space = 0);
 	void SetParamAsConstantBuffer(uint32_t ParamIndex, uint32_t Register, D3D12_SHADER_VISIBILITY Visibility, uint32_t Space = 0);
 	void SetParamAsDescriptorRange(uint32_t ParamIndex, D3D12_DESCRIPTOR_RANGE_TYPE Type, uint32_t Register, uint32_t Count,
 		D3D12_SHADER_VISIBILITY Visibility = D3D12_SHADER_VISIBILITY_ALL, uint32_t Space = 0);

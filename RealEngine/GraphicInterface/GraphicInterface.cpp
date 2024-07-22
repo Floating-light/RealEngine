@@ -144,3 +144,16 @@ D3D12_CPU_DESCRIPTOR_HANDLE RGraphicInterface::AllocateDescriptor(D3D12_DESCRIPT
 {
     return m_DescriptorAllocator[HeapType].Allocate(1);
 }
+
+void RGraphicInterface::InitializeTexture(RRHIResource& Dest, uint32_t NumSubresources, D3D12_SUBRESOURCE_DATA SubData[])
+{
+    uint64_t uploadBufferSize = GetRequiredIntermediateSize(Dest.GetResource(), 0, NumSubresources); 
+    RCommandContext* NewContext = ContextManager->AllocateContext(D3D12_COMMAND_LIST_TYPE_DIRECT);
+
+    RDynamicAlloc Alloc = NewContext->ReserveUploadMemory(uploadBufferSize);
+
+    UpdateSubresources(NewContext->GetCommandList(), Dest.GetResource(), Alloc.Resource.GetResource(), 0, 0, NumSubresources, SubData);
+    NewContext->TransitionResource(Dest, D3D12_RESOURCE_STATE_GENERIC_READ);
+
+    NewContext->Finish(true);
+}

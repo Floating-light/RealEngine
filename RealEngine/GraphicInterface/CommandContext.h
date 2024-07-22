@@ -63,12 +63,19 @@ public:
     // 暂时用着
     ID3D12GraphicsCommandList* GetCommandList() const { return m_CommandList; }  
 
-    void TransitionResource(RRHIResource& Resource, D3D12_RESOURCE_STATES NewState, bool FlushImmediate);
+    void TransitionResource(RRHIResource& Resource, D3D12_RESOURCE_STATES NewState, bool FlushImmediate = false);
 
     //RRHIBuffer* CreateBuffer(const void *Data, uint32_t Size, uint32_t Stride, std::string_view DebugName);
     void SetDynamicConstantBufferView(uint32_t RootIndex, size_t BufferSize, const void* BufferData);
     void SetRenderTarget(D3D12_CPU_DESCRIPTOR_HANDLE RTV, D3D12_CPU_DESCRIPTOR_HANDLE DSV) { SetRenderTargets(1, &RTV, DSV); };
     void SetRenderTargets(uint8_t NumRTVs, D3D12_CPU_DESCRIPTOR_HANDLE RTVs[], D3D12_CPU_DESCRIPTOR_HANDLE DSV);
+
+    RDynamicAlloc ReserveUploadMemory(size_t SizeInBytes)
+    {
+        return m_CpuLinearAllocator.Allocate(SizeInBytes);
+    }
+
+
 private:
     D3D12_HEAP_PROPERTIES GetUploadBufferHeapProps() const;
     D3D12_RESOURCE_DESC GetUploadBufferResourceDesc(uint32_t BufferSize) const;

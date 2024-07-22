@@ -35,9 +35,12 @@ public:
 	RCommandListManager* GetCommandListManager()const {return CommandListManager.get();}
 	RCommandContextManger* GetCommandContextManger()const { return ContextManager.get(); }
 	RLinearAllocatorPageManager* GetLinearAllocatorPageMananger(ELinearAllocatorType Type){ return (m_LinearAllocatorManager[Type].get()); }
+	
 	void InitializeBuffer(RRHIBuffer& DestBuffer, const RRHIUploadBuffer& SrcBuffer, size_t SrcOffset, size_t NumBytes = -1, size_t DestOffset = 0);
+	void InitializeTexture(RRHIResource& Dest, uint32_t NumSubresources, D3D12_SUBRESOURCE_DATA SubData[]);
 
 	D3D12_CPU_DESCRIPTOR_HANDLE AllocateDescriptor(D3D12_DESCRIPTOR_HEAP_TYPE HeapType);
+
 
 private:
 	std::unique_ptr<RCommandContextManger> ContextManager;

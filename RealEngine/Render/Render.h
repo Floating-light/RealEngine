@@ -2,6 +2,8 @@
 
 #include "ViewInfo.h"
 #include "DepthBuffer.h"
+#include "Texture.h"
+
 class RGraphicPSO;
 
 class RRenderer
@@ -18,6 +20,8 @@ public:
 private:
     //Microsoft::WRL::ComPtr<ID3D12Resource> m_DepthBuffer;
     RDepthBuffer m_SceneDepthBuffer;
+    RTexture m_DefaultTexture;
+
     std::shared_ptr<RGraphicPSO> m_DefaultPSO;
     uint64_t m_FrameAsyncFence;
 };

@@ -21,7 +21,7 @@ public:
     {
         Destroy(); 
     }
-    void Destroy() 
+    virtual void Destroy() 
     {
         m_Resource = nullptr;
         m_GpuVirtualAddress = D3D12_GPU_VIRTUAL_ADDRESS_NULL;

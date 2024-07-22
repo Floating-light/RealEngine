@@ -1,6 +1,14 @@
 #include "RootSignature.h"
 #include "GraphicInterface.h"
 
+void RRootParameter::InitAsBufferSRV(uint32_t Register, D3D12_SHADER_VISIBILITY Visibility, uint32_t Space)
+{
+	m_RootParam.ParameterType = D3D12_ROOT_PARAMETER_TYPE_SRV;
+	m_RootParam.ShaderVisibility = Visibility;
+	m_RootParam.Descriptor.ShaderRegister = Register;
+	m_RootParam.Descriptor.RegisterSpace = Space;
+}
+
 void RRootParameter::InitAsConstantBuffer(uint32_t Register, D3D12_SHADER_VISIBILITY Visibility, uint32_t Space)
 {
 	m_RootParam.ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV;
@@ -31,6 +39,12 @@ void RRootParameter::SetTableRange(uint32_t RangeIndex, D3D12_DESCRIPTOR_RANGE_T
 	CurRange->BaseShaderRegister = Register;
 	CurRange->NumDescriptors = Count;
 	CurRange->RegisterSpace= Space;
+}
+
+void RRootSignature::SetParamAsBufferSRV(uint32_t ParamIndex, uint32_t Register, D3D12_SHADER_VISIBILITY Visibility, uint32_t Space)
+{
+	RCHECK(ParamIndex < m_Params.size());
+	m_Params[ParamIndex].InitAsBufferSRV(Register, Visibility, Space);
 }
 
 void RRootSignature::SetParamAsConstantBuffer(uint32_t ParamIndex, uint32_t Register, D3D12_SHADER_VISIBILITY Visibility, uint32_t Space)
