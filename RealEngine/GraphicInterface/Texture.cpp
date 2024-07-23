@@ -34,7 +34,6 @@ void RTexture::Create2D(const std::string& InName, uint32_t RowPitchBytes, uint3
 	ASSERTDX(Device->CreateCommittedResource(&HeapProps, D3D12_HEAP_FLAG_NONE, &desc, 
 		D3D12_RESOURCE_STATE_COPY_DEST, nullptr, IID_PPV_ARGS(m_Resource.ReleaseAndGetAddressOf())));
 	m_Resource->SetName(RUtility::StringToWstring(InName).c_str());
-	m_GpuVirtualAddress = m_Resource->GetGPUVirtualAddress(); 
 	
 	D3D12_SUBRESOURCE_DATA texResource{};
 	texResource.pData = InData; // 原始数据

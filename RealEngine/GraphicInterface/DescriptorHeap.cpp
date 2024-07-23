@@ -39,3 +39,38 @@ void RDescriptorAllocator::RequestNewHeap()
 		m_DescriptorSize = Device->GetDescriptorHandleIncrementSize(m_Type);
 	}
 }
+
+//  Descriptor Heap for descriptor table
+
+void RDescriptorHeap::Create(const std::string& InName, D3D12_DESCRIPTOR_HEAP_TYPE InType, int32_t InMaxCount)
+{
+	ID3D12Device* Device = GGraphicInterface->GetDeviceRaw();
+
+	m_HeapDesc.Type = InType;
+	m_HeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
+	m_HeapDesc.NodeMask = 1;
+	m_HeapDesc.NumDescriptors = InMaxCount;
+
+	ASSERTDX(Device->CreateDescriptorHeap(&m_HeapDesc, IID_PPV_ARGS(m_DescriptorHeap.ReleaseAndGetAddressOf())));
+	m_DescriptorHeap->SetName(RUtility::StringToWstring(InName).c_str());
+
+	m_DescriptorHandleIncrementSize = Device->GetDescriptorHandleIncrementSize(InType);
+	m_NumFreeDescriptors = InMaxCount;
+
+	m_FirstHandle.m_CpuHandle = m_DescriptorHeap->GetCPUDescriptorHandleForHeapStart(); 
+	m_FirstHandle.m_GpuHandle = m_DescriptorHeap->GetGPUDescriptorHandleForHeapStart();
+
+	m_NextFreeHandle = m_FirstHandle;
+}
+
+RDescriptorHandle RDescriptorHeap::Allocate(uint32_t InCount) 
+{
+	RCHECK(HasAvailableSpace(InCount)); 
+	m_NumFreeDescriptors -= InCount;
+	RDescriptorHandle RetVal = m_NextFreeHandle;
+
+	m_NextFreeHandle.m_CpuHandle.ptr +=  m_DescriptorHandleIncrementSize * InCount; 
+	m_NextFreeHandle.m_GpuHandle.ptr +=  m_DescriptorHandleIncrementSize * InCount;  
+
+	return RetVal;
+}

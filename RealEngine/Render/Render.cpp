@@ -55,19 +55,31 @@ RRenderer& RRenderer::Get()
 }
 void RRenderer::Init(std::shared_ptr<RGenericWindow> Window)
 {
+    ID3D12Device* Device = GGraphicInterface->GetDeviceRaw();
     GGraphicInterface->InitilizeViewport(HWND(Window->GetWindowHandle()), 1280, 720); 
     RGraphicViewport* Viewprot = GGraphicInterface->GetViewport();
-    
+    m_TextureHeap.Create("GlobalTextureHeap", D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV, 4096);
+
     m_SceneDepthBuffer.Create("SceneDepthBuffer", 1280, 720, DSV_FORMAT);
     std::vector<LocalRGBA> ColorData = CreateProceduralTex(1280, 720);
     m_DefaultTexture.Create2D("DefaultTexture", 1280 * sizeof(LocalRGBA), 1280, 720, DXGI_FORMAT_R8G8B8A8_UNORM, ColorData.data()); 
+   
+    {
+        D3D12_CPU_DESCRIPTOR_HANDLE defaultTextureCpuHandle = m_DefaultTexture.GetSRV();
+        
+        m_DefaultTextureHandle = m_TextureHeap.Allocate(1);
+        const uint32_t NumHandle = 1;
+        //Device->CopyDescriptors(1, &m_DefaultTextureHandle, &NumHandle, 1, &defaultTextureCpuHandle, &NumHandle, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+        Device->CopyDescriptorsSimple(1, m_DefaultTextureHandle, defaultTextureCpuHandle, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+    }
+
 
     std::shared_ptr< RRootSignature> NewSignature = std::shared_ptr<RRootSignature>(new RRootSignature());
     NewSignature->Reset(4); 
     NewSignature->SetParamAsConstantBuffer(0, 0, D3D12_SHADER_VISIBILITY_VERTEX);
     NewSignature->SetParamAsConstantBuffer(1, 0, D3D12_SHADER_VISIBILITY_PIXEL);
     NewSignature->SetParamAsConstantBuffer(2, 1, D3D12_SHADER_VISIBILITY_ALL);
-    NewSignature->SetParamAsBufferSRV(3, 0,D3D12_SHADER_VISIBILITY_PIXEL); // 先给材质占10个位置
+    NewSignature->SetParamAsDescriptorRange(3,D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 0, 1,D3D12_SHADER_VISIBILITY_PIXEL); // 先给材质占10个位置
 
     NewSignature->Finalize("MyNewRootSignature", D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT);
 
@@ -181,7 +193,29 @@ void RRenderer::DoRender(RViewInfo& ViewInfo)
     Context->SetDynamicConstantBufferView(0, sizeof(ObjectConstants), &GlobalConstants);
     //Context->SetDynamicConstantBufferView(1, sizeof(ObjectConstants), &GlobalConstants);
     Context->SetDynamicConstantBufferView(2, sizeof(ObjectConstants), &GlobalConstants);
-    CommandList->SetComputeRootShaderResourceView(3, m_DefaultTexture.GetGPUVirtualAddress());
+
+// D3D12 ERROR: GPU-BASED VALIDATION: Draw, 
+// Descriptor heap index out of bounds: 
+// Heap Index To DescriptorTableStart: [0], 
+// Heap Index From HeapStart: [3452816845], 
+// Heap Type: D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV, 
+// Num Descriptor Entries: 4096, 
+// Index of Descriptor Range: 0, 
+// Shader Stage: PIXEL, 
+// Root Parameter Index: [3], 
+// Draw Index: [0], 
+// Shader Code: E:\Workspace\RealEngine\RealEngine\Render\BasePS.hlsl(24,5-43), 
+// Asm Instruction Range: [0xe4-0x107], Asm Operand Index: [2], 
+// Command List: 0x000002037F21BF60:'MyCommandList', 
+// SRV/UAV/CBV Descriptor Heap: 0x000002037FD0F790:'GlobalTextureHeap', 
+// Sampler Descriptor Heap: <not set>, 
+// Pipeline State: 0x00000203055CF070:'MyNewPSO',  
+// [ EXECUTION ERROR #936: GPU_BASED_VALIDATION_DESCRIPTOR_HEAP_INDEX_OUT_OF_BOUNDS]
+
+    ID3D12DescriptorHeap* MaterialTextureDescHeap = m_TextureHeap.GetDescriptorHeap(); 
+    CommandList->SetDescriptorHeaps(1, &MaterialTextureDescHeap);
+
+    CommandList->SetGraphicsRootDescriptorTable(3, MaterialTextureDescHeap->GetGPUDescriptorHandleForHeapStart());
 
     for (size_t i = 0; i < InPrims.size(); ++i)
     {
