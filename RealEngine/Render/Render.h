@@ -27,6 +27,7 @@ private:
     RTexture m_DefaultTexture;
     RDescriptorHandle m_DefaultTextureHandle;
 
+    RTexture m_YiBaseColor;
     std::shared_ptr<RGraphicPSO> m_DefaultPSO;
     uint64_t m_FrameAsyncFence;
 };

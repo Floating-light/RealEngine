@@ -20,10 +20,10 @@ target_sources(Renderer
     ${SOURCES_H}
   PRIVATE
     ${SOURCES_CPP}
-    # ${SHADERS}
+    ${SHADERS}
 )
-
-# source_group("Shaders" FILES ${SHADERS})
+source_group("Shaders" FILES ${SHADERS})
+set_source_files_properties(${SHADERS}  PROPERTIES  HEADER_FILE_ONLY TRUE)
 
 target_include_directories(Renderer
   PUBLIC
@@ -36,6 +36,7 @@ target_link_libraries(Renderer
     Application
     Core
     DirectXMath
+    DirectXTex
   )
 
 target_link_libraries(Renderer

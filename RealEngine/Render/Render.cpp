@@ -1,6 +1,7 @@
 #include "Render.h"
 
 #include <filesystem>
+#include <DirectXTex.h>
 
 #include "GraphicInterface.h"
 #include "Logging.h"
@@ -49,6 +50,18 @@ std::vector<LocalRGBA> CreateProceduralTex(int32_t Width, int32_t Height)
     }
     return RetVal;
 }
+
+RTexture CreateTexture(const std::filesystem::path InPath)
+{
+    RTexture RetVal{};
+
+    DirectX::TexMetadata metaData{};
+    DirectX::ScratchImage scratchImage{};
+    DirectX::LoadFromWICFile(InPath.c_str(), DirectX::WIC_FLAGS_NONE, &metaData, scratchImage);
+
+    RetVal.Create2D("TestTex1", scratchImage.GetImages()->rowPitch, metaData.width, metaData.height,metaData.format, scratchImage.GetImages()->pixels); 
+    return RetVal;
+}
 RRenderer& RRenderer::Get()
 {
     static RRenderer Renderer;
@@ -63,8 +76,10 @@ void RRenderer::Init(std::shared_ptr<RGenericWindow> Window)
 
     m_SceneDepthBuffer.Create("SceneDepthBuffer", 1280, 720, DSV_FORMAT);
     std::vector<LocalRGBA> ColorData = CreateProceduralTex(1280, 720);
-    m_DefaultTexture.Create2D("DefaultTexture", 1280 * sizeof(LocalRGBA), 1280, 720, DXGI_FORMAT_R8G8B8A8_UNORM, ColorData.data()); 
-   
+    //m_DefaultTexture.Create2D("DefaultTexture", 1280 * sizeof(LocalRGBA), 1280, 720, DXGI_FORMAT_R8G8B8A8_UNORM, ColorData.data()); 
+    
+    m_DefaultTexture = CreateTexture("../../resources/HuangQuan/衣内.png");
+    
     {   
         D3D12_CPU_DESCRIPTOR_HANDLE defaultTextureCpuHandle = m_DefaultTexture.GetSRV(); 
         

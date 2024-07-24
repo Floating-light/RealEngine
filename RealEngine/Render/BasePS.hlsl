@@ -21,7 +21,10 @@ float4 PSMain(VSOutput input) :SV_Target0
     Location.y = input.uv0.y * 720;
     Location.z = 0;
     //return float4(input.uv0, 0,1);
-    return baseColorTexture.Load(Location);
+    float3 baseColor = baseColorTexture.Load(Location);
+    float gamma = 2.2f;
+    baseColor = pow(baseColor.rgb, float3(gamma, gamma, gamma));
+    return float4(baseColor, 1.f);
     
     //return float4(input.normal, 1.f);
 }
