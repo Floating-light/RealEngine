@@ -43,7 +43,8 @@ std::vector<LocalRGBA> CreateProceduralTex(int32_t Width, int32_t Height)
         {
             bool isWhite = ((x / checkSize) % 2 == ((y / checkSize) % 2));
             uint8_t color = isWhite ? 255 : 0;
-            RetVal[y * Width + Height] = {color, color, color, 255};
+            //RetVal[y * Width + Height] = {color, color, color, 0};
+            RetVal[y * Width + Height] = {255, 0, 0, 255};
         }
     }
     return RetVal;
@@ -64,13 +65,13 @@ void RRenderer::Init(std::shared_ptr<RGenericWindow> Window)
     std::vector<LocalRGBA> ColorData = CreateProceduralTex(1280, 720);
     m_DefaultTexture.Create2D("DefaultTexture", 1280 * sizeof(LocalRGBA), 1280, 720, DXGI_FORMAT_R8G8B8A8_UNORM, ColorData.data()); 
    
-    {
-        D3D12_CPU_DESCRIPTOR_HANDLE defaultTextureCpuHandle = m_DefaultTexture.GetSRV();
+    {   
+        D3D12_CPU_DESCRIPTOR_HANDLE defaultTextureCpuHandle = m_DefaultTexture.GetSRV(); 
         
-        m_DefaultTextureHandle = m_TextureHeap.Allocate(1);
-        const uint32_t NumHandle = 1;
+        m_DefaultTextureHandle = m_TextureHeap.Allocate(1); 
+        const uint32_t NumHandle = 1; 
         //Device->CopyDescriptors(1, &m_DefaultTextureHandle, &NumHandle, 1, &defaultTextureCpuHandle, &NumHandle, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
-        Device->CopyDescriptorsSimple(1, m_DefaultTextureHandle, defaultTextureCpuHandle, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+        Device->CopyDescriptorsSimple(1, m_DefaultTextureHandle, defaultTextureCpuHandle, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV); 
     }
 
 
@@ -194,28 +195,10 @@ void RRenderer::DoRender(RViewInfo& ViewInfo)
     //Context->SetDynamicConstantBufferView(1, sizeof(ObjectConstants), &GlobalConstants);
     Context->SetDynamicConstantBufferView(2, sizeof(ObjectConstants), &GlobalConstants);
 
-// D3D12 ERROR: GPU-BASED VALIDATION: Draw, 
-// Descriptor heap index out of bounds: 
-// Heap Index To DescriptorTableStart: [0], 
-// Heap Index From HeapStart: [3452816845], 
-// Heap Type: D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV, 
-// Num Descriptor Entries: 4096, 
-// Index of Descriptor Range: 0, 
-// Shader Stage: PIXEL, 
-// Root Parameter Index: [3], 
-// Draw Index: [0], 
-// Shader Code: E:\Workspace\RealEngine\RealEngine\Render\BasePS.hlsl(24,5-43), 
-// Asm Instruction Range: [0xe4-0x107], Asm Operand Index: [2], 
-// Command List: 0x000002037F21BF60:'MyCommandList', 
-// SRV/UAV/CBV Descriptor Heap: 0x000002037FD0F790:'GlobalTextureHeap', 
-// Sampler Descriptor Heap: <not set>, 
-// Pipeline State: 0x00000203055CF070:'MyNewPSO',  
-// [ EXECUTION ERROR #936: GPU_BASED_VALIDATION_DESCRIPTOR_HEAP_INDEX_OUT_OF_BOUNDS]
+    ID3D12DescriptorHeap* descHeaps[] = { m_TextureHeap.GetDescriptorHeap()};
+    CommandList->SetDescriptorHeaps(1, descHeaps);
 
-    ID3D12DescriptorHeap* MaterialTextureDescHeap = m_TextureHeap.GetDescriptorHeap(); 
-    CommandList->SetDescriptorHeaps(1, &MaterialTextureDescHeap);
-
-    CommandList->SetGraphicsRootDescriptorTable(3, MaterialTextureDescHeap->GetGPUDescriptorHandleForHeapStart());
+    CommandList->SetGraphicsRootDescriptorTable(3, m_DefaultTextureHandle);
 
     for (size_t i = 0; i < InPrims.size(); ++i)
     {

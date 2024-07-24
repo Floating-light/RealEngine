@@ -20,7 +20,6 @@ public:
 
     void Destroy();
 private:
-    //Microsoft::WRL::ComPtr<ID3D12Resource> m_DepthBuffer;
     RDescriptorHeap m_TextureHeap;
     
     RDepthBuffer m_SceneDepthBuffer;

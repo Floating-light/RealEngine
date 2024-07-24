@@ -20,7 +20,7 @@ float4 PSMain(VSOutput input) :SV_Target0
     Location.x = input.uv0.x * 1280;
     Location.y = input.uv0.y * 720;
     Location.z = 0;
-    
+    //return float4(input.uv0, 0,1);
     return baseColorTexture.Load(Location);
     
     //return float4(input.normal, 1.f);

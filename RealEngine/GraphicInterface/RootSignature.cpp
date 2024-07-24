@@ -39,6 +39,10 @@ void RRootParameter::SetTableRange(uint32_t RangeIndex, D3D12_DESCRIPTOR_RANGE_T
 	CurRange->BaseShaderRegister = Register;
 	CurRange->NumDescriptors = Count;
 	CurRange->RegisterSpace= Space;
+	
+	// 自动计算偏移，一个RootParameter有多个Range，这个偏移应该是绑定的HeapHandle之后的多少个Handle，通常就是前面的Range占了多少?
+	// CommandList->SetGraphicsRootDescriptorTable(3, m_TempDescriptorHeap->GetGPUDescriptorHandleForHeapStart());
+	CurRange->OffsetInDescriptorsFromTableStart = D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND; 
 }
 
 void RRootSignature::SetParamAsBufferSRV(uint32_t ParamIndex, uint32_t Register, D3D12_SHADER_VISIBILITY Visibility, uint32_t Space)
