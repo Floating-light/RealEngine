@@ -36,7 +36,6 @@ target_link_libraries(Renderer
     Application
     Core
     DirectXMath
-    DirectXTex
   )
 
 target_link_libraries(Renderer

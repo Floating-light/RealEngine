@@ -19,6 +19,8 @@ public:
     void DoRender(RViewInfo& ViewInfo);
 
     void Destroy();
+
+    RDescriptorHandle AllocateSRV(uint32_t Count = 1);
 private:
     RDescriptorHeap m_TextureHeap;
     

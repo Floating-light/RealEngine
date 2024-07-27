@@ -110,12 +110,39 @@ void ProcessaiNode(aiNode* InNode)
         ProcessaiNode(InNode->mChildren[i]);
     }
 }
+std::unordered_map<aiPropertyTypeInfo, std::string> matPropMap = 
+{   {aiPTI_Float, "float"},
+    {aiPTI_Double, "double"}, 
+    {aiPTI_String, "string"},
+    {aiPTI_Integer, "Integer"},
+    {aiPTI_Buffer, "Buffer"} };
+
+std::vector<RMaterial> ProcessMaterial(const aiScene* InScene, std::filesystem::path InParentPath)
+{
+    std::vector<RMaterial> Mats{};
+    for (int32_t i = 0; i < InScene->mNumMaterials; ++i)
+    {
+        aiMaterial* Mat = InScene->mMaterials[i]; 
+        for (size_t j = 0; j < Mat->mNumProperties; ++j)
+        {
+            aiMaterialProperty* Prop = Mat->mProperties[j];
+            RLOG(Info, "{}. Mat: {}, Prop: {}, Type: {}", 
+                i,Mat->GetName().C_Str(), Prop->mKey.C_Str(), matPropMap[Prop->mType]); 
+        }
+        aiString Path;
+        Mat->Get(AI_MATKEY_TEXTURE(aiTextureType_DIFFUSE, 0), Path);
+        RLOG(Info, "texture path : {}", Path.C_Str());
+        Mats.emplace_back((InParentPath / Path.C_Str()).string());
+    }
+    return std::move(Mats);
+}
 std::shared_ptr<RModelData> RAssetImporter::ImportModelNew(const std::string& InFile)
 {
+    const std::filesystem::path FilePath = std::filesystem::path(InFile);
     Assimp::Importer importer; 
-    const std::string nFilePath = std::filesystem::path(InFile).string(); 
+    //const std::string nFilePath = std::filesystem::path(InFile).string(); 
 
-    const aiScene* scene = importer.ReadFile(nFilePath,  
+    const aiScene* scene = importer.ReadFile(FilePath.string(),
         aiProcess_CalcTangentSpace |
         aiProcess_JoinIdenticalVertices |
         aiProcess_Triangulate |
@@ -134,12 +161,15 @@ std::shared_ptr<RModelData> RAssetImporter::ImportModelNew(const std::string& In
 
     if (scene == nullptr) 
     {
-        RLOG(Error, "Load file failed : {} ", nFilePath); 
+        RLOG(Error, "Load file failed : {} ", FilePath.string()); 
         return nullptr;
     }
 
     std::shared_ptr<RModelData> RetData(new RModelData());  
     ProcessaiNode(scene->mRootNode);
+    
+    RetData->SetMaterials(ProcessMaterial(scene,  FilePath.parent_path()));
+
     std::vector<uint8_t>& LocalGeometryData =RetData->GetGeometryData(); 
     std::vector<RMeshData>& LocalMeshesData = RetData->GetMeshesData();
     const uint32_t strides = sizeof(float) * (3 + 3 + 2);
@@ -193,6 +223,7 @@ std::shared_ptr<RModelData> RAssetImporter::ImportModelNew(const std::string& In
         MeshData.indexCount = Mesh->mNumFaces * 3;
         MeshData.ibOffset = LocalGeometryData.size();
         MeshData.ibSize = Mesh->mNumFaces * 3 * sizeof(uint32_t);
+        MeshData.MaterialIndex = Mesh->mMaterialIndex;
 
         uint8_t* pIndexBuffer = CurIndexBuffer.data(); 
         for (size_t j = 0; j < Mesh->mNumFaces; ++j)
@@ -203,7 +234,7 @@ std::shared_ptr<RModelData> RAssetImporter::ImportModelNew(const std::string& In
             pIndexBuffer += sizeof(uint32_t) * 3; 
         }
         LocalGeometryData.insert(LocalGeometryData.end(), CurIndexBuffer.begin(), CurIndexBuffer.end()); 
-
+        MeshData.Name = Mesh->mName.C_Str();
         RLOG(Info, "{}, V: {}, F: {}, T: {}, Mat: {}", Mesh->mName.C_Str(), Mesh->mNumVertices, Mesh->mNumFaces, Mesh->mPrimitiveTypes, Mesh->mMaterialIndex);
     }
     if (RetData)

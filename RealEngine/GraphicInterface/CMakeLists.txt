@@ -32,6 +32,7 @@ endif()
 target_link_libraries(GraphicInterface 
   PUBLIC
     Core
+    DirectXTex
   )
 target_link_libraries(GraphicInterface
   PRIVATE

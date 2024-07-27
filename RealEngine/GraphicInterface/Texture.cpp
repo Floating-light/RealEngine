@@ -1,6 +1,7 @@
 #include "Texture.h"
 #include "GraphicInterface.h"
 #include "CommandContext.h"
+#include <DirectXTex.h>
 
 void RTexture::Create2D(const std::string& InName, uint32_t RowPitchBytes, uint32_t InWidth, uint32_t InHeight, DXGI_FORMAT InFormat, const void* InData)
 {
@@ -48,4 +49,25 @@ void RTexture::Create2D(const std::string& InName, uint32_t RowPitchBytes, uint3
 	}
 
 	Device->CreateShaderResourceView(m_Resource.Get(), nullptr, m_CpuDescriptorHandle); 
+}
+
+RTexture RTexture::CreateTexture(const std::filesystem::path InPath)
+{
+	RTexture RetVal{};
+
+	DirectX::TexMetadata metaData{};
+	DirectX::ScratchImage scratchImage{};
+	std::string ext = InPath.extension().string();  
+	
+	if (InPath.extension() == ".tga")
+	{
+		ASSERTDX(DirectX::LoadFromTGAFile(InPath.c_str(),&metaData,scratchImage));
+	}
+	else
+	{
+		ASSERTDX(DirectX::LoadFromWICFile(InPath.c_str(), DirectX::WIC_FLAGS_NONE, &metaData, scratchImage));
+	}
+
+	RetVal.Create2D("TestTex1", scratchImage.GetImages()->rowPitch, metaData.width, metaData.height, metaData.format, scratchImage.GetImages()->pixels);
+	return RetVal;
 }
