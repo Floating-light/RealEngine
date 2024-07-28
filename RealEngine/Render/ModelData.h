@@ -38,20 +38,29 @@ class RModelData
 public:
 	void SetName(const std::string& InName) { m_Name = InName; };
 	void SetMaterials(const std::vector<RMaterial>& InMats) { m_Materials = InMats; };
-
+	
+	const RMaterial& GetMaterial(uint32_t InIndex)const;
+	
 	RDescriptorHandle GetMaterialSRV(int32_t InIndex)const;
+	
 	std::string GetMaterialName(int32_t InIndex) const;
+	
 	std::vector<uint8_t>& GetGeometryData() { return m_GeometryData; };
+	void SetGeometryData(const std::vector<uint8_t>& InGeoData) { m_GeometryData = InGeoData; }
+
+	void AddMeshData(const RMeshData& InData) { m_MeshesData.push_back(InData); };
 	std::vector<RMeshData>& GetMeshesData() { return m_MeshesData; }
 	const std::vector<RMeshData>& GetMeshesData()const { return m_MeshesData; }
+	
 	const RRHIBufferByteAddress& GetGeometryDataBuffer() const { return m_GeometryBuffer; }; 
+	
 	void PostLoad();
 private:
 	std::string m_Name;
 	RRHIBufferByteAddress m_GeometryBuffer;
 	std::vector<uint8_t> m_GeometryData;
 	std::vector<RMeshData> m_MeshesData;
-	std::vector<RMaterial> m_Materials;
+	std::vector<RMaterial> m_Materials{};
 };
 
 inline RDescriptorHandle RModelData::GetMaterialSRV(int32_t InIndex)const  
@@ -64,4 +73,10 @@ inline std::string RModelData::GetMaterialName(int32_t InIndex) const
 {
 	RCHECK(InIndex < m_Materials.size()); 
 	return m_Materials[InIndex].DiffuseTexPath;  
+}
+
+inline const RMaterial& RModelData::GetMaterial(uint32_t InIndex)const
+{
+	RCHECK(InIndex < m_Materials.size());
+	return m_Materials[InIndex];
 }

@@ -10,8 +10,8 @@ RGameViewportClient::RGameViewportClient() :
 
 Reply RGameViewportClient::OnKeyDown( const RGeometry& MyGeometry, const RKeyEvent& InKeyEvent )
 {
-    RLOG(Info, "{} : {}", __FUNCTION__, InKeyEvent.GetKey().ToString());
-    static constexpr float Intensity = 0.1;
+    //RLOG(Info, "{} : {}", __FUNCTION__, InKeyEvent.GetKey().ToString());
+    static constexpr float Intensity = 0.5;
     if(InKeyEvent.GetKey() == RKey::W)
     {
         DeltaLocation.Z -= Intensity;
@@ -57,8 +57,8 @@ Reply RGameViewportClient::OnMouseButtonUp( const RGeometry& MyGeometry, const R
 Reply RGameViewportClient::OnMouseMove( const RGeometry& MyGeometry, const RPointerEvent& MouseEvent )
 {
     const Vector2D DeltaMove = MouseEvent.GetDeltaPosition();
-    RLOG(Info, "{} : [{}]", __FUNCTION__, DeltaMove.ToString()); 
-    constexpr float MouseSensitivity = 0.01f;
+    //RLOG(Info, "{} : [{}]", __FUNCTION__, DeltaMove.ToString()); 
+    constexpr float MouseSensitivity = 0.005f;
 
     if (DeltaMove.X > 100 || DeltaMove.Y > 100)
     {

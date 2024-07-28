@@ -45,6 +45,25 @@ void RRootParameter::SetTableRange(uint32_t RangeIndex, D3D12_DESCRIPTOR_RANGE_T
 	CurRange->OffsetInDescriptorsFromTableStart = D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND; 
 }
 
+void RRootSignature::InitStaticSampler(uint32_t Register, const D3D12_SAMPLER_DESC& NonStaticSamplerDesc, D3D12_SHADER_VISIBILITY Visibility)
+{
+	D3D12_STATIC_SAMPLER_DESC desc{};
+	desc.Filter = NonStaticSamplerDesc.Filter;
+	desc.AddressU = NonStaticSamplerDesc.AddressU;
+	desc.AddressV = NonStaticSamplerDesc.AddressV;
+	desc.AddressW = NonStaticSamplerDesc.AddressW;
+	desc.MipLODBias = NonStaticSamplerDesc.MipLODBias;
+	desc.MaxAnisotropy = NonStaticSamplerDesc.MaxAnisotropy;
+	desc.ComparisonFunc = NonStaticSamplerDesc.ComparisonFunc;
+	desc.BorderColor = D3D12_STATIC_BORDER_COLOR_OPAQUE_WHITE; 
+	desc.MinLOD = NonStaticSamplerDesc.MinLOD;
+	desc.MaxLOD = NonStaticSamplerDesc.MaxLOD;
+	desc.ShaderRegister = Register;
+	desc.RegisterSpace = 0;
+	desc.ShaderVisibility = Visibility;
+	m_SamplerArray.push_back(std::move(desc));
+}
+
 void RRootSignature::SetParamAsBufferSRV(uint32_t ParamIndex, uint32_t Register, D3D12_SHADER_VISIBILITY Visibility, uint32_t Space)
 {
 	RCHECK(ParamIndex < m_Params.size());
@@ -70,8 +89,8 @@ void RRootSignature::Finalize(const std::string& name, D3D12_ROOT_SIGNATURE_FLAG
 	D3D12_ROOT_SIGNATURE_DESC RootDesc = {};
 	RootDesc.NumParameters = m_Params.size(); 
 	RootDesc.pParameters = (const D3D12_ROOT_PARAMETER*)m_Params.data(); 
-	RootDesc.NumStaticSamplers = 0;
-	RootDesc.pStaticSamplers = nullptr;
+	RootDesc.NumStaticSamplers = m_SamplerArray.size();
+	RootDesc.pStaticSamplers = RootDesc.NumStaticSamplers > 0 ? m_SamplerArray.data() : nullptr;
 	RootDesc.Flags = Flags;
 
 	using Microsoft::WRL::ComPtr;

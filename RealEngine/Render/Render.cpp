@@ -12,6 +12,7 @@
 #include "CommandContext.h"
 #include "PrimitiveInfo.h"
 #include "ModelData.h"
+#include "SamplerDesc.h"
 
 // for test purpose
 #include "GenericPlatform/GenericWindow.h"
@@ -80,7 +81,10 @@ void RRenderer::Init(std::shared_ptr<RGenericWindow> Window)
 
     std::shared_ptr< RRootSignature> NewSignature = std::shared_ptr<RRootSignature>(new RRootSignature());
     NewSignature->Reset(4); 
-    NewSignature->SetParamAsConstantBuffer(0, 0, D3D12_SHADER_VISIBILITY_VERTEX);
+    RSamplerDesc samplerDesc{};
+    
+    NewSignature->InitStaticSampler(0, samplerDesc, D3D12_SHADER_VISIBILITY_PIXEL);
+    NewSignature->SetParamAsConstantBuffer(0, 0, D3D12_SHADER_VISIBILITY_VERTEX); 
     NewSignature->SetParamAsConstantBuffer(1, 0, D3D12_SHADER_VISIBILITY_PIXEL);
     NewSignature->SetParamAsConstantBuffer(2, 1, D3D12_SHADER_VISIBILITY_ALL);
     NewSignature->SetParamAsDescriptorRange(3,D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 0, 1,D3D12_SHADER_VISIBILITY_PIXEL); // 先给材质占10个位置
@@ -108,7 +112,8 @@ void RRenderer::Init(std::shared_ptr<RGenericWindow> Window)
     alphaBlend.RenderTarget[0].DestBlendAlpha = D3D12_BLEND_INV_SRC_ALPHA;
     alphaBlend.RenderTarget[0].BlendOpAlpha = D3D12_BLEND_OP_ADD;
     alphaBlend.RenderTarget[0].RenderTargetWriteMask = D3D12_COLOR_WRITE_ENABLE_ALL;
-    alphaBlend.RenderTarget[0].SrcBlend = D3D12_BLEND_ONE;
+    alphaBlend.RenderTarget[0].LogicOpEnable = false;
+    alphaBlend.RenderTarget[0].LogicOp = D3D12_LOGIC_OP_CLEAR;
 
     m_DefaultPSO->SetBlendState(alphaBlend);
 
@@ -194,7 +199,6 @@ void RRenderer::DoRender(RViewInfo& ViewInfo)
     CommandList->SetPipelineState(m_DefaultPSO->GetPipelineState());
 
     // RootIndex 指的是构建RootSignature时，第几个D3D12_ROOT_PARAMETER
-    Context->SetDynamicConstantBufferView(0, sizeof(ObjectConstants), &GlobalConstants);
     //Context->SetDynamicConstantBufferView(1, sizeof(ObjectConstants), &GlobalConstants);
     Context->SetDynamicConstantBufferView(2, sizeof(ObjectConstants), &GlobalConstants);
 
@@ -203,19 +207,23 @@ void RRenderer::DoRender(RViewInfo& ViewInfo)
     for (size_t i = 0; i < InPrims.size(); ++i)
     {
         std::shared_ptr<RPrimitiveObject> obj = InPrims[i];
+        Context->SetConstantBuffer(0, obj->GetModelConstant());
         if (RModelData* data = obj->GetModelData())
         {
             const std::vector<RMeshData>& Meshes = data->GetMeshesData();
             for (const RMeshData& Mesh : Meshes)
             {
-                CommandList->SetGraphicsRootDescriptorTable(3, data->GetMaterialSRV(Mesh.MaterialIndex));
+                //if (Mesh.MaterialIndex == 2 || Meshes.size() == 1)
+                {
+                    CommandList->SetGraphicsRootDescriptorTable(3, data->GetMaterialSRV(Mesh.MaterialIndex));
 
-                D3D12_GPU_VIRTUAL_ADDRESS buffer_ptr = data->GetGeometryDataBuffer().GetGPUVirtualAddress();
-                D3D12_VERTEX_BUFFER_VIEW buffer_view = { buffer_ptr + Mesh.vbOffset, Mesh.vbSize , Mesh.vbStride };
-                CommandList->IASetVertexBuffers(0, 1, &buffer_view);
-                D3D12_INDEX_BUFFER_VIEW indexBufferView = { buffer_ptr + Mesh.ibOffset, Mesh.ibSize, DXGI_FORMAT_R32_UINT };
-                CommandList->IASetIndexBuffer(&indexBufferView);
-                CommandList->DrawIndexedInstanced(Mesh.indexCount, 1, 0, 0, 0);
+                    D3D12_GPU_VIRTUAL_ADDRESS buffer_ptr = data->GetGeometryDataBuffer().GetGPUVirtualAddress();
+                    D3D12_VERTEX_BUFFER_VIEW buffer_view = { buffer_ptr + Mesh.vbOffset, Mesh.vbSize , Mesh.vbStride };
+                    CommandList->IASetVertexBuffers(0, 1, &buffer_view);
+                    D3D12_INDEX_BUFFER_VIEW indexBufferView = { buffer_ptr + Mesh.ibOffset, Mesh.ibSize, DXGI_FORMAT_R32_UINT };
+                    CommandList->IASetIndexBuffer(&indexBufferView); 
+                    CommandList->DrawIndexedInstanced(Mesh.indexCount, 1, 0, 0, 0);
+                }
             }
         }
     }

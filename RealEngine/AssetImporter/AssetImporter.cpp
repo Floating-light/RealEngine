@@ -1,10 +1,11 @@
 #include "AssetImporter.h"
 
+#include <filesystem>
+#include <cassert>
+#include <array>
 #include <assimp/Importer.hpp>      // C++ importer interface
 #include <assimp/scene.h>           // Output data structure
 #include <assimp/postprocess.h>     // Post processing flags
-#include <filesystem>
-#include <cassert>
 
 #include "Core.h"
 #include "PrimitiveInfo.h"
@@ -247,4 +248,65 @@ std::shared_ptr<RModelData> RAssetImporter::ImportModelNew(const std::string& In
         RetData->PostLoad();
     }
     return RetData;
+}
+struct LocalVertex
+{
+    LocalVertex(const Vector3D& InPosition, const Vector3D& InNormal, const Vector2D& InUV)
+        : Position(InPosition)
+        , Normal(InNormal)
+        , UV(InUV)
+    {}
+    Vector3D Position;
+    Vector3D Normal;
+    Vector2D UV;
+};
+std::shared_ptr<RModelData> RAssetImporter::MakeCube()
+{
+    //std::array<CubeVertex, 8> vertex =
+    //{ 
+    //    CubeVertex(Vector3D(0.5f, 0.5f,-0.5f)  , Vector3D(1.f,1.f,1.f), Vector2D()),
+    //    CubeVertex(Vector3D(0.5f, -0.5f,-0.5f) , Vector3D(1.f,1.f,1.f), Vector2D()),
+    //    CubeVertex(Vector3D(-0.5f, -0.5f,-0.5f), Vector3D(1.f,1.f,1.f), Vector2D()),
+    //    CubeVertex(Vector3D(-0.5f, 0.5f,-0.5f) , Vector3D(1.f,1.f,1.f), Vector2D()),
+    //    CubeVertex(Vector3D(0.5f, 0.5f,0.5f)  ,  Vector3D(1.f,1.f,1.f), Vector2D()),
+    //    CubeVertex(Vector3D(0.5f, -0.5f,0.5f) ,  Vector3D(1.f,1.f,1.f), Vector2D()),
+    //    CubeVertex(Vector3D(-0.5f, -0.5f,0.5f),  Vector3D(1.f,1.f,1.f), Vector2D()),
+    //    CubeVertex(Vector3D(-0.5f, 0.5f,0.5f) ,  Vector3D(1.f,1.f,1.f), Vector2D())
+    //};
+    return std::shared_ptr<RModelData>();
+}
+
+std::shared_ptr<RModelData> RAssetImporter::MakePlane() 
+{
+    std::array<LocalVertex, 4> Vertex = {
+        LocalVertex(Vector3D(1.5f, 1.5f,-1.5f)  , Vector3D(1.f,1.f,1.f), Vector2D(1,0)),
+        LocalVertex(Vector3D(-1.5f, 1.5f,-1.5f)  , Vector3D(1.f,1.f,1.f), Vector2D(0,0)),
+        LocalVertex(Vector3D(-1.5f, -1.5f,-1.5f)  , Vector3D(1.f,1.f,1.f), Vector2D(0,1)),
+        LocalVertex(Vector3D(1.5f, -1.5f,-1.5f)  , Vector3D(1.f,1.f,1.f), Vector2D(1,1)),
+    };
+    std::array<uint32_t, 6> Index = {3,0,1,1,2,3};
+
+    std::shared_ptr<RModelData> RetVal = std::shared_ptr<RModelData>(new RModelData());
+    std::vector<uint8_t>& Data = RetVal->GetGeometryData(); 
+    Data.resize(sizeof(LocalVertex) * 4 + sizeof(uint32_t)*6);
+    memcpy(Data.data(), Vertex.data(), sizeof(LocalVertex) * 4);
+    memcpy(Data.data() + sizeof(LocalVertex) * 4, Index.data(), sizeof(uint32_t) * 6);
+
+    RMeshData meshData{};
+    meshData.vbOffset = 0;
+    meshData.vbSize = sizeof(LocalVertex) * 4;
+    meshData.vbStride = sizeof(LocalVertex);
+    meshData.ibOffset = meshData.vbSize;
+    meshData.ibSize = sizeof(uint32_t) * 6;
+    meshData.indexCount = 6;
+    meshData.MaterialIndex = 0;
+    meshData.xform = Matrix4::Identity;
+    /*meshData.rotation = RQuat::*/
+    meshData.scale = Vector3D::OneVector;
+
+    meshData.Name = "TestPlane";
+    RetVal->AddMeshData(meshData);
+    RetVal->PostLoad();
+
+    return RetVal;
 }

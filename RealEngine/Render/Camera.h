@@ -23,7 +23,7 @@ private:
 private:
 	// View 空间
 	Matrix3 m_Basis;
-	Transform m_CameraToWorld; 
+	RTransform m_CameraToWorld; 
 	Matrix4 m_ViewMatrix;
 	Matrix4 m_ProjMatrix;
 	Matrix4 m_ViewProjMatrix;

@@ -216,6 +216,11 @@ D3D12_RESOURCE_DESC RCommandContext::GetUploadBufferResourceDesc(uint32_t Buffer
 //    }
 //}
 
+void RCommandContext::SetConstantBuffer(uint32_t RootIndex, D3D12_GPU_VIRTUAL_ADDRESS CBV)
+{
+    m_CommandList->SetGraphicsRootConstantBufferView(RootIndex, CBV);
+}
+
 void RCommandContext::SetDynamicConstantBufferView(uint32_t RootIndex, size_t BufferSize, const void* BufferData)
 {
     assert(BufferData != nullptr && RMath::IsAligned(BufferSize, 16));

@@ -66,6 +66,7 @@ public:
     void TransitionResource(RRHIResource& Resource, D3D12_RESOURCE_STATES NewState, bool FlushImmediate = false);
 
     //RRHIBuffer* CreateBuffer(const void *Data, uint32_t Size, uint32_t Stride, std::string_view DebugName);
+    void SetConstantBuffer(uint32_t RootIndex, D3D12_GPU_VIRTUAL_ADDRESS CBV);
     void SetDynamicConstantBufferView(uint32_t RootIndex, size_t BufferSize, const void* BufferData);
     void SetRenderTarget(D3D12_CPU_DESCRIPTOR_HANDLE RTV, D3D12_CPU_DESCRIPTOR_HANDLE DSV) { SetRenderTargets(1, &RTV, DSV); };
     void SetRenderTargets(uint8_t NumRTVs, D3D12_CPU_DESCRIPTOR_HANDLE RTVs[], D3D12_CPU_DESCRIPTOR_HANDLE DSV);

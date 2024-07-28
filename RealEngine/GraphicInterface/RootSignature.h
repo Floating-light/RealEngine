@@ -42,6 +42,7 @@ public:
 
 	void Reset(uint32_t Num) { m_Params.resize(Num); }
 
+	void InitStaticSampler(uint32_t Register, const D3D12_SAMPLER_DESC& NonStaticSamplerDesc, D3D12_SHADER_VISIBILITY Visibility);
 	void SetParamAsBufferSRV(uint32_t ParamIndex, uint32_t Register, D3D12_SHADER_VISIBILITY Visibility , uint32_t Space = 0);
 	void SetParamAsConstantBuffer(uint32_t ParamIndex, uint32_t Register, D3D12_SHADER_VISIBILITY Visibility, uint32_t Space = 0);
 	void SetParamAsDescriptorRange(uint32_t ParamIndex, D3D12_DESCRIPTOR_RANGE_TYPE Type, uint32_t Register, uint32_t Count,
@@ -52,5 +53,6 @@ public:
 private:
 	bool m_Finalized = false;
 	std::vector<RRootParameter> m_Params; 
+	std::vector<D3D12_STATIC_SAMPLER_DESC> m_SamplerArray;
 	Microsoft::WRL::ComPtr<ID3D12RootSignature> m_Signature;
 };

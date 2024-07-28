@@ -25,7 +25,7 @@ struct VSOutput
 VSOutput VSMain(VSInput input)
 {
     VSOutput output;
-    output.position = mul(ViewProjMatrix, float4(input.position, 1.0f));
+    output.position = mul(ViewProjMatrix, mul(ModelMatrix, float4(input.position, 1.0f)));
     //output.position = float4(input.position, 1.0f);
     
     output.normal = input.normal;
