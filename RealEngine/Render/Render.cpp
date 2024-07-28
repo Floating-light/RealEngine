@@ -161,7 +161,7 @@ void RRenderer::DoRender(RViewInfo& ViewInfo)
     ObjectConstants GlobalConstants;
     GlobalConstants.ViewProjMatrix = ViewInfo.GetViewProjectionMatrix();
     //GlobalConstants.ViewProjMatrix.SetIdentity();
-    RLOG(LogLevel::Info, "----->> \n{}", GlobalConstants.ViewProjMatrix.ToString());
+    //RLOG(LogLevel::Info, "----->> \n{}", GlobalConstants.ViewProjMatrix.ToString());
 
     RCommandContext* Context = GGraphicInterface->BeginCommandContext("MainRender");
     Context->TransitionResource(m_SceneDepthBuffer, D3D12_RESOURCE_STATE_DEPTH_WRITE, true);

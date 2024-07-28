@@ -26,5 +26,5 @@ float4 PSMain(VSOutput input) :SV_Target0
     baseColor = pow(baseColor.rgb, float3(gamma, gamma, gamma));
     return float4(baseColor, 1.f);
     
-    //return float4(input.normal, 1.f);
+    //return float4(input.uv0,0.f, 1.f);
 }

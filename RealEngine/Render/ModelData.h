@@ -40,7 +40,7 @@ public:
 	void SetMaterials(const std::vector<RMaterial>& InMats) { m_Materials = InMats; };
 
 	RDescriptorHandle GetMaterialSRV(int32_t InIndex)const;
-
+	std::string GetMaterialName(int32_t InIndex) const;
 	std::vector<uint8_t>& GetGeometryData() { return m_GeometryData; };
 	std::vector<RMeshData>& GetMeshesData() { return m_MeshesData; }
 	const std::vector<RMeshData>& GetMeshesData()const { return m_MeshesData; }
@@ -58,4 +58,10 @@ inline RDescriptorHandle RModelData::GetMaterialSRV(int32_t InIndex)const
 { 
 	RCHECK(InIndex < m_Materials.size());
 	return m_Materials[InIndex].Handle; 
+}
+
+inline std::string RModelData::GetMaterialName(int32_t InIndex) const
+{
+	RCHECK(InIndex < m_Materials.size()); 
+	return m_Materials[InIndex].DiffuseTexPath;  
 }

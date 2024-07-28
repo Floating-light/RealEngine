@@ -23,7 +23,10 @@ public:
     void SetUpView(struct RViewInfo& InOutViewInfo);
 private:
     Vector Location = Vector::ZeroVector;
-    Vector DeltaLocation = Vector::ZeroVector;
     Rotator Rotation;
+
+    Vector DeltaLocation = Vector::ZeroVector;
+    Rotator DeltaRotator{}; 
+    
     std::shared_ptr<RCamera> m_Camera;
 };

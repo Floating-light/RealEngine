@@ -297,6 +297,9 @@ public:
 	{
 		return Key;
 	}
+	Vector2D GetCurrentPosition()const { return ScreenSpacePosition; };
+	Vector2D GetLastPosition()const {return LastScreenSpacePosition;}; 
+	Vector2D GetDeltaPosition() const { return ScreenSpacePosition - LastScreenSpacePosition; }
 private:
     Vector2D ScreenSpacePosition;
     Vector2D LastScreenSpacePosition;

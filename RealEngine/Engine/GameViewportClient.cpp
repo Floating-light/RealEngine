@@ -11,7 +11,7 @@ RGameViewportClient::RGameViewportClient() :
 Reply RGameViewportClient::OnKeyDown( const RGeometry& MyGeometry, const RKeyEvent& InKeyEvent )
 {
     RLOG(Info, "{} : {}", __FUNCTION__, InKeyEvent.GetKey().ToString());
-    static constexpr float Intensity = 0.06;
+    static constexpr float Intensity = 0.1;
     if(InKeyEvent.GetKey() == RKey::W)
     {
         DeltaLocation.Z -= Intensity;
@@ -20,7 +20,7 @@ Reply RGameViewportClient::OnKeyDown( const RGeometry& MyGeometry, const RKeyEve
     {
         DeltaLocation.Z += Intensity;
     }
-    else if(InKeyEvent.GetKey() == RKey::A)
+    if(InKeyEvent.GetKey() == RKey::A)
     {
         DeltaLocation.X -= Intensity;
     }
@@ -28,17 +28,13 @@ Reply RGameViewportClient::OnKeyDown( const RGeometry& MyGeometry, const RKeyEve
     {
         DeltaLocation.X += Intensity;
     }
-    else if (InKeyEvent.GetKey() == RKey::E)
+    if (InKeyEvent.GetKey() == RKey::E)
     {
         DeltaLocation.Y -= Intensity;
     }
     else if (InKeyEvent.GetKey() == RKey::Q)
     {
         DeltaLocation.Y += Intensity;
-    }
-    else
-    {
-        return Reply::Unhandled();
     }
 
     return Reply::Handled();
@@ -60,17 +56,29 @@ Reply RGameViewportClient::OnMouseButtonUp( const RGeometry& MyGeometry, const R
 }
 Reply RGameViewportClient::OnMouseMove( const RGeometry& MyGeometry, const RPointerEvent& MouseEvent )
 {
+    const Vector2D DeltaMove = MouseEvent.GetDeltaPosition();
+    RLOG(Info, "{} : [{}]", __FUNCTION__, DeltaMove.ToString()); 
+    constexpr float MouseSensitivity = 0.01f;
 
-    return Reply::Unhandled();
+    if (DeltaMove.X > 100 || DeltaMove.Y > 100)
+    {
+        return Reply::Unhandled();
+    }
+    Rotation.Yaw += -DeltaMove.X * MouseSensitivity; 
+    Rotation.Pitch += -DeltaMove.Y * MouseSensitivity;
+    return Reply::Handled();
 }
 
 void RGameViewportClient::Update()
 {
+    if (Rotation.Pitch > 89.0f) Rotation.Pitch = 89.0f;
+    if (Rotation.Pitch < -89.0f) Rotation.Pitch = -89.0f;
+
     Matrix3 rot = Matrix3::MakeYRotation(Rotation.Yaw) * Matrix3::MakeXRotation(Rotation.Pitch);
     Location += rot * DeltaLocation;
     m_Camera->SetTransform(Location, Rotation);
     m_Camera->Update();
-    RLOG(Info, "{} Camera location: {}", __FUNCTION__, Location.ToString()); 
+    //RLOG(Info, "{} Camera location: {}", __FUNCTION__, Location.ToString()); 
 
     DeltaLocation = Vector::ZeroVector;
 }

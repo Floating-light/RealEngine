@@ -116,7 +116,13 @@ std::unordered_map<aiPropertyTypeInfo, std::string> matPropMap =
     {aiPTI_String, "string"},
     {aiPTI_Integer, "Integer"},
     {aiPTI_Buffer, "Buffer"} };
-
+std::string GetMaterialIdentityName(aiMaterial* InMat)
+{
+    RCHECK(InMat);
+    aiString Path;
+    InMat->Get(AI_MATKEY_TEXTURE(aiTextureType_DIFFUSE, 0), Path); 
+    return Path.C_Str();
+}
 std::vector<RMaterial> ProcessMaterial(const aiScene* InScene, std::filesystem::path InParentPath)
 {
     std::vector<RMaterial> Mats{};
@@ -129,10 +135,7 @@ std::vector<RMaterial> ProcessMaterial(const aiScene* InScene, std::filesystem::
             RLOG(Info, "{}. Mat: {}, Prop: {}, Type: {}", 
                 i,Mat->GetName().C_Str(), Prop->mKey.C_Str(), matPropMap[Prop->mType]); 
         }
-        aiString Path;
-        Mat->Get(AI_MATKEY_TEXTURE(aiTextureType_DIFFUSE, 0), Path);
-        RLOG(Info, "texture path : {}", Path.C_Str());
-        Mats.emplace_back((InParentPath / Path.C_Str()).string());
+        Mats.emplace_back((InParentPath / GetMaterialIdentityName(Mat)).string());
     }
     return std::move(Mats);
 }
@@ -235,7 +238,9 @@ std::shared_ptr<RModelData> RAssetImporter::ImportModelNew(const std::string& In
         }
         LocalGeometryData.insert(LocalGeometryData.end(), CurIndexBuffer.begin(), CurIndexBuffer.end()); 
         MeshData.Name = Mesh->mName.C_Str();
-        RLOG(Info, "{}, V: {}, F: {}, T: {}, Mat: {}", Mesh->mName.C_Str(), Mesh->mNumVertices, Mesh->mNumFaces, Mesh->mPrimitiveTypes, Mesh->mMaterialIndex);
+        RLOG(Info, "{}, V: {}, F: {}, T: {}, Mat: {}, Mat name: {}", 
+            Mesh->mName.C_Str(), Mesh->mNumVertices, Mesh->mNumFaces, Mesh->mPrimitiveTypes, Mesh->mMaterialIndex, 
+            GetMaterialIdentityName(scene->mMaterials[Mesh->mMaterialIndex]));
     }
     if (RetData)
     {
