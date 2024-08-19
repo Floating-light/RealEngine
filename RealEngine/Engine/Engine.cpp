@@ -32,7 +32,7 @@ void REngine::OnInit()
     // E:\Workspace\RealEngine\build\bin\Debug\
     // E:\Workspace\RealEngine\build\RealEngine\Launch\
     
-    std::filesystem::path FilePath = std::filesystem::absolute("../../resources/HuangQuan/星穹铁道—黄泉（轴修复）.pmx");
+    std::filesystem::path FilePath = std::filesystem::absolute("../../../resources/HuangQuan/星穹铁道—黄泉（轴修复）.pmx");
     RCHECK(std::filesystem::exists(FilePath));
     std::shared_ptr<RModelData> ModelData = RAssetImporter::ImportModelNew(FilePath.string()); 
     std::shared_ptr<RPrimitiveObject> Obj(new RPrimitiveObject());
@@ -50,13 +50,13 @@ void REngine::OnInit()
     Objects.push_back(PlanePrimtive);
 }
 
-void REngine::OnUpdate()
+void REngine::OnUpdate(float DeltaTime)
 {
     // App 更新，处理UI输入
     RApplication::Get().ProcessInput();
 
     // update scene 
-    GameViewportClient->Update();
+    GameViewportClient->Update(DeltaTime);
 
     // init scene view infor
     RViewInfo ViewInfo;

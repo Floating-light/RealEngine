@@ -17,7 +17,7 @@ public:
     virtual Reply OnMouseMove( const RGeometry& MyGeometry, const RPointerEvent& MouseEvent );
     // ~ IAppViewport
 
-    void Update();
+    void Update(float DeltaTime);
     void GetViewPoint(Vector& OutLocation, Rotator& OutRotation) const;
     void GetViewTransform(Matrix4& OutMat) const;
     void SetUpView(struct RViewInfo& InOutViewInfo);

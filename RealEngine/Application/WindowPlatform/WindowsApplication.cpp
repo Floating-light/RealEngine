@@ -330,6 +330,18 @@ int WindowsApplication::ProcessMessage(HWND hWnd, UINT message, WPARAM wParam, L
             // return 0;
         }
         break;
+    case WM_SETFOCUS:
+        {
+        ShowCursor(false);
+        SetCapture(hWnd);
+        }
+        break;
+    case WM_KILLFOCUS:
+    {
+        ShowCursor(true);
+        ReleaseCapture();
+    }
+    break;
     }
 
     // Handle any messages the switch statement didn't.

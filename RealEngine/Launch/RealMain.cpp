@@ -1,5 +1,7 @@
 #include "RealMain.h"
 
+#include <chrono>
+
 #include "GraphicInterface.h"
 #include "Engine.h"
 #include "Core.h"
@@ -23,10 +25,13 @@ int RealLuanch::Run(const wchar_t* Cmd)
     RHIInit();
 
     REngine::Get()->OnInit();
-
+    auto timeStart = std::chrono::high_resolution_clock::now();
     while(!RCoreGlobal::IsRequireExit())
     {
-        REngine::Get()->OnUpdate();
+        const auto timeEnd = std::chrono::high_resolution_clock::now();
+        const float deltaSeconds = std::chrono::duration<float>(timeEnd - timeStart).count();
+        timeStart = timeEnd;
+        REngine::Get()->OnUpdate(deltaSeconds);
     }
     REngine::Get()->Destoryed(); 
     RHIExit(); 

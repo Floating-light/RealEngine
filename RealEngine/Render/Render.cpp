@@ -67,7 +67,7 @@ void RRenderer::Init(std::shared_ptr<RGenericWindow> Window)
     std::vector<LocalRGBA> ColorData = CreateProceduralTex(1280, 720);
     //m_DefaultTexture.Create2D("DefaultTexture", 1280 * sizeof(LocalRGBA), 1280, 720, DXGI_FORMAT_R8G8B8A8_UNORM, ColorData.data()); 
     
-    m_DefaultTexture = RTexture::CreateTexture("../../resources/HuangQuan/衣内.png"); 
+    m_DefaultTexture = RTexture::CreateTexture("../../../resources/HuangQuan/衣内.png"); 
     
     {   
         D3D12_CPU_DESCRIPTOR_HANDLE defaultTextureCpuHandle = m_DefaultTexture.GetSRV(); 

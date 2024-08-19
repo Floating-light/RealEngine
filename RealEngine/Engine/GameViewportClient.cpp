@@ -10,7 +10,7 @@ RGameViewportClient::RGameViewportClient() :
 
 Reply RGameViewportClient::OnKeyDown( const RGeometry& MyGeometry, const RKeyEvent& InKeyEvent )
 {
-    //RLOG(Info, "{} : {}", __FUNCTION__, InKeyEvent.GetKey().ToString());
+    RLOG(Info, "{} : {}", __FUNCTION__, InKeyEvent.GetKey().ToString()); 
     static constexpr float Intensity = 0.5;
     if(InKeyEvent.GetKey() == RKey::W)
     {
@@ -30,11 +30,11 @@ Reply RGameViewportClient::OnKeyDown( const RGeometry& MyGeometry, const RKeyEve
     }
     if (InKeyEvent.GetKey() == RKey::E)
     {
-        DeltaLocation.Y -= Intensity;
+        DeltaLocation.Y += Intensity;
     }
     else if (InKeyEvent.GetKey() == RKey::Q)
     {
-        DeltaLocation.Y += Intensity;
+        DeltaLocation.Y -= Intensity;
     }
 
     return Reply::Handled();
@@ -69,13 +69,13 @@ Reply RGameViewportClient::OnMouseMove( const RGeometry& MyGeometry, const RPoin
     return Reply::Handled();
 }
 
-void RGameViewportClient::Update()
+void RGameViewportClient::Update(float DeltaTime)
 {
     if (Rotation.Pitch > 89.0f) Rotation.Pitch = 89.0f;
     if (Rotation.Pitch < -89.0f) Rotation.Pitch = -89.0f;
 
     Matrix3 rot = Matrix3::MakeYRotation(Rotation.Yaw) * Matrix3::MakeXRotation(Rotation.Pitch);
-    Location += rot * DeltaLocation;
+    Location += rot * (DeltaLocation);
     m_Camera->SetTransform(Location, Rotation);
     m_Camera->Update();
     //RLOG(Info, "{} Camera location: {}", __FUNCTION__, Location.ToString()); 
